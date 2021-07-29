@@ -1,100 +1,130 @@
-import argparse
 import time
 import sys
 import os
 
-from rgbmatrix import graphics
+from animator import Animator
 
-sys.path.append(os.path.abspath(os.path.dirname(__file__) + '/..'))
+from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
+DEFAULT_INDENT_STATIC_TEXT = 4
 
-class Display(object):
-    def __init__(self, *args, **kwargs):
-        self.parser = argparse.ArgumentParser()
 
-        self.parser.add_argument("-r", "--led-rows", action="store", help="Display rows. 16 for 16x32, 32 for 32x32. Default: 32", default=32, type=int)
-        self.parser.add_argument("--led-cols", action="store", help="Panel columns. Typically 32 or 64. (Default: 32)", default=32, type=int)
-        self.parser.add_argument("-c", "--led-chain", action="store", help="Daisy-chained boards. Default: 1.", default=1, type=int)
-        self.parser.add_argument("-P", "--led-parallel", action="store", help="For Plus-models or RPi2: parallel chains. 1..3. Default: 1", default=1, type=int)
-        self.parser.add_argument("-p", "--led-pwm-bits", action="store", help="Bits used for PWM. Something between 1..11. Default: 11", default=11, type=int)
-        self.parser.add_argument("-b", "--led-brightness", action="store", help="Sets brightness level. Default: 100. Range: 1..100", default=100, type=int)
-        self.parser.add_argument("-m", "--led-gpio-mapping", help="Hardware Mapping: regular, adafruit-hat, adafruit-hat-pwm" , choices=['regular', 'regular-pi1', 'adafruit-hat', 'adafruit-hat-pwm'], type=str)
-        self.parser.add_argument("--led-scan-mode", action="store", help="Progressive or interlaced scan. 0 Progressive, 1 Interlaced (default)", default=1, choices=range(2), type=int)
-        self.parser.add_argument("--led-pwm-lsb-nanoseconds", action="store", help="Base time-unit for the on-time in the lowest significant bit in nanoseconds. Default: 130", default=130, type=int)
-        self.parser.add_argument("--led-show-refresh", action="store_true", help="Shows the current refresh rate of the LED panel")
-        self.parser.add_argument("--led-slowdown-gpio", action="store", help="Slow down writing to GPIO. Range: 0..4. Default: 1", default=1, type=int)
-        self.parser.add_argument("--led-no-hardware-pulse", action="store", help="Don't use hardware pin-pulse generation")
-        self.parser.add_argument("--led-rgb-sequence", action="store", help="Switch if your matrix has led colors swapped. Default: RGB", default="RGB", type=str)
-        self.parser.add_argument("--led-pixel-mapper", action="store", help="Apply pixel mappers. e.g \"Rotate:90\"", default="", type=str)
-        self.parser.add_argument("--led-row-addr-type", action="store", help="0 = default; 1=AB-addressed panels; 2=row direct; 3=ABC-addressed panels; 4 = ABC Shift + DE direct", default=0, type=int, choices=[0,1,2,3,4])
-        self.parser.add_argument("--led-multiplexing", action="store", help="Multiplexing type: 0=direct; 1=strip; 2=checker; 3=spiral; 4=ZStripe; 5=ZnMirrorZStripe; 6=coreman; 7=Kaler2Scan; 8=ZStripeUneven... (Default: 0)", default=0, type=int)
-        self.parser.add_argument("--led-panel-type", action="store", help="Needed to initialize special panels. Supported: 'FM6126A'", default="", type=str)
-        self.parser.add_argument("--led-no-drop-privs", dest="drop_privileges", help="Don't drop privileges from 'root' after initializing the hardware.", action='store_false')
-        self.parser.add_argument("-t", "--text", help="The text to scroll on the RGB LED panel", default="Hello world!")
+class Display(Animator):
+    def __init__(self):
+        super().__init__(0.1)
 
-        self.parser.set_defaults(drop_privileges=True)
+        # Setup Display
+        options = RGBMatrixOptions()
+        options.hardware_mapping = "adafruit-hat-pwm"
+        options.rows = 32
+        options.cols = 64
+        options.chain_length = 1
+        options.parallel = 1
+        options.row_address_type = 0
+        options.multiplexing = 0
+        options.pwm_bits = 11
+        options.brightness = 100
+        options.pwm_lsb_nanoseconds = 130
+        options.led_rgb_sequence = "RGB"
+        options.pixel_mapper_config = ""
+        options.panel_type = ""
+        options.show_refresh_rate = 0
+        options.gpio_slowdown = 1
+        options.disable_hardware_pulsing = True
+        options.drop_privileges = True
+        self.matrix = RGBMatrix(options=options)
 
-    def usleep(self, value):
-        time.sleep(value / 1000000.0)
+        # Setup canvas
+        self.canvas = self.matrix.CreateFrameCanvas()
+        self.canvas.Clear()
+
+        # Setup fonts
+        self.font_regular = graphics.Font()
+        self.font_regular.LoadFont("fonts/6x12.bdf")
+
+        # Element positions
+        self.journey_position = DEFAULT_INDENT_STATIC_TEXT
+        self.plane_position = DEFAULT_INDENT_STATIC_TEXT
+
+        # Data to render
+        self.data = {"error": "", "journey": "GLA▶EDI", "plane": "01269"}
+
+    def draw_square(self, x0, y0, x1, y1, colour):
+        for x in range(x0, x1):
+            _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
+
+    @Animator.KeyFrame.add(1)
+    def journey(self, count):
+
+        MAX_STATIC_TEXT_LEN = 8
+        MAX_TEXT_WIDTH = 48
+
+        # Draw background
+        if len(self.data["journey"]) > MAX_STATIC_TEXT_LEN:
+            self.draw_square(0, 0, 49, 14, graphics.Color(0, 0, 0))
+
+        # Draw text
+        text_length = graphics.DrawText(
+            self.canvas,
+            self.font_regular,
+            self.journey_position,
+            12,
+            graphics.Color(255, 255, 0),
+            self.data["journey"],
+        )
+
+        # If it should be scrolling, update
+        if len(self.data["journey"]) > MAX_STATIC_TEXT_LEN:
+            self.journey_position -= 1
+            if self.journey_position + text_length < 0:
+                self.journey_position = MAX_TEXT_WIDTH
+        else:
+            self.journey_position = DEFAULT_INDENT_STATIC_TEXT
+
+    @Animator.KeyFrame.add(1)
+    def plane(self, count):
+
+        MAX_STATIC_TEXT_LEN = 8
+        MAX_TEXT_WIDTH = 48
+
+        # Draw background
+        if len(self.data["plane"]) > MAX_STATIC_TEXT_LEN:
+            self.draw_square(0, 18, 48, 32, graphics.Color(0, 0, 0))
+
+        # Draw text
+        text_length = graphics.DrawText(
+            self.canvas,
+            self.font_regular,
+            self.plane_position,
+            29,
+            graphics.Color(255, 255, 0),
+            self.data["plane"],
+        )
+
+        # If it should be scrolling, update
+        if len(self.data["plane"]) > MAX_STATIC_TEXT_LEN:
+            self.plane_position -= 1
+            if self.plane_position + text_length < 0:
+                self.plane_position = MAX_TEXT_WIDTH
+        else:
+            self.plane_position = DEFAULT_INDENT_STATIC_TEXT
+
+    @Animator.KeyFrame.add(1)
+    def permanant_elements(self, count):
+        graphics.DrawLine(self.canvas, 0, 16, 49, 16, graphics.Color(153, 204, 255))
+        graphics.DrawLine(self.canvas, 49, 0, 49, 32, graphics.Color(153, 204, 255))
+
+    @Animator.KeyFrame.add(1)
+    def sync(self, count):
+        _ = self.matrix.SwapOnVSync(self.canvas)
 
     def run(self):
-        offscreen_canvas = self.matrix.CreateFrameCanvas()
-        font = graphics.Font()
-        font.LoadFont("fonts/7x13.bdf")
-        textColor = graphics.Color(255, 255, 0)
-        pos = offscreen_canvas.width
-        my_text = self.args.text
-
-        while True:
-            offscreen_canvas.Clear()
-            len = graphics.DrawText(offscreen_canvas, font, pos, 10, textColor, my_text)
-            pos -= 1
-            if (pos + len < 0):
-                pos = offscreen_canvas.width
-
-            time.sleep(0.01)
-            offscreen_canvas = self.matrix.SwapOnVSync(offscreen_canvas)
-
-    def process(self):
-        self.args = self.parser.parse_args()
-
-        options = RGBMatrixOptions()
-
-        if self.args.led_gpio_mapping != None:
-          options.hardware_mapping = self.args.led_gpio_mapping
-        options.rows = self.args.led_rows
-        options.cols = self.args.led_cols
-        options.chain_length = self.args.led_chain
-        options.parallel = self.args.led_parallel
-        options.row_address_type = self.args.led_row_addr_type
-        options.multiplexing = self.args.led_multiplexing
-        options.pwm_bits = self.args.led_pwm_bits
-        options.brightness = self.args.led_brightness
-        options.pwm_lsb_nanoseconds = self.args.led_pwm_lsb_nanoseconds
-        options.led_rgb_sequence = self.args.led_rgb_sequence
-        options.pixel_mapper_config = self.args.led_pixel_mapper
-        options.panel_type = self.args.led_panel_type
-
-
-        if self.args.led_show_refresh:
-          options.show_refresh_rate = 1
-
-        if self.args.led_slowdown_gpio != None:
-            options.gpio_slowdown = self.args.led_slowdown_gpio
-        if self.args.led_no_hardware_pulse:
-          options.disable_hardware_pulsing = True
-        if not self.args.drop_privileges:
-          options.drop_privileges=False
-
-        self.matrix = RGBMatrix(options = options)
-
         try:
             # Start loop
-            print("Press CTRL-C to stop sample")
-            self.run()
+            print("Press CTRL-C to stop")
+            self.play()
+
         except KeyboardInterrupt:
             print("Exiting\n")
             sys.exit(0)
-
-        return True
