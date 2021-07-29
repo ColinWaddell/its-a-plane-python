@@ -1,18 +1,22 @@
 import time
 import sys
 import os
+from typing import overload
 
 from animator import Animator
+from overhead import Overhead
 
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
 DEFAULT_INDENT_STATIC_TEXT = 4
+FRAME_RATE = 0.1
+FRAME_PERIOD = 1 / FRAME_RATE
 
 
 class Display(Animator):
     def __init__(self):
-        super().__init__(0.1)
+        super().__init__(FRAME_RATE)
 
         # Setup Display
         options = RGBMatrixOptions()
@@ -48,7 +52,20 @@ class Display(Animator):
         self.plane_position = DEFAULT_INDENT_STATIC_TEXT
 
         # Data to render
-        self.data = {"error": "", "journey": "GLA▶EDI", "plane": "01269"}
+        self._data = [
+            {
+                "error": "",
+                "plane": "",
+                "origin": "",
+                "destination": "",
+                "vertical_speed": 0,
+                "altitude": 0,
+            }
+        ]
+
+        # Start Looking for planes
+        self.overhead = Overhead()
+        self.overhead.grab_data()
 
     def draw_square(self, x0, y0, x1, y1, colour):
         for x in range(x0, x1):
@@ -60,8 +77,10 @@ class Display(Animator):
         MAX_STATIC_TEXT_LEN = 8
         MAX_TEXT_WIDTH = 48
 
+        journey = f"{self._data[0]['origin']}▶{self._data[0]['destination']}"
+
         # Draw background
-        if len(self.data["journey"]) > MAX_STATIC_TEXT_LEN:
+        if len(journey) > MAX_STATIC_TEXT_LEN:
             self.draw_square(0, 0, 49, 14, graphics.Color(0, 0, 0))
 
         # Draw text
@@ -71,11 +90,11 @@ class Display(Animator):
             self.journey_position,
             12,
             graphics.Color(255, 255, 0),
-            self.data["journey"],
+            journey,
         )
 
         # If it should be scrolling, update
-        if len(self.data["journey"]) > MAX_STATIC_TEXT_LEN:
+        if len(journey) > MAX_STATIC_TEXT_LEN:
             self.journey_position -= 1
             if self.journey_position + text_length < 0:
                 self.journey_position = MAX_TEXT_WIDTH
@@ -88,8 +107,10 @@ class Display(Animator):
         MAX_STATIC_TEXT_LEN = 8
         MAX_TEXT_WIDTH = 48
 
+        plane = self._data[0]["plane"]
+
         # Draw background
-        if len(self.data["plane"]) > MAX_STATIC_TEXT_LEN:
+        if len(plane) > MAX_STATIC_TEXT_LEN:
             self.draw_square(0, 18, 48, 32, graphics.Color(0, 0, 0))
 
         # Draw text
@@ -99,11 +120,11 @@ class Display(Animator):
             self.plane_position,
             29,
             graphics.Color(255, 255, 0),
-            self.data["plane"],
+            plane,
         )
 
         # If it should be scrolling, update
-        if len(self.data["plane"]) > MAX_STATIC_TEXT_LEN:
+        if len(plane) > MAX_STATIC_TEXT_LEN:
             self.plane_position -= 1
             if self.plane_position + text_length < 0:
                 self.plane_position = MAX_TEXT_WIDTH
@@ -118,6 +139,21 @@ class Display(Animator):
     @Animator.KeyFrame.add(1)
     def sync(self, count):
         _ = self.matrix.SwapOnVSync(self.canvas)
+
+    @Animator.KeyFrame.add(FRAME_PERIOD * 5)
+    def load_data(self, count):
+        if self.overhead.processing:
+            # show processing animation
+            print("loading data")
+            pass
+
+        if self.overhead.new_data:
+            print("new data")
+            self._data = self.overhead.data
+
+    @Animator.KeyFrame.add(FRAME_PERIOD * 30)
+    def grab_data(self, count):
+        self.overhead.grab_data()
 
     def run(self):
         try:
