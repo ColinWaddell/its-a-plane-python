@@ -77,6 +77,7 @@ class Display(Animator):
 
         # Guard against no data
         if len(self._data) == 0:
+            self.canvas.Clear()
             return
 
         if len(self._data) > 1:
