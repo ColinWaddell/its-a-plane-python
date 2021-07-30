@@ -10,8 +10,14 @@ from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
 DEFAULT_INDENT_STATIC_TEXT = 4
+
 FRAME_RATE = 0.1
 FRAME_PERIOD = 1 / FRAME_RATE
+
+COLOUR_BLACK = graphics.Color(0, 0, 0)
+COLOUR_WHITE = graphics.Color(255, 255, 255)
+COLOUR_YELLOW = graphics.Color(255, 255, 0)
+COLOUR_BLUE = graphics.Color(153, 204, 255)
 
 
 class Display(Animator):
@@ -44,24 +50,19 @@ class Display(Animator):
         self.canvas.Clear()
 
         # Setup fonts
+        self.font_small = graphics.Font()
         self.font_regular = graphics.Font()
+        self.font_large = graphics.Font()
+        self.font_small.LoadFont("fonts/4x6.bdf")
         self.font_regular.LoadFont("fonts/6x12.bdf")
+        self.font_large.LoadFont("fonts/8x13.bdf")
 
         # Element positions
-        self.journey_position = DEFAULT_INDENT_STATIC_TEXT
         self.plane_position = DEFAULT_INDENT_STATIC_TEXT
 
         # Data to render
-        self._data = [
-            {
-                "error": "",
-                "plane": "",
-                "origin": "",
-                "destination": "",
-                "vertical_speed": 0,
-                "altitude": 0,
-            }
-        ]
+        self._data_index = 0
+        self._data = []
 
         # Start Looking for planes
         self.overhead = Overhead()
@@ -71,55 +72,81 @@ class Display(Animator):
         for x in range(x0, x1):
             _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
 
-    @Animator.KeyFrame.add(1)
+    @Animator.KeyFrame.add(0)
+    def permanant_elements(self, count):
+
+        # Guard against no data
+        if len(self._data) == 0:
+            return
+
+        if len(self._data) > 1:
+            graphics.DrawLine(self.canvas, 0, 16, 48, 16, COLOUR_BLUE)
+
+            self.draw_square(51, 14, 64, 18, COLOUR_BLACK)
+
+            # Draw text
+            text_length = graphics.DrawText(
+                self.canvas,
+                self.font_small,
+                51,
+                19,
+                COLOUR_WHITE,
+                f"{self._data_index + 1}/{len(self._data)}",
+            )
+        else:
+            graphics.DrawLine(self.canvas, 0, 16, 64, 16, COLOUR_BLUE)
+
+    @Animator.KeyFrame.add(0)
     def journey(self, count):
 
-        MAX_STATIC_TEXT_LEN = 8
-        MAX_TEXT_WIDTH = 48
+        # Guard against no data
+        if len(self._data) == 0:
+            return
 
-        journey = f"{self._data[0]['origin']}▶{self._data[0]['destination']}"
+        if not (
+            self._data[self._data_index]["origin"]
+            and self._data[self._data_index]["destination"]
+        ):
+            return
+
+        journey = f"{self._data[self._data_index]['origin']}  {self._data[self._data_index]['destination']}"
 
         # Draw background
-        if len(journey) > MAX_STATIC_TEXT_LEN:
-            self.draw_square(0, 0, 49, 14, graphics.Color(0, 0, 0))
+        self.draw_square(0, 0, 64, 14, COLOUR_BLACK)
 
         # Draw text
         text_length = graphics.DrawText(
             self.canvas,
-            self.font_regular,
-            self.journey_position,
+            self.font_large,
+            0,
             12,
-            graphics.Color(255, 255, 0),
+            COLOUR_YELLOW,
             journey,
         )
-
-        # If it should be scrolling, update
-        if len(journey) > MAX_STATIC_TEXT_LEN:
-            self.journey_position -= 1
-            if self.journey_position + text_length < 0:
-                self.journey_position = MAX_TEXT_WIDTH
-        else:
-            self.journey_position = DEFAULT_INDENT_STATIC_TEXT
 
     @Animator.KeyFrame.add(1)
     def plane(self, count):
 
-        MAX_STATIC_TEXT_LEN = 8
-        MAX_TEXT_WIDTH = 48
+        # Guard against no data
+        if len(self._data) == 0:
+            return
 
-        plane = self._data[0]["plane"]
+        MAX_STATIC_TEXT_LEN = 12
+        MAX_TEXT_WIDTH = 64
+
+        plane = self._data[self._data_index]["plane"]
 
         # Draw background
         if len(plane) > MAX_STATIC_TEXT_LEN:
-            self.draw_square(0, 18, 48, 32, graphics.Color(0, 0, 0))
+            self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
 
         # Draw text
         text_length = graphics.DrawText(
             self.canvas,
             self.font_regular,
             self.plane_position,
-            29,
-            graphics.Color(255, 255, 0),
+            28,
+            COLOUR_YELLOW,
             plane,
         )
 
@@ -128,32 +155,52 @@ class Display(Animator):
             self.plane_position -= 1
             if self.plane_position + text_length < 0:
                 self.plane_position = MAX_TEXT_WIDTH
+                if len(self._data) > 1:
+                    self._data_index = (self._data_index + 1) % len(self._data)
+                    self.reset_scene()
         else:
-            self.plane_position = DEFAULT_INDENT_STATIC_TEXT
+            self.plane_position = 0
 
-    @Animator.KeyFrame.add(1)
-    def permanant_elements(self, count):
-        graphics.DrawLine(self.canvas, 0, 16, 49, 16, graphics.Color(153, 204, 255))
-        graphics.DrawLine(self.canvas, 49, 0, 49, 32, graphics.Color(153, 204, 255))
+    @Animator.KeyFrame.add(0)
+    def journey_arrow(self, count):
+
+        # Guard against no data
+        if len(self._data) == 0:
+            return
+
+        if not (
+            self._data[self._data_index]["origin"]
+            and self._data[self._data_index]["destination"]
+        ):
+            return
+
+        self.draw_square(28, 2, 36, 12, COLOUR_BLACK)
+        graphics.DrawLine(self.canvas, 29, 2, 34, 7, COLOUR_BLUE)
+        graphics.DrawLine(self.canvas, 34, 7, 29, 12, COLOUR_BLUE)
+
+    @Animator.KeyFrame.add(5)
+    def loading_blink(self, count):
+        if self.overhead.processing:
+            if count % 2:
+                self.canvas.SetPixel(63, 0, 153, 204, 255)
+                return
+        self.canvas.SetPixel(63, 0, 0, 0, 0)
+
+    @Animator.KeyFrame.add(FRAME_PERIOD * 5)
+    def check_for_loaded_data(self, count):
+        if self.overhead.new_data:
+            self._data_index = 0
+            self._data = self.overhead.data
+            self.reset_scene()
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 5)
-    def load_data(self, count):
-        if self.overhead.processing:
-            # show processing animation
-            print("loading data")
-            pass
-
-        if self.overhead.new_data:
-            print("new data")
-            self._data = self.overhead.data
-
     @Animator.KeyFrame.add(FRAME_PERIOD * 30)
-    def grab_data(self, count):
-        self.overhead.grab_data()
+    def grab_new_data(self, count):
+        if not (self.overhead.processing and self.overhead.new_data):
+            self.overhead.grab_data()
 
     def run(self):
         try:

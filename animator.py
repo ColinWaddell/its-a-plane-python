@@ -27,6 +27,9 @@ class Animator(object):
 
     def play(self):
         while True:
+            if self.frame < 0:
+                continue
+
             for keyframe in self.keyframes:
                 # If divisor == 0 then only run once on first loop
                 if self.frame == 0:
@@ -45,6 +48,9 @@ class Animator(object):
 
             self.frame += 1
             sleep(self.delay)
+
+    def reset_scene(self):
+        self.frame = -1
 
 
 if __name__ == "__main__":

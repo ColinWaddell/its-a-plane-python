@@ -5,6 +5,7 @@ from time import sleep
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
 
+
 ZONE_UK = {
     "tl_y": 62.61,
     "tl_x": -13.07,
@@ -12,11 +13,11 @@ ZONE_UK = {
     "br_x": 3.46,
 }
 
-ZOME_HOME = {
+ZONE_HOME = {
     "tl_y": 55.92860260752661,
-    "tl_x": -4.324657457545864,
+    "tl_x": -4.359924486085342,
     "br_y": 55.89148040308923,
-    "br_x": -4.359924486085342,
+    "br_x": -4.324657457545864
 }
 
 
@@ -37,10 +38,10 @@ class Overhead:
         data = []
 
         # Grab flight details
-        bounds = self._api.get_bounds(ZOME_HOME)
+        bounds = self._api.get_bounds(ZONE_HOME)
         flights = self._api.get_flights(bounds=bounds)
 
-        for flight in flights:
+        for flight in flights[:3]:
             retries = RETRIES
 
             while retries:
