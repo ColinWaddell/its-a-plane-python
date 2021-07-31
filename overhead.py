@@ -4,7 +4,7 @@ from time import sleep
 
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
-MAX_FLIGHT_LOOKUP = 1
+MAX_FLIGHT_LOOKUP = 5
 
 
 ZONE_UK = {
@@ -39,10 +39,11 @@ class Overhead:
         data = []
 
         # Grab flight details
-        bounds = self._api.get_bounds(ZONE_UK)
+        bounds = self._api.get_bounds(ZONE_HOME)
         flights = self._api.get_flights(bounds=bounds)
 
-        print("PROCESSING")
+        # Sort flights by altitude, lowest first
+        flights = sorted(flights, key=lambda f: f.altitude) 
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:
             retries = RETRIES
@@ -69,8 +70,6 @@ class Overhead:
                 except (KeyError, AttributeError):
                     retries -= 1
         
-        # Sort flights by altitude, lowest first
-        data = sorted(data, key=lambda k: k['altitude']) 
 
         self._new_data = True
         self._processing = False

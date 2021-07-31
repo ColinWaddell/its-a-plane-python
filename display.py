@@ -143,10 +143,9 @@ class Display(Animator):
         MAX_STATIC_TEXT_LEN = 12
         MAX_TEXT_WIDTH = 64
 
-        # plane = self._data[self._data_index]['plane']
-        # if self._data[self._data_index]['callsign'] != "N/A":
-        #     plane += " " + self._data[self._data_index]['callsign']
-        plane = "xxx"
+        plane = self._data[self._data_index]['plane']
+        if self._data[self._data_index]['callsign'] != "N/A":
+            plane += " " + self._data[self._data_index]['callsign']
 
         # Draw background
         self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
@@ -212,10 +211,10 @@ class Display(Animator):
     def sync(self, count):
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 30)
+    @Animator.KeyFrame.add(FRAME_PERIOD * 10)
     def grab_new_data(self, count):
         if not (self.overhead.processing and self.overhead.new_data) and (
-            self._data_all_looped or len(self._data) == 0
+            self._data_all_looped or len(self._data) == 1
         ):
             self.overhead.grab_data()
 
