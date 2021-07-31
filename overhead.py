@@ -4,7 +4,7 @@ from time import sleep
 
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
-MAX_FLIGHT_LOOKUP = 5
+MAX_FLIGHT_LOOKUP = 1
 
 
 ZONE_UK = {
