@@ -15,6 +15,7 @@ class Animator(object):
         self.keyframes = []
         self.frame = 0
         self.delay = delay
+        self._reset_scene = True
 
         self._register_keyframes()
 
@@ -27,30 +28,28 @@ class Animator(object):
 
     def play(self):
         while True:
-            if self.frame < 0:
-                continue
-
             for keyframe in self.keyframes:
                 # If divisor == 0 then only run once on first loop
                 if self.frame == 0:
                     if keyframe.properties["divisor"] == 0:
-                        keyframe(keyframe.properties["count"])
-                    else:
-                        continue
+                        keyframe()
 
-                # Else perform normal operation
-                elif keyframe.properties["divisor"] and not (
-                    (self.frame - keyframe.properties["offset"])
-                    % keyframe.properties["divisor"]
+                # Otherwise perform normal operation
+                if (
+                    self.frame > 0
+                    and keyframe.properties["divisor"]
+                    and not (
+                        (self.frame - keyframe.properties["offset"])
+                        % keyframe.properties["divisor"]
+                    )
                 ):
                     keyframe(keyframe.properties["count"])
                     keyframe.properties["count"] += 1
 
+            self._reset_scene = False
             self.frame += 1
             sleep(self.delay)
 
-    def reset_scene(self):
-        self.frame = -1
 
 
 if __name__ == "__main__":

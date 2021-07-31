@@ -9,6 +9,8 @@ from overhead import Overhead
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+
 DEFAULT_INDENT_STATIC_TEXT = 4
 
 FRAME_RATE = 0.1
@@ -53,15 +55,16 @@ class Display(Animator):
         self.font_small = graphics.Font()
         self.font_regular = graphics.Font()
         self.font_large = graphics.Font()
-        self.font_small.LoadFont("fonts/4x6.bdf")
-        self.font_regular.LoadFont("fonts/6x12.bdf")
-        self.font_large.LoadFont("fonts/8x13.bdf")
+        self.font_small.LoadFont(f"{DIR_PATH}/fonts/4x6.bdf")
+        self.font_regular.LoadFont(f"{DIR_PATH}/fonts/6x12.bdf")
+        self.font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
 
         # Element positions
         self.plane_position = DEFAULT_INDENT_STATIC_TEXT
 
         # Data to render
         self._data_index = 0
+        self._data_all_looped = False
         self._data = []
 
         # Start Looking for planes
@@ -72,8 +75,13 @@ class Display(Animator):
         for x in range(x0, x1):
             _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
 
+    def reset_scene(self):
+        self.permanant_elements()
+        self.journey()
+        self.journey_arrow()
+
     @Animator.KeyFrame.add(0)
-    def permanant_elements(self, count):
+    def permanant_elements(self):
 
         # Guard against no data
         if len(self._data) == 0:
@@ -98,7 +106,7 @@ class Display(Animator):
             graphics.DrawLine(self.canvas, 0, 16, 64, 16, COLOUR_BLUE)
 
     @Animator.KeyFrame.add(0)
-    def journey(self, count):
+    def journey(self):
 
         # Guard against no data
         if len(self._data) == 0:
@@ -113,7 +121,7 @@ class Display(Animator):
         journey = f"{self._data[self._data_index]['origin']}  {self._data[self._data_index]['destination']}"
 
         # Draw background
-        self.draw_square(0, 0, 64, 14, COLOUR_BLACK)
+        self.draw_square(0, 0, 64, 13, COLOUR_BLACK)
 
         # Draw text
         text_length = graphics.DrawText(
@@ -135,11 +143,13 @@ class Display(Animator):
         MAX_STATIC_TEXT_LEN = 12
         MAX_TEXT_WIDTH = 64
 
-        plane = self._data[self._data_index]["plane"]
+        # plane = self._data[self._data_index]['plane']
+        # if self._data[self._data_index]['callsign'] != "N/A":
+        #     plane += " " + self._data[self._data_index]['callsign']
+        plane = "xxx"
 
         # Draw background
-        if len(plane) > MAX_STATIC_TEXT_LEN:
-            self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
+        self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
 
         # Draw text
         text_length = graphics.DrawText(
@@ -152,18 +162,21 @@ class Display(Animator):
         )
 
         # If it should be scrolling, update
-        if len(plane) > MAX_STATIC_TEXT_LEN:
+        if len(self._data) > 1 or len(plane) > MAX_STATIC_TEXT_LEN:
             self.plane_position -= 1
             if self.plane_position + text_length < 0:
                 self.plane_position = MAX_TEXT_WIDTH
                 if len(self._data) > 1:
                     self._data_index = (self._data_index + 1) % len(self._data)
+                    self._data_all_looped = (
+                        not self._data_index
+                    ) or self._data_all_looped
                     self.reset_scene()
         else:
             self.plane_position = 0
 
     @Animator.KeyFrame.add(0)
-    def journey_arrow(self, count):
+    def journey_arrow(self):
 
         # Guard against no data
         if len(self._data) == 0:
@@ -191,6 +204,7 @@ class Display(Animator):
     def check_for_loaded_data(self, count):
         if self.overhead.new_data:
             self._data_index = 0
+            self._data_all_looped = False
             self._data = self.overhead.data
             self.reset_scene()
 
@@ -200,7 +214,9 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 30)
     def grab_new_data(self, count):
-        if not (self.overhead.processing and self.overhead.new_data):
+        if not (self.overhead.processing and self.overhead.new_data) and (
+            self._data_all_looped or len(self._data) == 0
+        ):
             self.overhead.grab_data()
 
     def run(self):
