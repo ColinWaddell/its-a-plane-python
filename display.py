@@ -214,7 +214,7 @@ class Display(Animator):
     @Animator.KeyFrame.add(FRAME_PERIOD * 10)
     def grab_new_data(self, count):
         if not (self.overhead.processing and self.overhead.new_data) and (
-            self._data_all_looped or len(self._data) == 1
+            self._data_all_looped or len(self._data) <= 1
         ):
             self.overhead.grab_data()
 
