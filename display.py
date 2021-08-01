@@ -87,11 +87,12 @@ class Display(Animator):
         if len(self._data) == 0:
             self.canvas.Clear()
             return
+        
+        # Clear are where N of M might have been
+        self.draw_square(51, 14, 64, 18, COLOUR_BLACK)
 
         if len(self._data) > 1:
             graphics.DrawLine(self.canvas, 0, 16, 48, 16, COLOUR_BLUE)
-
-            self.draw_square(51, 14, 64, 18, COLOUR_BLACK)
 
             # Draw text
             text_length = graphics.DrawText(
@@ -144,8 +145,6 @@ class Display(Animator):
         MAX_TEXT_WIDTH = 64
 
         plane = self._data[self._data_index]['plane']
-        if self._data[self._data_index]['callsign'] != "N/A":
-            plane += " " + self._data[self._data_index]['callsign']
 
         # Draw background
         self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
@@ -211,7 +210,7 @@ class Display(Animator):
     def sync(self, count):
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 10)
+    @Animator.KeyFrame.add(FRAME_PERIOD * 30)
     def grab_new_data(self, count):
         if not (self.overhead.processing and self.overhead.new_data) and (
             self._data_all_looped or len(self._data) <= 1
