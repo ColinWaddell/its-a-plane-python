@@ -154,25 +154,23 @@ class Display(Animator):
         text_length = graphics.DrawText(
             self.canvas,
             self.font_regular,
-            self.plane_position if len(self._data) > 1 else 0,
+            self.plane_position,
             28,
             COLOUR_YELLOW,
             plane,
         )
 
-        # If it should be scrolling, update
-        if len(self._data) > 1 or len(plane) > MAX_STATIC_TEXT_LEN:
-            self.plane_position -= 1
-            if self.plane_position + text_length < 0:
-                self.plane_position = MAX_TEXT_WIDTH
-                if len(self._data) > 1:
-                    self._data_index = (self._data_index + 1) % len(self._data)
-                    self._data_all_looped = (
-                        not self._data_index
-                    ) or self._data_all_looped
-                    self.reset_scene()
-        else:
-            self.plane_position = 0
+        # Handle scrolling
+        self.plane_position -= 1
+        if self.plane_position + text_length < 0:
+            self.plane_position = MAX_TEXT_WIDTH
+            if len(self._data) > 1:
+                self._data_index = (self._data_index + 1) % len(self._data)
+                self._data_all_looped = (
+                    not self._data_index
+                ) or self._data_all_looped
+                self.reset_scene()
+
 
     @Animator.KeyFrame.add(0)
     def journey_arrow(self):
