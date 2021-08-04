@@ -81,6 +81,7 @@ class Display(Animator):
         self.permanant_elements()
         self.journey()
         self.journey_arrow()
+        self.flight_number()
 
     @Animator.KeyFrame.add(0)
     def permanant_elements(self):
@@ -138,17 +139,17 @@ class Display(Animator):
     
     @Animator.KeyFrame.add(0)
     def flight_number(self):
-
         # Guard against no data
         if len(self._data) == 0:
             return
+        print("1")
 
         if not (
             self._data[self._data_index]["callsign"]
         ):
             return
 
-        flight_no = self._data[self._data_index]["callsign"]
+        flight_no = f'{self._data[self._data_index]["callsign"]}'
 
         # Draw background
         self.draw_square(0, 0, 64, 13, COLOUR_BLACK)
@@ -158,7 +159,7 @@ class Display(Animator):
             self.canvas,
             self.font_small,
             2,
-            14,
+            19,
             COLOUR_WHITE,
             flight_no,
         )
