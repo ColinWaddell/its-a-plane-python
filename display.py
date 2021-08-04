@@ -89,7 +89,7 @@ class Display(Animator):
         if len(self._data) == 0:
             self.canvas.Clear()
             return
-        
+
         # Clear are where N of M might have been
         self.draw_square(51, 14, 64, 18, COLOUR_BLACK)
 
@@ -145,7 +145,7 @@ class Display(Animator):
 
         MAX_STATIC_TEXT_LEN = 12
 
-        plane = self._data[self._data_index]['plane']
+        plane = self._data[self._data_index]["plane"]
 
         # Draw background
         self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
@@ -193,7 +193,7 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(5)
     def loading_blink(self, count):
-        graphics.DrawLine(self.canvas, 63, 0, 63, 5, COLOUR_BLACK) 
+        graphics.DrawLine(self.canvas, 63, 0, 63, 5, COLOUR_BLACK)
         if self.overhead.processing:
             self.canvas.SetPixel(63, count % 6, 255, 255, 255)
 

@@ -14,12 +14,7 @@ ZONE_UK = {
     "br_x": 3.46,
 }
 
-ZONE_HOME = {
-    "tl_y": 56.06403,
-    "tl_x": -4.51589,
-    "br_y": 55.89088,
-    "br_x": -4.19694
-}
+ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
 
 
 class Overhead:
@@ -46,7 +41,7 @@ class Overhead:
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by altitude, lowest first
-        flights = sorted(flights, key=lambda f: f.altitude) 
+        flights = sorted(flights, key=lambda f: f.altitude)
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:
             retries = RETRIES
@@ -65,14 +60,13 @@ class Overhead:
                             "destination": flight.destination_airport_iata,
                             "vertical_speed": flight.vertical_speed,
                             "altitude": flight.altitude,
-                            "callsign": flight.callsign
+                            "callsign": flight.callsign,
                         }
                     )
                     break
 
                 except (KeyError, AttributeError):
                     retries -= 1
-        
 
         with self._lock:
             self._new_data = True
