@@ -40,7 +40,7 @@ class Display(Animator):
         options.pwm_lsb_nanoseconds = 130
         options.led_rgb_sequence = "RGB"
         options.pixel_mapper_config = ""
-        options.panel_type = ""
+        #options.panel_type = ""
         options.show_refresh_rate = 0
         options.gpio_slowdown = 1
         options.disable_hardware_pulsing = True
