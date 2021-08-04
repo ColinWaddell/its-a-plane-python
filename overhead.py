@@ -1,5 +1,5 @@
 from FlightRadar24.api import FlightRadar24API
-from threading import Thread
+from threading import Thread, Lock
 from time import sleep
 
 RETRIES = 3
@@ -14,17 +14,13 @@ ZONE_UK = {
     "br_x": 3.46,
 }
 
-ZONE_HOME = {
-    "tl_y": 56.06403,
-    "tl_x": -4.51589,
-    "br_y": 55.89088,
-    "br_x": -4.19694
-}
+ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
 
 
 class Overhead:
     def __init__(self):
         self._api = FlightRadar24API()
+        self._lock = Lock()
         self._data = []
         self._new_data = False
         self._processing = False
@@ -34,8 +30,10 @@ class Overhead:
 
     def _grab_data(self):
         # Mark data as old
-        self._new_data = False
-        self._processing = True
+        with self._lock:
+            self._new_data = False
+            self._processing = True
+
         data = []
 
         # Grab flight details
@@ -43,7 +41,7 @@ class Overhead:
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by altitude, lowest first
-        flights = sorted(flights, key=lambda f: f.altitude) 
+        flights = sorted(flights, key=lambda f: f.altitude)
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:
             retries = RETRIES
@@ -62,31 +60,34 @@ class Overhead:
                             "destination": flight.destination_airport_iata,
                             "vertical_speed": flight.vertical_speed,
                             "altitude": flight.altitude,
-                            "callsign": flight.callsign
+                            "callsign": flight.callsign,
                         }
                     )
                     break
 
                 except (KeyError, AttributeError):
                     retries -= 1
-        
 
-        self._new_data = True
-        self._processing = False
-        self._data = data
+        with self._lock:
+            self._new_data = True
+            self._processing = False
+            self._data = data
 
     @property
     def new_data(self):
-        return self._new_data
+        with self._lock:
+            return self._new_data
 
     @property
     def processing(self):
-        return self._processing
+        with self._lock:
+            return self._processing
 
     @property
     def data(self):
-        self._new_data = False
-        return self._data
+        with self._lock:
+            self._new_data = False
+            return self._data
 
 
 # Main function
