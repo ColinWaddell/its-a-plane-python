@@ -135,6 +135,38 @@ class Display(Animator):
             COLOUR_YELLOW,
             journey,
         )
+    
+    @Animator.KeyFrame.add(0)
+    def flight_number(self):
+
+        # Guard against no data
+        if len(self._data) == 0:
+            return
+
+        if not (
+            self._data[self._data_index]["callsign"]
+        ):
+            return
+
+        flight_no = self._data[self._data_index]["callsign"]
+
+        # Draw background
+        self.draw_square(0, 0, 64, 13, COLOUR_BLACK)
+
+        # Draw text
+        text_length = graphics.DrawText(
+            self.canvas,
+            self.font_small,
+            2,
+            14,
+            COLOUR_WHITE,
+            flight_no,
+        )
+
+        # Blank sides
+        self.draw_square(0, 14, 2, 18, COLOUR_BLACK)
+        self.draw_square(text_length + 1, 14, text_length + 3, 18, COLOUR_BLACK)
+
 
     @Animator.KeyFrame.add(1)
     def plane(self, count):
