@@ -21,6 +21,8 @@ COLOUR_WHITE = graphics.Color(255, 255, 255)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(153, 204, 255)
 
+MAX_TEXT_WIDTH = 64
+
 
 class Display(Animator):
     def __init__(self):
@@ -60,7 +62,7 @@ class Display(Animator):
         self.font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
 
         # Element positions
-        self.plane_position = DEFAULT_INDENT_STATIC_TEXT
+        self.plane_position = MAX_TEXT_WIDTH
 
         # Data to render
         self._data_index = 0
@@ -142,7 +144,6 @@ class Display(Animator):
             return
 
         MAX_STATIC_TEXT_LEN = 12
-        MAX_TEXT_WIDTH = 64
 
         plane = self._data[self._data_index]['plane']
 
@@ -153,7 +154,7 @@ class Display(Animator):
         text_length = graphics.DrawText(
             self.canvas,
             self.font_regular,
-            self.plane_position,
+            self.plane_position if len(self._data) > 1 else 0,
             28,
             COLOUR_YELLOW,
             plane,
@@ -192,11 +193,9 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(5)
     def loading_blink(self, count):
+        graphics.DrawLine(self.canvas, 63, 0, 63, 5, COLOUR_BLACK) 
         if self.overhead.processing:
-            if count % 2:
-                self.canvas.SetPixel(63, 0, 153, 204, 255)
-                return
-        self.canvas.SetPixel(63, 0, 0, 0, 0)
+            self.canvas.SetPixel(63, count % 6, 255, 255, 255)
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 5)
     def check_for_loaded_data(self, count):
