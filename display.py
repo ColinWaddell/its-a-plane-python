@@ -91,10 +91,10 @@ class Display(Animator):
             return
 
         # Clear are where N of M might have been
-        self.draw_square(51, 14, 64, 18, COLOUR_BLACK)
+        self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
 
         if len(self._data) > 1:
-            graphics.DrawLine(self.canvas, 0, 16, 48, 16, COLOUR_BLUE)
+            graphics.DrawLine(self.canvas, 0, 16, 47, 16, COLOUR_BLUE)
 
             # Draw text
             text_length = graphics.DrawText(
@@ -174,7 +174,6 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(0)
     def journey_arrow(self):
-
         # Guard against no data
         if len(self._data) == 0:
             return
