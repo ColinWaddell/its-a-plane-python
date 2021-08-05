@@ -165,7 +165,7 @@ class Display(Animator):
 
         MAX_STATIC_TEXT_LEN = 12
 
-        plane = self._data[self._data_index]["plane"]
+        plane = f'{self._data[self._data_index]["plane"]}'
 
         # Draw background
         self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
@@ -177,7 +177,7 @@ class Display(Animator):
             self.plane_position,
             28,
             COLOUR_YELLOW,
-            plane,
+            plane
         )
 
         # Handle scrolling
