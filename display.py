@@ -19,7 +19,8 @@ FRAME_PERIOD = 1 / FRAME_RATE
 COLOUR_BLACK = graphics.Color(0, 0, 0)
 COLOUR_WHITE = graphics.Color(255, 255, 255)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
-COLOUR_BLUE = graphics.Color(153, 204, 255)
+COLOUR_BLUE = graphics.Color(55, 14, 237)
+COLOUR_BLUE_LIGHT = graphics.Color(153, 204, 255)
 
 MAX_TEXT_WIDTH = 64
 
@@ -94,7 +95,10 @@ class Display(Animator):
 
         # Draw flight number if available
         flight_no_text_length = 0
-        if self._data[self._data_index]["callsign"]:
+        if (
+            self._data[self._data_index]["callsign"] and
+            self._data[self._data_index]["callsign"] != "N/A"
+        ):
             flight_no = f'{self._data[self._data_index]["callsign"]}'
 
             flight_no_text_length = graphics.DrawText(
@@ -102,7 +106,7 @@ class Display(Animator):
                 self.font_small,
                 2,
                 19,
-                COLOUR_WHITE,
+                COLOUR_BLUE,
                 flight_no,
             )
 
@@ -112,7 +116,7 @@ class Display(Animator):
             self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
 
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 47, 16, COLOUR_BLUE)
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 47, 16, COLOUR_BLUE_LIGHT)
 
             # Draw text
             text_length = graphics.DrawText(
@@ -125,7 +129,7 @@ class Display(Animator):
             )
         else:
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 64, 16, COLOUR_BLUE) 
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 64, 16, COLOUR_BLUE_LIGHT) 
 
     @Animator.KeyFrame.add(0)
     def journey(self):
@@ -204,8 +208,8 @@ class Display(Animator):
             return
 
         self.draw_square(28, 2, 36, 12, COLOUR_BLACK)
-        graphics.DrawLine(self.canvas, 29, 2, 34, 7, COLOUR_BLUE)
-        graphics.DrawLine(self.canvas, 34, 7, 29, 12, COLOUR_BLUE)
+        graphics.DrawLine(self.canvas, 29, 2, 34, 7, COLOUR_BLUE_LIGHT)
+        graphics.DrawLine(self.canvas, 34, 7, 29, 12, COLOUR_BLUE_LIGHT)
 
     @Animator.KeyFrame.add(5)
     def loading_blink(self, count):

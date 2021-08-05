@@ -13,8 +13,8 @@ ZONE_UK = {
     "br_y": 49.71,
     "br_x": 3.46,
 }
-
 ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
+ZONE_DEFAULT = ZONE_HOME
 
 
 class Overhead:
@@ -37,7 +37,7 @@ class Overhead:
         data = []
 
         # Grab flight details
-        bounds = self._api.get_bounds(ZONE_HOME)
+        bounds = self._api.get_bounds(ZONE_DEFAULT)
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by altitude, lowest first
@@ -53,14 +53,21 @@ class Overhead:
                 # Grab and store details
                 try:
                     details = self._api.get_flight_details(flight.id)
+
+                    # Get plane type
+                    try:
+                        plane = details["aircraft"]["model"]["text"]
+                    except (KeyError, TypeError):
+                        plane = ""
+
                     data.append(
                         {
-                            "plane": details["aircraft"]["model"]["text"],
+                            "plane": plane,
                             "origin": flight.origin_airport_iata,
                             "destination": flight.destination_airport_iata,
                             "vertical_speed": flight.vertical_speed,
                             "altitude": flight.altitude,
-                            "callsign": flight.callsign,
+                            "callsign": flight.number if flight.number != 'N/A' else "",
                         }
                     )
                     break
