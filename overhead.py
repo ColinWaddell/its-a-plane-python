@@ -37,7 +37,7 @@ class Overhead:
         data = []
 
         # Grab flight details
-        bounds = self._api.get_bounds(ZONE_UK)
+        bounds = self._api.get_bounds(ZONE_HOME)
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by altitude, lowest first

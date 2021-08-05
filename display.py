@@ -77,10 +77,9 @@ class Display(Animator):
             _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
 
     def reset_scene(self):
-        self.permanant_elements()
+        self.flight_number_bar()
         self.journey()
         self.journey_arrow()
-        self.flight_number()
 
     @Animator.KeyFrame.add(0)
     def flight_number_bar(self):
