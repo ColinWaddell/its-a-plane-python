@@ -42,7 +42,6 @@ class Display(Animator):
         options.pwm_lsb_nanoseconds = 130
         options.led_rgb_sequence = "RGB"
         options.pixel_mapper_config = ""
-        #options.panel_type = ""
         options.show_refresh_rate = 0
         options.gpio_slowdown = 1
         options.disable_hardware_pulsing = True
@@ -81,20 +80,40 @@ class Display(Animator):
         self.permanant_elements()
         self.journey()
         self.journey_arrow()
+        self.flight_number()
 
     @Animator.KeyFrame.add(0)
-    def permanant_elements(self):
+    def flight_number_bar(self):
 
         # Guard against no data
         if len(self._data) == 0:
             self.canvas.Clear()
             return
 
-        # Clear are where N of M might have been
-        self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
+        # Clear the area
+        self.draw_square(0, 14, 63, 18, COLOUR_BLACK)
 
+        # Draw flight number if available
+        flight_no_text_length = 0
+        if self._data[self._data_index]["callsign"]:
+            flight_no = f'{self._data[self._data_index]["callsign"]}'
+
+            flight_no_text_length = graphics.DrawText(
+                self.canvas,
+                self.font_small,
+                2,
+                19,
+                COLOUR_WHITE,
+                flight_no,
+            )
+
+        # Draw bar
         if len(self._data) > 1:
-            graphics.DrawLine(self.canvas, 0, 16, 47, 16, COLOUR_BLUE)
+            # Clear are where N of M might have been
+            self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
+
+            # Dividing bar
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 47, 16, COLOUR_BLUE)
 
             # Draw text
             text_length = graphics.DrawText(
@@ -106,7 +125,8 @@ class Display(Animator):
                 f"{self._data_index + 1}/{len(self._data)}",
             )
         else:
-            graphics.DrawLine(self.canvas, 0, 16, 64, 16, COLOUR_BLUE)
+            # Dividing bar
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 64, 16, COLOUR_BLUE) 
 
     @Animator.KeyFrame.add(0)
     def journey(self):
