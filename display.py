@@ -77,11 +77,6 @@ class Display(Animator):
         for x in range(x0, x1):
             _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
 
-    def reset_scene(self):
-        self.flight_number_bar()
-        self.journey()
-        self.journey_arrow()
-
     @Animator.KeyFrame.add(0)
     def flight_number_bar(self):
 
@@ -116,7 +111,7 @@ class Display(Animator):
             self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
 
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 47, 16, COLOUR_BLUE_LIGHT)
+            graphics.DrawLine(self.canvas, flight_no_text_length + 4, 16, 47, 16, COLOUR_BLUE_LIGHT)
 
             # Draw text
             text_length = graphics.DrawText(
