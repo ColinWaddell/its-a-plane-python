@@ -86,7 +86,7 @@ class Display(Animator):
             return
 
         # Clear the area
-        self.draw_square(0, 14, 63, 18, COLOUR_BLACK)
+        self.draw_square(0, 14, 63, 20, COLOUR_BLACK)
 
         # Draw flight number if available
         flight_no_text_length = 0
@@ -100,7 +100,7 @@ class Display(Animator):
                 self.canvas,
                 self.font_small,
                 2,
-                19,
+                21,
                 COLOUR_BLUE_LIGHT,
                 flight_no,
             )
@@ -108,23 +108,23 @@ class Display(Animator):
         # Draw bar
         if len(self._data) > 1:
             # Clear are where N of M might have been
-            self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
+            self.draw_square(46, 14, 64, 18, COLOUR_BLACK)
 
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 4, 17, 47, 17, COLOUR_BLUE)
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 18, 45, 18, COLOUR_BLUE)
 
             # Draw text
             text_length = graphics.DrawText(
                 self.canvas,
                 self.font_small,
-                51,
-                19,
+                48,
+                21,
                 COLOUR_WHITE,
                 f"{self._data_index + 1}/{len(self._data)}",
             )
         else:
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 17, 64, 17, COLOUR_BLUE) 
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 18, 64, 18, COLOUR_BLUE) 
 
     @Animator.KeyFrame.add(0)
     def journey(self):
@@ -166,7 +166,7 @@ class Display(Animator):
         plane = f'{self._data[self._data_index]["plane"]}'
 
         # Draw background
-        self.draw_square(0, 20, 64, 32, COLOUR_BLACK)
+        self.draw_square(0, 22, 64, 32, COLOUR_BLACK)
 
         # Draw text
         text_length = graphics.DrawText(
@@ -210,7 +210,7 @@ class Display(Animator):
     def loading_blink(self, count):
         graphics.DrawLine(self.canvas, 63, 0, 63, 5, COLOUR_BLACK)
         if self.overhead.processing:
-            self.canvas.SetPixel(63, count % 6, 255, 255, 255)
+            self.canvas.SetPixel(63, count % 5, 255, 255, 255)
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 5)
     def check_for_loaded_data(self, count):
