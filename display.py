@@ -1,7 +1,6 @@
 import time
 import sys
 import os
-from typing import overload
 
 from animator import Animator
 from overhead import Overhead
@@ -9,20 +8,62 @@ from overhead import Overhead
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
-DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
-DEFAULT_INDENT_STATIC_TEXT = 4
-
+# Loop setup
 FRAME_RATE = 0.1
 FRAME_PERIOD = 1 / FRAME_RATE
 
+# Fonts
+DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+font_small = graphics.Font()
+font_regular = graphics.Font()
+font_large = graphics.Font()
+font_small.LoadFont(f"{DIR_PATH}/fonts/5x8.bdf")
+font_regular.LoadFont(f"{DIR_PATH}/fonts/6x12.bdf")
+font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
+
+# Colour helpers
 COLOUR_BLACK = graphics.Color(0, 0, 0)
 COLOUR_WHITE = graphics.Color(255, 255, 255)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(153, 204, 255)
 
-MAX_TEXT_WIDTH = 64
+# Element colours
+FLIGHT_NUMBER_COLOUR = COLOUR_BLUE_LIGHT
+DIVIDING_BAR_COLOUR = COLOUR_BLUE
+DATA_INDEX_COLOUR = COLOUR_WHITE
+JOURNEY_COLOUR = COLOUR_YELLOW
+ARROW_COLOUR = COLOUR_BLUE_LIGHT
+PLANE_DETAILS_COLOUR = COLOUR_YELLOW
+BLINKER_COLOUR = COLOUR_WHITE
+
+# Element Positions
+ARROW_POINT_POSITION = (34, 7)
+ARROW_WIDTH = 5
+ARROW_HEIGHT = 10
+
+BAR_STARTING_POSITION = (0, 18)
+BAR_PADDING = 2
+BAR_TEXT_HEIGHT = 8  # based on font size
+
+BLINKER_POSITION = (63, 0)
+BLINKER_LENGTH = 5
+
+DATA_INDEX_POSITION = (48, 21)
+
+FLIGHT_NO_POSITION = (2, 21)
+
+JOURNEY_POSITION = (0, 0)
+JOURNEY_HEIGHT = 12
+JOURNEY_WIDTH = 64
+
+PLANE_DISTANCE_FROM_TOP = 30
+PLANE_TEXT_HEIGHT = 13
+
+# Constants
+MAX_WIDTH = 64
+MAX_STATIC_TEXT_LEN = 12
 
 
 class Display(Animator):
@@ -53,16 +94,8 @@ class Display(Animator):
         self.canvas = self.matrix.CreateFrameCanvas()
         self.canvas.Clear()
 
-        # Setup fonts
-        self.font_small = graphics.Font()
-        self.font_regular = graphics.Font()
-        self.font_large = graphics.Font()
-        self.font_small.LoadFont(f"{DIR_PATH}/fonts/5x8.bdf")
-        self.font_regular.LoadFont(f"{DIR_PATH}/fonts/6x12.bdf")
-        self.font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
-
         # Element positions
-        self.plane_position = MAX_TEXT_WIDTH
+        self.plane_position = MAX_WIDTH
 
         # Data to render
         self._data_index = 0
@@ -78,7 +111,7 @@ class Display(Animator):
             _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
 
     @Animator.KeyFrame.add(0)
-    def flight_number_bar(self):
+    def flight_details(self):
 
         # Guard against no data
         if len(self._data) == 0:
@@ -86,45 +119,74 @@ class Display(Animator):
             return
 
         # Clear the area
-        self.draw_square(0, 14, 63, 20, COLOUR_BLACK)
+        self.draw_square(
+            0,
+            BAR_STARTING_POSITION - (BAR_TEXT_HEIGHT // 2),
+            MAX_WIDTH - 1,
+            BAR_STARTING_POSITION + (BAR_TEXT_HEIGHT // 2),
+            COLOUR_BLACK,
+        )
 
         # Draw flight number if available
         flight_no_text_length = 0
         if (
-            self._data[self._data_index]["callsign"] and
-            self._data[self._data_index]["callsign"] != "N/A"
+            self._data[self._data_index]["callsign"]
+            and self._data[self._data_index]["callsign"] != "N/A"
         ):
             flight_no = f'{self._data[self._data_index]["callsign"]}'
 
-            flight_no_text_length = graphics.DrawText(
-                self.canvas,
-                self.font_small,
-                2,
-                21,
-                COLOUR_BLUE_LIGHT,
-                flight_no,
+            flight_no_text_length = (
+                graphics.DrawText(
+                    self.canvas,
+                    font_small,
+                    FLIGHT_NO_POSITION[0],
+                    FLIGHT_NO_POSITION[1],
+                    FLIGHT_NUMBER_COLOUR,
+                    flight_no,
+                )
+                + BAR_PADDING
             )
 
         # Draw bar
         if len(self._data) > 1:
             # Clear are where N of M might have been
-            self.draw_square(46, 14, 64, 18, COLOUR_BLACK)
+            self.draw_square(
+                DATA_INDEX_POSITION - BAR_PADDING,
+                BAR_STARTING_POSITION[1] - (BAR_TEXT_HEIGHT // 2),
+                MAX_WIDTH,
+                BAR_STARTING_POSITION[1] + (BAR_TEXT_HEIGHT // 2),
+                COLOUR_BLACK,
+            )
 
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 18, 45, 18, COLOUR_BLUE)
+            graphics.DrawLine(
+                self.canvas,
+                flight_no_text_length,
+                BAR_STARTING_POSITION[1],
+                DATA_INDEX_POSITION[0] - (BAR_TEXT_HEIGHT // 2),
+                BAR_STARTING_POSITION[1],
+                DIVIDING_BAR_COLOUR,
+            )
 
             # Draw text
             text_length = graphics.DrawText(
                 self.canvas,
-                self.font_small,
-                48,
-                21,
-                COLOUR_WHITE,
+                font_small,
+                DATA_INDEX_POSITION[0],
+                DATA_INDEX_POSITION[1],
+                DATA_INDEX_COLOUR,
                 f"{self._data_index + 1}/{len(self._data)}",
             )
         else:
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 18, 64, 18, COLOUR_BLUE) 
+            graphics.DrawLine(
+                self.canvas,
+                BAR_STARTING_POSITION[0],
+                BAR_STARTING_POSITION[1],
+                BAR_STARTING_POSITION[0] + MAX_WIDTH - 1,
+                BAR_STARTING_POSITION[1],
+                COLOUR_BLUE,
+            )
 
     @Animator.KeyFrame.add(0)
     def journey(self):
@@ -142,53 +204,60 @@ class Display(Animator):
         journey = f"{self._data[self._data_index]['origin']}  {self._data[self._data_index]['destination']}"
 
         # Draw background
-        self.draw_square(0, 0, 64, 13, COLOUR_BLACK)
+        self.draw_square(
+            JOURNEY_POSITION[0],
+            JOURNEY_POSITION[1],
+            JOURNEY_POSITION[0] + JOURNEY_WIDTH - 1,
+            JOURNEY_POSITION[1] + JOURNEY_HEIGHT - 1,
+            COLOUR_BLACK,
+        )
 
         # Draw text
         text_length = graphics.DrawText(
             self.canvas,
-            self.font_large,
+            font_large,
             0,
-            12,
-            COLOUR_YELLOW,
+            JOURNEY_HEIGHT,
+            JOURNEY_COLOUR,
             journey,
         )
 
     @Animator.KeyFrame.add(1)
-    def plane(self, count):
+    def plane_details(self, count):
 
         # Guard against no data
         if len(self._data) == 0:
             return
 
-        MAX_STATIC_TEXT_LEN = 12
-
         plane = f'{self._data[self._data_index]["plane"]}'
 
         # Draw background
-        self.draw_square(0, 22, 64, 32, COLOUR_BLACK)
+        self.draw_square(
+            0,
+            BAR_STARTING_POSITION[1] + BAR_PADDING,
+            MAX_WIDTH,
+            PLANE_DISTANCE_FROM_TOP,
+            COLOUR_BLACK,
+        )
 
         # Draw text
         text_length = graphics.DrawText(
             self.canvas,
-            self.font_regular,
+            font_regular,
             self.plane_position,
-            30,
-            COLOUR_YELLOW,
-            plane
+            PLANE_DISTANCE_FROM_TOP,
+            PLANE_DETAILS_COLOUR,
+            plane,
         )
 
         # Handle scrolling
         self.plane_position -= 1
         if self.plane_position + text_length < 0:
-            self.plane_position = MAX_TEXT_WIDTH
+            self.plane_position = MAX_WIDTH
             if len(self._data) > 1:
                 self._data_index = (self._data_index + 1) % len(self._data)
-                self._data_all_looped = (
-                    not self._data_index
-                ) or self._data_all_looped
+                self._data_all_looped = (not self._data_index) or self._data_all_looped
                 self.reset_scene()
-
 
     @Animator.KeyFrame.add(0)
     def journey_arrow(self):
@@ -202,15 +271,51 @@ class Display(Animator):
         ):
             return
 
-        self.draw_square(28, 2, 36, 12, COLOUR_BLACK)
-        graphics.DrawLine(self.canvas, 29, 2, 34, 7, COLOUR_BLUE_LIGHT)
-        graphics.DrawLine(self.canvas, 34, 7, 29, 12, COLOUR_BLUE_LIGHT)
+        # Black area before arrow
+        self.draw_square(
+            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
+            ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
+            ARROW_POINT_POSITION[0],
+            ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
+            COLOUR_BLACK,
+        )
+        # Top slash
+        graphics.DrawLine(
+            self.canvas,
+            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
+            ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
+            ARROW_POINT_POSITION[0],
+            ARROW_POINT_POSITION[1],
+            ARROW_COLOUR,
+        )
+        # Bottom slash
+        graphics.DrawLine(
+            self.canvas,
+            ARROW_POINT_POSITION[0],
+            ARROW_POINT_POSITION[1],
+            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
+            ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
+            ARROW_COLOUR,
+        )
 
     @Animator.KeyFrame.add(5)
     def loading_blink(self, count):
-        graphics.DrawLine(self.canvas, 63, 0, 63, 5, COLOUR_BLACK)
+        graphics.DrawLine(
+            self.canvas,
+            BLINKER_POSITION[0],
+            BLINKER_POSITION[1],
+            BLINKER_POSITION[0],
+            BLINKER_POSITION[1] + BLINKER_LENGTH,
+            COLOUR_BLACK,
+        )
         if self.overhead.processing:
-            self.canvas.SetPixel(63, count % 5, 255, 255, 255)
+            self.canvas.SetPixel(
+                BLINKER_POSITION[0],
+                count % BLINKER_LENGTH,
+                BLINKER_COLOUR.red,
+                BLINKER_COLOUR.green,
+                BLINKER_COLOUR.blue,
+            )
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 5)
     def check_for_loaded_data(self, count):
