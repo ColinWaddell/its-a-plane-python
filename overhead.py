@@ -14,7 +14,7 @@ ZONE_UK = {
     "br_x": 3.46,
 }
 ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
-ZONE_DEFAULT = ZONE_HOME
+ZONE_DEFAULT = ZONE_UK
 
 
 class Overhead:

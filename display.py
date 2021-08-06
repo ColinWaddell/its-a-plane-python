@@ -15,9 +15,11 @@ FRAME_PERIOD = 1 / FRAME_RATE
 
 # Fonts
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
+font_extrasmall = graphics.Font()
 font_small = graphics.Font()
 font_regular = graphics.Font()
 font_large = graphics.Font()
+font_extrasmall.LoadFont(f"{DIR_PATH}/fonts/4x6.bdf")
 font_small.LoadFont(f"{DIR_PATH}/fonts/5x8.bdf")
 font_regular.LoadFont(f"{DIR_PATH}/fonts/6x12.bdf")
 font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
@@ -28,14 +30,17 @@ COLOUR_WHITE = graphics.Color(255, 255, 255)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(153, 204, 255)
+COLOUR_PINK = graphics.Color(200, 0, 200)
+COLOUR_GREEN = graphics.Color(0, 200, 0)
+COLOUR_ORANGE = graphics.Color(227, 110, 0)
 
 # Element colours
 FLIGHT_NUMBER_COLOUR = COLOUR_BLUE_LIGHT
-DIVIDING_BAR_COLOUR = COLOUR_BLUE
+DIVIDING_BAR_COLOUR = COLOUR_GREEN
 DATA_INDEX_COLOUR = COLOUR_WHITE
 JOURNEY_COLOUR = COLOUR_YELLOW
-ARROW_COLOUR = COLOUR_BLUE_LIGHT
-PLANE_DETAILS_COLOUR = COLOUR_YELLOW
+ARROW_COLOUR = COLOUR_ORANGE
+PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
 
 # Element Positions
@@ -45,24 +50,26 @@ ARROW_HEIGHT = 10
 
 BAR_STARTING_POSITION = (0, 18)
 BAR_PADDING = 2
-BAR_TEXT_HEIGHT = 8  # based on font size
 
 BLINKER_POSITION = (63, 0)
 BLINKER_LENGTH = 5
 
-DATA_INDEX_POSITION = (48, 21)
+DATA_INDEX_POSITION = (52, 21)
+DATA_INDEX_TEXT_HEIGHT = 6
 
-FLIGHT_NO_POSITION = (2, 21)
+FLIGHT_NO_POSITION = (1, 21)
+FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
 
 JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
 JOURNEY_WIDTH = 64
 
 PLANE_DISTANCE_FROM_TOP = 30
-PLANE_TEXT_HEIGHT = 13
+PLANE_TEXT_HEIGHT = 9
 
 # Constants
 MAX_WIDTH = 64
+MAX_HEIGHT = 32
 MAX_STATIC_TEXT_LEN = 12
 
 
@@ -121,9 +128,9 @@ class Display(Animator):
         # Clear the area
         self.draw_square(
             0,
-            BAR_STARTING_POSITION - (BAR_TEXT_HEIGHT // 2),
+            BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
             MAX_WIDTH - 1,
-            BAR_STARTING_POSITION + (BAR_TEXT_HEIGHT // 2),
+            BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
             COLOUR_BLACK,
         )
 
@@ -151,10 +158,10 @@ class Display(Animator):
         if len(self._data) > 1:
             # Clear are where N of M might have been
             self.draw_square(
-                DATA_INDEX_POSITION - BAR_PADDING,
-                BAR_STARTING_POSITION[1] - (BAR_TEXT_HEIGHT // 2),
+                DATA_INDEX_POSITION[0] - BAR_PADDING,
+                BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
                 MAX_WIDTH,
-                BAR_STARTING_POSITION[1] + (BAR_TEXT_HEIGHT // 2),
+                BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
                 COLOUR_BLACK,
             )
 
@@ -163,7 +170,7 @@ class Display(Animator):
                 self.canvas,
                 flight_no_text_length,
                 BAR_STARTING_POSITION[1],
-                DATA_INDEX_POSITION[0] - (BAR_TEXT_HEIGHT // 2),
+                DATA_INDEX_POSITION[0] - BAR_PADDING,
                 BAR_STARTING_POSITION[1],
                 DIVIDING_BAR_COLOUR,
             )
@@ -171,7 +178,7 @@ class Display(Animator):
             # Draw text
             text_length = graphics.DrawText(
                 self.canvas,
-                font_small,
+                font_extrasmall,
                 DATA_INDEX_POSITION[0],
                 DATA_INDEX_POSITION[1],
                 DATA_INDEX_COLOUR,
@@ -234,9 +241,9 @@ class Display(Animator):
         # Draw background
         self.draw_square(
             0,
-            BAR_STARTING_POSITION[1] + BAR_PADDING,
+            PLANE_DISTANCE_FROM_TOP - PLANE_TEXT_HEIGHT,
             MAX_WIDTH,
-            PLANE_DISTANCE_FROM_TOP,
+            MAX_HEIGHT,
             COLOUR_BLACK,
         )
 
