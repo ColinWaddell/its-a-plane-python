@@ -57,7 +57,7 @@ class Display(Animator):
         self.font_small = graphics.Font()
         self.font_regular = graphics.Font()
         self.font_large = graphics.Font()
-        self.font_small.LoadFont(f"{DIR_PATH}/fonts/4x6.bdf")
+        self.font_small.LoadFont(f"{DIR_PATH}/fonts/5x8.bdf")
         self.font_regular.LoadFont(f"{DIR_PATH}/fonts/6x12.bdf")
         self.font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
 
