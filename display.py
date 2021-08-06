@@ -101,7 +101,7 @@ class Display(Animator):
                 self.font_small,
                 2,
                 19,
-                COLOUR_BLUE,
+                COLOUR_BLUE_LIGHT,
                 flight_no,
             )
 
@@ -111,7 +111,7 @@ class Display(Animator):
             self.draw_square(48, 14, 64, 18, COLOUR_BLACK)
 
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 4, 16, 47, 16, COLOUR_BLUE_LIGHT)
+            graphics.DrawLine(self.canvas, flight_no_text_length + 4, 17, 47, 17, COLOUR_BLUE)
 
             # Draw text
             text_length = graphics.DrawText(
@@ -124,7 +124,7 @@ class Display(Animator):
             )
         else:
             # Dividing bar
-            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 16, 64, 16, COLOUR_BLUE_LIGHT) 
+            graphics.DrawLine(self.canvas, flight_no_text_length + 2, 17, 64, 17, COLOUR_BLUE) 
 
     @Animator.KeyFrame.add(0)
     def journey(self):
@@ -173,7 +173,7 @@ class Display(Animator):
             self.canvas,
             self.font_regular,
             self.plane_position,
-            28,
+            30,
             COLOUR_YELLOW,
             plane
         )
