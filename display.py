@@ -44,7 +44,7 @@ PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
 
 # Element Positions
-ARROW_POINT_POSITION = (34, 7)
+ARROW_POINT_POSITION = (35, 7)
 ARROW_WIDTH = 5
 ARROW_HEIGHT = 10
 
@@ -142,16 +142,13 @@ class Display(Animator):
         ):
             flight_no = f'{self._data[self._data_index]["callsign"]}'
 
-            flight_no_text_length = (
-                graphics.DrawText(
-                    self.canvas,
-                    font_small,
-                    FLIGHT_NO_POSITION[0],
-                    FLIGHT_NO_POSITION[1],
-                    FLIGHT_NUMBER_COLOUR,
-                    flight_no,
-                )
-                + BAR_PADDING
+            flight_no_text_length = graphics.DrawText(
+                self.canvas,
+                font_small,
+                FLIGHT_NO_POSITION[0],
+                FLIGHT_NO_POSITION[1],
+                FLIGHT_NUMBER_COLOUR,
+                flight_no,
             )
 
         # Draw bar
@@ -168,7 +165,7 @@ class Display(Animator):
             # Dividing bar
             graphics.DrawLine(
                 self.canvas,
-                flight_no_text_length,
+                flight_no_text_length+ BAR_PADDING,
                 BAR_STARTING_POSITION[1],
                 DATA_INDEX_POSITION[0] - BAR_PADDING,
                 BAR_STARTING_POSITION[1],
@@ -188,9 +185,9 @@ class Display(Animator):
             # Dividing bar
             graphics.DrawLine(
                 self.canvas,
-                BAR_STARTING_POSITION[0],
+                flight_no_text_length + BAR_PADDING if flight_no_text_length else 0,
                 BAR_STARTING_POSITION[1],
-                BAR_STARTING_POSITION[0] + MAX_WIDTH - 1,
+                MAX_WIDTH,
                 BAR_STARTING_POSITION[1],
                 COLOUR_BLUE,
             )
@@ -300,6 +297,14 @@ class Display(Animator):
             self.canvas,
             ARROW_POINT_POSITION[0],
             ARROW_POINT_POSITION[1],
+            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
+            ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
+            ARROW_COLOUR,
+        )
+        graphics.DrawLine(
+            self.canvas,
+            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
+            ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
             ARROW_POINT_POSITION[0] - ARROW_WIDTH,
             ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
             ARROW_COLOUR,
