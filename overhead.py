@@ -5,16 +5,12 @@ from time import sleep
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
+MAX_ALTITUDE = 10000 # feet
 
 
-ZONE_UK = {
-    "tl_y": 62.61,
-    "tl_x": -13.07,
-    "br_y": 49.71,
-    "br_x": 3.46,
-}
+ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
 ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
-ZONE_DEFAULT = ZONE_HOME
+ZONE_DEFAULT = ZONE_UK
 
 
 class Overhead:
@@ -41,6 +37,7 @@ class Overhead:
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by altitude, lowest first
+        flights = [f for f in flights if f.altitude < MAX_ALTITUDE]
         flights = sorted(flights, key=lambda f: f.altitude)
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:

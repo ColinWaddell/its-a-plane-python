@@ -25,7 +25,7 @@ class Animator(object):
             method = getattr(self, methodname)
             if hasattr(method, "properties"):
                 self.keyframes.append(method)
-    
+
     def reset_scene(self):
         for keyframe in self.keyframes:
             if keyframe.properties["divisor"] == 0:
@@ -56,7 +56,6 @@ class Animator(object):
             self._reset_scene = False
             self.frame += 1
             sleep(self.delay)
-
 
 
 if __name__ == "__main__":
