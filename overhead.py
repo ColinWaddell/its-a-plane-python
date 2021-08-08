@@ -5,7 +5,7 @@ from time import sleep
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
-MAX_ALTITUDE = 10000 # feet
+MAX_ALTITUDE = 10000  # feet
 
 
 ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
@@ -60,11 +60,17 @@ class Overhead:
                     data.append(
                         {
                             "plane": plane,
-                            "origin": flight.origin_airport_iata,
-                            "destination": flight.destination_airport_iata,
+                            "origin": flight.origin_airport_iata
+                            if flight.origin_airport_iata != "N/A"
+                            else "",
+                            "destination": flight.destination_airport_iata
+                            if flight.destination_airport_iata != "N/A"
+                            else "",
                             "vertical_speed": flight.vertical_speed,
                             "altitude": flight.altitude,
-                            "callsign": flight.number if flight.number != 'N/A' else "",
+                            "callsign": flight.callsign
+                            if flight.callsign != "N/A"
+                            else "",
                         }
                     )
                     break

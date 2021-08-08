@@ -31,7 +31,7 @@ COLOUR_BLACK = graphics.Color(0, 0, 0)
 COLOUR_WHITE = graphics.Color(255, 255, 255)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
-COLOUR_BLUE_LIGHT = graphics.Color(153, 204, 255)
+COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
 COLOUR_PINK = graphics.Color(200, 0, 200)
 COLOUR_GREEN = graphics.Color(0, 200, 0)
 COLOUR_ORANGE = graphics.Color(227, 110, 0)
@@ -199,7 +199,7 @@ class Display(Animator):
                 BAR_STARTING_POSITION[1],
                 MAX_WIDTH,
                 BAR_STARTING_POSITION[1],
-                COLOUR_BLUE,
+                DIVIDING_BAR_COLOUR,
             )
 
     @Animator.KeyFrame.add(0)
