@@ -52,7 +52,7 @@ BAR_STARTING_POSITION = (0, 18)
 BAR_PADDING = 2
 
 BLINKER_POSITION = (63, 0)
-BLINKER_LENGTH = 5
+BLINKER_STEPS = 5
 
 DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
@@ -310,24 +310,28 @@ class Display(Animator):
             ARROW_COLOUR,
         )
 
-    @Animator.KeyFrame.add(5)
-    def loading_blink(self, count):
-        graphics.DrawLine(
-            self.canvas,
-            BLINKER_POSITION[0],
-            BLINKER_POSITION[1],
-            BLINKER_POSITION[0],
-            BLINKER_POSITION[1] + BLINKER_LENGTH,
-            COLOUR_BLACK,
-        )
+    @Animator.KeyFrame.add(2)
+    def loading_pulse(self, count):
+        reset_count = False
         if self.overhead.processing:
+            brightness = count / (BLINKER_STEPS - 1)
             self.canvas.SetPixel(
                 BLINKER_POSITION[0],
-                count % BLINKER_LENGTH,
-                BLINKER_COLOUR.red,
-                BLINKER_COLOUR.green,
-                BLINKER_COLOUR.blue,
+                BLINKER_POSITION[1],
+                brightness * BLINKER_COLOUR.red,
+                brightness * BLINKER_COLOUR.green,
+                brightness * BLINKER_COLOUR.blue,
             )
+            reset_count = (count == BLINKER_STEPS)
+        else:
+            self.canvas.SetPixel(
+                BLINKER_POSITION[0],
+                count % BLINKER_STEPS,
+                0,
+                0,
+                0
+            )
+        return reset_count
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 5)
     def check_for_loaded_data(self, count):

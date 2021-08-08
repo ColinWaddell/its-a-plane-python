@@ -48,8 +48,10 @@ class Animator(object):
                         % keyframe.properties["divisor"]
                     )
                 ):
-                    keyframe(keyframe.properties["count"])
-                    keyframe.properties["count"] += 1
+                    if keyframe(keyframe.properties["count"]):
+                        keyframe.properties["count"] = 0
+                    else:
+                        keyframe.properties["count"] += 1
 
             self._reset_scene = False
             self.frame += 1
