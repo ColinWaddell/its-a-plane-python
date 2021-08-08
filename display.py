@@ -52,7 +52,7 @@ BAR_STARTING_POSITION = (0, 18)
 BAR_PADDING = 2
 
 BLINKER_POSITION = (63, 0)
-BLINKER_STEPS = 5
+BLINKER_STEPS = 10
 
 DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
@@ -314,7 +314,7 @@ class Display(Animator):
     def loading_pulse(self, count):
         reset_count = False
         if self.overhead.processing:
-            brightness = count / (BLINKER_STEPS - 1)
+            brightness = (1 - (count / BLINKER_STEPS)) / 2
             self.canvas.SetPixel(
                 BLINKER_POSITION[0],
                 BLINKER_POSITION[1],
@@ -326,7 +326,7 @@ class Display(Animator):
         else:
             self.canvas.SetPixel(
                 BLINKER_POSITION[0],
-                count % BLINKER_STEPS,
+                BLINKER_POSITION[1],
                 0,
                 0,
                 0
