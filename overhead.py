@@ -6,6 +6,7 @@ RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
 MAX_ALTITUDE = 10000  # feet
+BLANK_FIELDS = ["", "N/A", "NONE"]
 
 
 ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
@@ -57,20 +58,40 @@ class Overhead:
                     except (KeyError, TypeError):
                         plane = ""
 
+                    # Tidy up what we pass along
+                    plane = (
+                        plane
+                        if not (plane.upper() in BLANK_FIELDS)
+                        else ""
+                    )
+
+                    origin = (
+                        flight.origin_airport_iata
+                        if not (flight.origin_airport_iata.upper() in BLANK_FIELDS)
+                        else ""
+                    )
+
+                    destination = (
+                        flight.destination_airport_iata
+                        if not (flight.destination_airport_iata.upper() in BLANK_FIELDS)
+                        else ""
+                    )
+
+
+                    callsign = (
+                        flight.callsign 
+                        if not (flight.callsign.upper() in BLANK_FIELDS) 
+                        else ""
+                    )
+
                     data.append(
                         {
                             "plane": plane,
-                            "origin": flight.origin_airport_iata
-                            if flight.origin_airport_iata != "N/A"
-                            else "",
-                            "destination": flight.destination_airport_iata
-                            if flight.destination_airport_iata != "N/A"
-                            else "",
+                            "origin": origin,
+                            "destination": destination,
                             "vertical_speed": flight.vertical_speed,
                             "altitude": flight.altitude,
-                            "callsign": flight.callsign
-                            if flight.callsign != "N/A"
-                            else "",
+                            "callsign": callsign,
                         }
                     )
                     break

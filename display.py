@@ -29,6 +29,7 @@ font_large_bold.LoadFont(f"{DIR_PATH}/fonts/8x13B.bdf")
 # Colour helpers
 COLOUR_BLACK = graphics.Color(0, 0, 0)
 COLOUR_WHITE = graphics.Color(255, 255, 255)
+COLOUR_GREY = graphics.Color(192, 192, 192)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
@@ -42,7 +43,7 @@ COLOUR_RED_LIGHT = graphics.Color(255, 195, 195)
 FLIGHT_NUMBER_ALPHA_COLOUR = COLOUR_BLUE
 FLIGHT_NUMBER_NUMERIC_COLOUR = COLOUR_BLUE_LIGHT
 DIVIDING_BAR_COLOUR = COLOUR_GREEN
-DATA_INDEX_COLOUR = COLOUR_WHITE
+DATA_INDEX_COLOUR = COLOUR_GREY
 JOURNEY_COLOUR = COLOUR_YELLOW
 ARROW_COLOUR = COLOUR_ORANGE
 PLANE_DETAILS_COLOUR = COLOUR_PINK
@@ -177,7 +178,7 @@ class Display(Animator):
                 self.canvas,
                 flight_no_text_length + BAR_PADDING,
                 BAR_STARTING_POSITION[1],
-                DATA_INDEX_POSITION[0] - BAR_PADDING,
+                DATA_INDEX_POSITION[0] - BAR_PADDING - 1,
                 BAR_STARTING_POSITION[1],
                 DIVIDING_BAR_COLOUR,
             )
