@@ -10,7 +10,7 @@ MAX_ALTITUDE = 10000 # feet
 
 ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
 ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
-ZONE_DEFAULT = ZONE_UK
+ZONE_DEFAULT = ZONE_HOME
 
 
 class Overhead:
