@@ -230,7 +230,7 @@ class Display(Animator):
         # Draw origin
         text_length = graphics.DrawText(
             self.canvas,
-            font_large_bold if origin != "GLA" else font_large,
+            font_large_bold if origin == "GLA" else font_large,
             1,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
@@ -240,11 +240,11 @@ class Display(Animator):
         # Draw destination
         _ = graphics.DrawText(
             self.canvas,
-            font_large_bold if origin != "GLA" else font_large,
+            font_large_bold if destination == "GLA" else font_large,
             text_length + JOURNEY_SPACING,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
-            origin,
+            destination,
         )
 
     @Animator.KeyFrame.add(1)
@@ -304,32 +304,36 @@ class Display(Animator):
             ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
             COLOUR_BLACK,
         )
-        # Top slash
-        graphics.DrawLine(
-            self.canvas,
-            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
-            ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
+
+        # Starting positions for filled in arrow
+        x = ARROW_POINT_POSITION[0] - ARROW_WIDTH
+        y1 = ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2)
+        y2 = ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2)
+
+        # Tip of arrow
+        self.canvas.SetPixel(
             ARROW_POINT_POSITION[0],
             ARROW_POINT_POSITION[1],
-            ARROW_COLOUR,
-        )
-        # Bottom slash
-        graphics.DrawLine(
-            self.canvas,
-            ARROW_POINT_POSITION[0],
-            ARROW_POINT_POSITION[1],
-            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
-            ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
-            ARROW_COLOUR,
-        )
-        graphics.DrawLine(
-            self.canvas,
-            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
-            ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
-            ARROW_POINT_POSITION[0] - ARROW_WIDTH,
-            ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
-            ARROW_COLOUR,
-        )
+            ARROW_COLOUR.red,
+            ARROW_COLOUR.green,
+            ARROW_COLOUR.blue,
+        ) 
+
+        # Draw using columns
+        for col in range(0, ARROW_WIDTH):
+            graphics.DrawLine(
+                self.canvas,
+                x,
+                y1,
+                x,
+                y2,
+                ARROW_COLOUR,
+            )
+
+            # Calculate next column's data
+            x += 1
+            y1 += 1
+            y2 -= 1
 
     @Animator.KeyFrame.add(2)
     def loading_pulse(self, count):
