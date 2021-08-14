@@ -1,3 +1,4 @@
+from datetime import datetime
 import time
 import sys
 import os
@@ -48,6 +49,7 @@ JOURNEY_COLOUR = COLOUR_YELLOW
 ARROW_COLOUR = COLOUR_ORANGE
 PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
+CLOCK_COLOUR = graphics.Color(96, 0, 96)
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -62,6 +64,8 @@ BLINKER_STEPS = 10
 
 DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
+
+CLOCK_POSITION = (44, 30)
 
 FLIGHT_NO_POSITION = (1, 21)
 FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
@@ -115,6 +119,9 @@ class Display(Animator):
         self._data_index = 0
         self._data_all_looped = False
         self._data = []
+
+        # Clock elements
+        self._last_time = None
 
         # Start Looking for planes
         self.overhead = Overhead()
@@ -368,6 +375,37 @@ class Display(Animator):
             self._data = self.overhead.data
             self.reset_scene()
 
+    @Animator.KeyFrame.add(FRAME_PERIOD * 5)
+    def clock(self, count):
+        # If there's no data to display
+        # then draw a clock
+        if len(self._data) == 0:
+            now = datetime.now()
+            current_time = now.strftime("%H:%M")
+
+            # Only draw if time needs updated
+            if self._last_time != current_time:
+                # Undraw last time if different from current
+                if self._last_time:
+                    _ = graphics.DrawText(
+                        self.canvas,
+                        font_extrasmall,
+                        CLOCK_POSITION[0],
+                        CLOCK_POSITION[1],
+                        COLOUR_BLACK,
+                        self._last_time,
+                    )
+                    self._last_time = current_time
+
+                _ = graphics.DrawText(
+                    self.canvas,
+                    font_extrasmall,
+                    CLOCK_POSITION[0],
+                    CLOCK_POSITION[1],
+                    CLOCK_COLOUR,
+                    current_time,
+                )
+            
     @Animator.KeyFrame.add(1)
     def sync(self, count):
         # Redraw screen every frame
