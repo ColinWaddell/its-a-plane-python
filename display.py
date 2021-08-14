@@ -34,6 +34,7 @@ COLOUR_GREY = graphics.Color(192, 192, 192)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
+COLOUR_BLUE_DARK = graphics.Color(29, 0, 156)
 COLOUR_PINK = graphics.Color(200, 0, 200)
 COLOUR_GREEN = graphics.Color(0, 200, 0)
 COLOUR_ORANGE = graphics.Color(227, 110, 0)
@@ -49,7 +50,7 @@ JOURNEY_COLOUR = COLOUR_YELLOW
 ARROW_COLOUR = COLOUR_ORANGE
 PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
-CLOCK_COLOUR = graphics.Color(96, 0, 96)
+CLOCK_COLOUR = COLOUR_BLUE_DARK
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -65,7 +66,7 @@ BLINKER_STEPS = 10
 DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
 
-CLOCK_POSITION = (1, 6)
+CLOCK_POSITION = (1, 8)
 
 FLIGHT_NO_POSITION = (1, 21)
 FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
@@ -399,7 +400,7 @@ class Display(Animator):
 
                 _ = graphics.DrawText(
                     self.canvas,
-                    font_extrasmall,
+                    font_small,
                     CLOCK_POSITION[0],
                     CLOCK_POSITION[1],
                     CLOCK_COLOUR,
