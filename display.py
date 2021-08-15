@@ -35,8 +35,8 @@ COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
 COLOUR_BLUE_DARK = graphics.Color(29, 0, 156)
-COLOUR_BLUE_DARKER = graphics.Color(22, 0, 117)
 COLOUR_PINK = graphics.Color(200, 0, 200)
+COLOUR_PINK_DARKER = graphics.Color(86, 0, 156)
 COLOUR_GREEN = graphics.Color(0, 200, 0)
 COLOUR_ORANGE = graphics.Color(227, 110, 0)
 COLOUR_RED = graphics.Color(255, 255, 255)
@@ -52,7 +52,7 @@ ARROW_COLOUR = COLOUR_ORANGE
 PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
 CLOCK_COLOUR_0 = COLOUR_BLUE_DARK
-CLOCK_COLOUR_1 = COLOUR_BLUE_DARKER
+CLOCK_COLOUR_1 = COLOUR_PINK_DARKER
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -380,7 +380,7 @@ class Display(Animator):
         if self.overhead.new_data:
             self._data_index = 0
             self._data_all_looped = False
-            self._data = self.overhead.data
+            # self._data = self.overhead.data
             self.reset_scene()
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
