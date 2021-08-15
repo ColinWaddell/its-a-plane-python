@@ -35,6 +35,7 @@ COLOUR_YELLOW = graphics.Color(255, 255, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
 COLOUR_BLUE_DARK = graphics.Color(29, 0, 156)
+COLOUR_BLUE_DARKER = graphics.Color(22, 0, 117)
 COLOUR_PINK = graphics.Color(200, 0, 200)
 COLOUR_GREEN = graphics.Color(0, 200, 0)
 COLOUR_ORANGE = graphics.Color(227, 110, 0)
@@ -50,7 +51,8 @@ JOURNEY_COLOUR = COLOUR_YELLOW
 ARROW_COLOUR = COLOUR_ORANGE
 PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
-CLOCK_COLOUR = COLOUR_BLUE_DARK
+CLOCK_COLOUR_0 = COLOUR_BLUE_DARK
+CLOCK_COLOUR_1 = COLOUR_BLUE_DARKER
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -65,19 +67,25 @@ BLINKER_STEPS = 10
 
 DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
+DATA_INDEX_FONT = font_extrasmall
 
 CLOCK_POSITION = (1, 8)
+CLOCK_FONT = font_regular
 
 FLIGHT_NO_POSITION = (1, 21)
 FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
+FLIGHT_NO_FONT = font_small
 
 JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
 JOURNEY_WIDTH = 64
 JOURNEY_SPACING = 16
+JOURNEY_FONT = font_large
+JOURNEY_FONT_SELECTED = font_large_bold
 
 PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
+PLANE_FONT = font_regular
 
 # Constants
 MAX_WIDTH = 64
@@ -137,7 +145,6 @@ class Display(Animator):
 
         # Guard against no data
         if len(self._data) == 0:
-            self.canvas.Clear()
             return
 
         # Clear the area
@@ -160,7 +167,7 @@ class Display(Animator):
             for ch in flight_no:
                 ch_length = graphics.DrawText(
                     self.canvas,
-                    font_small,
+                    FLIGHT_NO_FONT,
                     FLIGHT_NO_POSITION[0] + flight_no_text_length,
                     FLIGHT_NO_POSITION[1],
                     FLIGHT_NUMBER_NUMERIC_COLOUR
@@ -224,8 +231,8 @@ class Display(Animator):
         ):
             return
 
-        origin = self._data[self._data_index]['origin']
-        destination = self._data[self._data_index]['destination']
+        origin = self._data[self._data_index]["origin"]
+        destination = self._data[self._data_index]["destination"]
 
         # Draw background
         self.draw_square(
@@ -239,7 +246,7 @@ class Display(Animator):
         # Draw origin
         text_length = graphics.DrawText(
             self.canvas,
-            font_large_bold if origin == "GLA" else font_large,
+            JOURNEY_FONT_SELECTED if origin == "GLA" else JOURNEY_FONT,
             1,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
@@ -249,7 +256,7 @@ class Display(Animator):
         # Draw destination
         _ = graphics.DrawText(
             self.canvas,
-            font_large_bold if destination == "GLA" else font_large,
+            JOURNEY_FONT_SELECTED if destination == "GLA" else JOURNEY_FONT,
             text_length + JOURNEY_SPACING,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
@@ -277,7 +284,7 @@ class Display(Animator):
         # Draw text
         text_length = graphics.DrawText(
             self.canvas,
-            font_regular,
+            PLANE_FONT,
             self.plane_position,
             PLANE_DISTANCE_FROM_TOP,
             PLANE_DETAILS_COLOUR,
@@ -326,7 +333,7 @@ class Display(Animator):
             ARROW_COLOUR.red,
             ARROW_COLOUR.green,
             ARROW_COLOUR.blue,
-        ) 
+        )
 
         # Draw using columns
         for col in range(0, ARROW_WIDTH):
@@ -376,37 +383,57 @@ class Display(Animator):
             self._data = self.overhead.data
             self.reset_scene()
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 5)
+    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def clock(self, count):
         # If there's no data to display
         # then draw a clock
         if len(self._data) == 0:
             now = datetime.now()
-            current_time = now.strftime("%H:%M")
+            current_time = now.strftime("%H %M")
 
             # Only draw if time needs updated
             if self._last_time != current_time:
                 # Undraw last time if different from current
-                if self._last_time:
+                if not self._last_time is None:
                     _ = graphics.DrawText(
                         self.canvas,
-                        font_extrasmall,
+                        CLOCK_FONT,
                         CLOCK_POSITION[0],
                         CLOCK_POSITION[1],
                         COLOUR_BLACK,
                         self._last_time,
                     )
-                    self._last_time = current_time
+                self._last_time = current_time
 
+                # Draw Time
                 _ = graphics.DrawText(
                     self.canvas,
-                    font_small,
+                    CLOCK_FONT,
                     CLOCK_POSITION[0],
                     CLOCK_POSITION[1],
-                    CLOCK_COLOUR,
+                    CLOCK_COLOUR_0,
                     current_time,
                 )
-            
+
+            # Draw Seperator
+            _ = graphics.DrawLine(
+                self.canvas,
+                CLOCK_POSITION[0] + 14,
+                CLOCK_POSITION[1] - 6,
+                CLOCK_POSITION[0] + 14,
+                CLOCK_POSITION[1] - 5,
+                CLOCK_COLOUR_1 if (count % 2) else CLOCK_COLOUR_0,
+            )
+
+            _ = graphics.DrawLine(
+                self.canvas,
+                CLOCK_POSITION[0] + 14,
+                CLOCK_POSITION[1] - 3,
+                CLOCK_POSITION[0] + 14,
+                CLOCK_POSITION[1] - 2,
+                CLOCK_COLOUR_1 if (count % 2) else CLOCK_COLOUR_0,
+            )
+
     @Animator.KeyFrame.add(1)
     def sync(self, count):
         # Redraw screen every frame
