@@ -36,7 +36,8 @@ COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
 COLOUR_BLUE_DARK = graphics.Color(29, 0, 156)
 COLOUR_PINK = graphics.Color(200, 0, 200)
-COLOUR_PINK_DARKER = graphics.Color(86, 0, 156)
+COLOUR_PINK_DARK = graphics.Color(112, 0, 145)
+COLOUR_PINK_DARKER = graphics.Color(96, 1, 125)
 COLOUR_GREEN = graphics.Color(0, 200, 0)
 COLOUR_ORANGE = graphics.Color(227, 110, 0)
 COLOUR_RED = graphics.Color(255, 255, 255)
@@ -51,8 +52,9 @@ JOURNEY_COLOUR = COLOUR_YELLOW
 ARROW_COLOUR = COLOUR_ORANGE
 PLANE_DETAILS_COLOUR = COLOUR_PINK
 BLINKER_COLOUR = COLOUR_WHITE
-CLOCK_COLOUR_0 = COLOUR_BLUE_DARK
-CLOCK_COLOUR_1 = COLOUR_PINK_DARKER
+CLOCK_COLOUR = COLOUR_BLUE_DARK
+DATE_COLOUR = COLOUR_PINK_DARKER
+DAY_COLOUR = COLOUR_PINK_DARK
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -69,8 +71,14 @@ DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
 DATA_INDEX_FONT = font_extrasmall
 
-CLOCK_POSITION = (1, 8)
 CLOCK_FONT = font_regular
+CLOCK_POSITION = (1, 8)
+
+DATE_FONT = font_small
+DATE_POSITION = (1, 31)
+
+DAY_FONT = font_small
+DAY_POSITION = (2, 23)
 
 FLIGHT_NO_POSITION = (1, 21)
 FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
@@ -129,8 +137,10 @@ class Display(Animator):
         self._data_all_looped = False
         self._data = []
 
-        # Clock elements
+        # Clock and date elements
         self._last_time = None
+        self._last_day = None
+        self._last_date = None
 
         # Start Looking for planes
         self.overhead = Overhead()
@@ -380,7 +390,7 @@ class Display(Animator):
         if self.overhead.new_data:
             self._data_index = 0
             self._data_all_looped = False
-            # self._data = self.overhead.data
+            self._data = self.overhead.data
             self.reset_scene()
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
@@ -411,28 +421,92 @@ class Display(Animator):
                     CLOCK_FONT,
                     CLOCK_POSITION[0],
                     CLOCK_POSITION[1],
-                    CLOCK_COLOUR_0,
+                    CLOCK_COLOUR,
                     current_time,
                 )
 
-            # Draw Seperator
-            _ = graphics.DrawLine(
-                self.canvas,
-                CLOCK_POSITION[0] + 14,
-                CLOCK_POSITION[1] - 6,
-                CLOCK_POSITION[0] + 14,
-                CLOCK_POSITION[1] - 5,
-                CLOCK_COLOUR_1 if (count % 2) else CLOCK_COLOUR_0,
-            )
+                # Draw Seperator
+                _ = graphics.DrawLine(
+                    self.canvas,
+                    CLOCK_POSITION[0] + 14,
+                    CLOCK_POSITION[1] - 6,
+                    CLOCK_POSITION[0] + 14,
+                    CLOCK_POSITION[1] - 5,
+                    CLOCK_COLOUR,
+                )
 
-            _ = graphics.DrawLine(
-                self.canvas,
-                CLOCK_POSITION[0] + 14,
-                CLOCK_POSITION[1] - 3,
-                CLOCK_POSITION[0] + 14,
-                CLOCK_POSITION[1] - 2,
-                CLOCK_COLOUR_1 if (count % 2) else CLOCK_COLOUR_0,
-            )
+                _ = graphics.DrawLine(
+                    self.canvas,
+                    CLOCK_POSITION[0] + 14,
+                    CLOCK_POSITION[1] - 3,
+                    CLOCK_POSITION[0] + 14,
+                    CLOCK_POSITION[1] - 2,
+                    CLOCK_COLOUR,
+                )
+
+    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
+    def date(self, count):
+        # If there's no data to display
+        # then draw the date
+        if len(self._data) == 0:
+            now = datetime.now()
+            current_date = now.strftime("%-d-%-m-%Y")
+
+            # Only draw if time needs updated
+            if self._last_date != current_date:
+                # Undraw last time if different from current
+                if not self._last_date is None:
+                    _ = graphics.DrawText(
+                        self.canvas,
+                        DATE_FONT,
+                        DATE_POSITION[0],
+                        DATE_POSITION[1],
+                        COLOUR_BLACK,
+                        self._last_date,
+                    )
+                self._last_date = current_date
+
+                # Draw Time
+                _ = graphics.DrawText(
+                    self.canvas,
+                    DATE_FONT,
+                    DATE_POSITION[0],
+                    DATE_POSITION[1],
+                    DATE_COLOUR,
+                    current_date,
+                )
+
+    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
+    def day(self, count):
+        # If there's no data to display
+        # then draw the date
+        if len(self._data) == 0:
+            now = datetime.now()
+            current_day = now.strftime("%A")
+
+            # Only draw if time needs updated
+            if self._last_day != current_day:
+                # Undraw last time if different from current
+                if not self._last_day is None:
+                    _ = graphics.DrawText(
+                        self.canvas,
+                        DAY_FONT,
+                        DAY_POSITION[0],
+                        DAY_POSITION[1],
+                        COLOUR_BLACK,
+                        self._last_day,
+                    )
+                self._last_day = current_day
+
+                # Draw Time
+                _ = graphics.DrawText(
+                    self.canvas,
+                    DAY_FONT,
+                    DAY_POSITION[0],
+                    DAY_POSITION[1],
+                    DAY_COLOUR,
+                    current_day,
+                )
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
