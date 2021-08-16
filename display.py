@@ -458,6 +458,10 @@ class Display(Animator):
                     CLOCK_POSITION[1] - 2,
                     CLOCK_COLOUR,
                 )
+        else:
+            # Ensure redraw when there's new data
+            self._last_time = None
+
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def date(self, count):
@@ -490,6 +494,9 @@ class Display(Animator):
                     DATE_COLOUR,
                     current_date,
                 )
+        else:
+            # Ensure redraw when there's new data
+            self._last_date = None
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def day(self, count):
@@ -522,6 +529,9 @@ class Display(Animator):
                     DAY_COLOUR,
                     current_day,
                 )
+        else:
+            # Ensure redraw when there's new data
+            self._last_day = None
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
