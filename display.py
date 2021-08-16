@@ -152,11 +152,8 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(0)
     def clear_screen(self):
-
-        # Guard against no data
-        if len(self._data) == 0:
-            return
-
+        # First operation after
+        # a screen reset
         self.canvas.Clear()
 
     @Animator.KeyFrame.add(0)
