@@ -14,6 +14,7 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 FRAME_RATE = 0.1
 FRAME_PERIOD = 1 / FRAME_RATE
 
+
 # Fonts
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 font_extrasmall = graphics.Font()
@@ -154,6 +155,7 @@ class Display(Animator):
     def clear_screen(self):
         # First operation after
         # a screen reset
+        print("CLEAR SCREEN")
         self.canvas.Clear()
 
     @Animator.KeyFrame.add(0)
@@ -163,6 +165,8 @@ class Display(Animator):
         if len(self._data) == 0:
             return
 
+        print("flight_details DETAILS")
+        
         # Clear the while area
         self.draw_square(
             0,
@@ -247,6 +251,8 @@ class Display(Animator):
         ):
             return
 
+        print("journey DETAILS")
+
         origin = self._data[self._data_index]["origin"]
         destination = self._data[self._data_index]["destination"]
 
@@ -286,6 +292,8 @@ class Display(Animator):
         if len(self._data) == 0:
             return
 
+        print("PLANE DETAILS")
+
         plane = f'{self._data[self._data_index]["plane"]}'
 
         # Draw background
@@ -314,6 +322,7 @@ class Display(Animator):
             if len(self._data) > 1:
                 self._data_index = (self._data_index + 1) % len(self._data)
                 self._data_all_looped = (not self._data_index) or self._data_all_looped
+                print("PLANE DETAILS RESET")
                 self.reset_scene()
 
     @Animator.KeyFrame.add(0)
@@ -394,16 +403,23 @@ class Display(Animator):
     @Animator.KeyFrame.add(FRAME_PERIOD * 5)
     def check_for_loaded_data(self, count):
         if self.overhead.new_data:
+            reset_required = (len(self._data) > 0) or (not self.overhead.data_is_empty)
+            print("NEW DATA")
             self._data_index = 0
             self._data_all_looped = False
             self._data = self.overhead.data
-            self.reset_scene()
+
+            if reset_required:
+                print(f"RESET REQUIRED {not len(self._data)} {self.overhead.data_is_empty}")
+                self.reset_scene()
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def clock(self, count):
         # If there's no data to display
         # then draw a clock
+        print("TRY AND DRAW CLOCK")
         if len(self._data) == 0:
+            print("DRAW CLOCK")
             now = datetime.now()
             current_time = now.strftime("%H %M")
 
@@ -419,7 +435,9 @@ class Display(Animator):
                         COLOUR_BLACK,
                         self._last_time,
                     )
+                    print("UNDRAW OLD CLOCK")
                 self._last_time = current_time
+                print("DRAWING NEW CLOCK")
 
                 # Draw Time
                 _ = graphics.DrawText(
@@ -458,9 +476,9 @@ class Display(Animator):
             now = datetime.now()
             current_date = now.strftime("%-d-%-m-%Y")
 
-            # Only draw if time needs updated
+            # Only draw if date needs updated
             if self._last_date != current_date:
-                # Undraw last time if different from current
+                # Undraw last date if different from current
                 if not self._last_date is None:
                     _ = graphics.DrawText(
                         self.canvas,
@@ -472,7 +490,7 @@ class Display(Animator):
                     )
                 self._last_date = current_date
 
-                # Draw Time
+                # Draw date
                 _ = graphics.DrawText(
                     self.canvas,
                     DATE_FONT,
@@ -485,14 +503,14 @@ class Display(Animator):
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def day(self, count):
         # If there's no data to display
-        # then draw the date
+        # then draw the day
         if len(self._data) == 0:
             now = datetime.now()
             current_day = now.strftime("%A")
 
             # Only draw if time needs updated
             if self._last_day != current_day:
-                # Undraw last time if different from current
+                # Undraw last day if different from current
                 if not self._last_day is None:
                     _ = graphics.DrawText(
                         self.canvas,
@@ -504,7 +522,7 @@ class Display(Animator):
                     )
                 self._last_day = current_day
 
-                # Draw Time
+                # Draw day
                 _ = graphics.DrawText(
                     self.canvas,
                     DAY_FONT,

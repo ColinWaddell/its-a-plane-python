@@ -119,6 +119,10 @@ class Overhead:
         with self._lock:
             self._new_data = False
             return self._data
+    
+    @property
+    def data_is_empty(self):
+        return len(self._data) == 0
 
 
 # Main function
