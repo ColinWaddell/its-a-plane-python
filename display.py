@@ -151,13 +151,22 @@ class Display(Animator):
             _ = graphics.DrawLine(self.canvas, x, y0, x, y1, colour)
 
     @Animator.KeyFrame.add(0)
+    def clear_screen(self):
+
+        # Guard against no data
+        if len(self._data) == 0:
+            return
+
+        self.canvas.Clear()
+
+    @Animator.KeyFrame.add(0)
     def flight_details(self):
 
         # Guard against no data
         if len(self._data) == 0:
             return
 
-        # Clear the area
+        # Clear the while area
         self.draw_square(
             0,
             BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
