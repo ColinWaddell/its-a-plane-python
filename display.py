@@ -398,9 +398,7 @@ class Display(Animator):
             # Only reset if there's flight data already
             # on the screen, of if there's some new
             # data available to draw
-            reset_required = (
-                len(self._data) > 0 or not self.overhead.data_is_empty
-            )
+            reset_required = len(self._data) > 0 or not self.overhead.data_is_empty
             self._data_index = 0
             self._data_all_looped = False
             self._data = self.overhead.data
@@ -418,7 +416,7 @@ class Display(Animator):
             # If there's no data to display
             # then draw a clock
             now = datetime.now()
-            current_time = now.strftime("%H %M")
+            current_time = now.strftime("%H:%M")
 
             # Only draw if time needs updated
             if self._last_time != current_time:
@@ -442,25 +440,6 @@ class Display(Animator):
                     CLOCK_POSITION[1],
                     CLOCK_COLOUR,
                     current_time,
-                )
-
-                # Draw Seperators
-                _ = graphics.DrawLine(
-                    self.canvas,
-                    CLOCK_POSITION[0] + 14,
-                    CLOCK_POSITION[1] - 6,
-                    CLOCK_POSITION[0] + 14,
-                    CLOCK_POSITION[1] - 5,
-                    CLOCK_COLOUR,
-                )
-
-                _ = graphics.DrawLine(
-                    self.canvas,
-                    CLOCK_POSITION[0] + 14,
-                    CLOCK_POSITION[1] - 3,
-                    CLOCK_POSITION[0] + 14,
-                    CLOCK_POSITION[1] - 2,
-                    CLOCK_COLOUR,
                 )
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
