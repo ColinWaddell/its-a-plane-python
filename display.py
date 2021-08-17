@@ -410,9 +410,13 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def clock(self, count):
-        # If there's no data to display
-        # then draw a clock
-        if len(self._data) == 0:
+        if len(self._data):
+            # Ensure redraw when there's new data
+            self._last_time = None
+
+        else:
+            # If there's no data to display
+            # then draw a clock
             now = datetime.now()
             current_time = now.strftime("%H %M")
 
@@ -440,7 +444,7 @@ class Display(Animator):
                     current_time,
                 )
 
-                # Draw Seperator
+                # Draw Seperators
                 _ = graphics.DrawLine(
                     self.canvas,
                     CLOCK_POSITION[0] + 14,
@@ -458,16 +462,16 @@ class Display(Animator):
                     CLOCK_POSITION[1] - 2,
                     CLOCK_COLOUR,
                 )
-        else:
-            # Ensure redraw when there's new data
-            self._last_time = None
-
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def date(self, count):
-        # If there's no data to display
-        # then draw the date
-        if len(self._data) == 0:
+        if len(self._data):
+            # Ensure redraw when there's new data
+            self._last_date = None
+
+        else:
+            # If there's no data to display
+            # then draw the date
             now = datetime.now()
             current_date = now.strftime("%-d-%-m-%Y")
 
@@ -494,15 +498,16 @@ class Display(Animator):
                     DATE_COLOUR,
                     current_date,
                 )
-        else:
-            # Ensure redraw when there's new data
-            self._last_date = None
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def day(self, count):
-        # If there's no data to display
-        # then draw the day
-        if len(self._data) == 0:
+        if len(self._data):
+            # Ensure redraw when there's new data
+            self._last_day = None
+
+        else:
+            # If there's no data to display
+            # then draw the day
             now = datetime.now()
             current_day = now.strftime("%A")
 
@@ -529,9 +534,6 @@ class Display(Animator):
                     DAY_COLOUR,
                     current_day,
                 )
-        else:
-            # Ensure redraw when there's new data
-            self._last_day = None
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
