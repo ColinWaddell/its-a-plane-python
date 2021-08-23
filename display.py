@@ -5,6 +5,7 @@ import os
 
 from animator import Animator
 from overhead import Overhead
+from temperature import Temperature
 
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
@@ -33,6 +34,7 @@ COLOUR_BLACK = graphics.Color(0, 0, 0)
 COLOUR_WHITE = graphics.Color(255, 255, 255)
 COLOUR_GREY = graphics.Color(192, 192, 192)
 COLOUR_YELLOW = graphics.Color(255, 255, 0)
+COLOUR_YELLOW_DARK = graphics.Color(128, 128, 0)
 COLOUR_BLUE = graphics.Color(55, 14, 237)
 COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
 COLOUR_BLUE_DARK = graphics.Color(29, 0, 156)
@@ -41,7 +43,8 @@ COLOUR_PINK_DARK = graphics.Color(112, 0, 145)
 COLOUR_PINK_DARKER = graphics.Color(96, 1, 125)
 COLOUR_GREEN = graphics.Color(0, 200, 0)
 COLOUR_ORANGE = graphics.Color(227, 110, 0)
-COLOUR_RED = graphics.Color(255, 255, 255)
+COLOUR_ORANGE_DARK = graphics.Color(113, 55, 0)
+COLOUR_RED = graphics.Color(255, 0, 0)
 COLOUR_RED_LIGHT = graphics.Color(255, 195, 195)
 
 # Element colours
@@ -98,10 +101,32 @@ PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
 PLANE_FONT = font_regular
 
+TEMPERATURE_LOCATION = "Glasgow"
+TEMPERATURE_FONT = font_small
+TEMPERATURE_FONT_HEIGHT = 6
+TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT)
+TEMPERATURE_COLOUR = COLOUR_ORANGE
+TEMPERATURE_BANDS = [
+    {"threshold": -100, "colour": COLOUR_BLUE_LIGHT},
+    {"threshold": 0, "colour": COLOUR_BLUE},
+    {"threshold": 10, "colour": COLOUR_YELLOW_DARK},
+    {"threshold": 20, "colour": COLOUR_ORANGE_DARK},
+]
+
 # Constants
 MAX_WIDTH = 64
 MAX_HEIGHT = 32
 MAX_STATIC_TEXT_LEN = 12
+
+# Helpers
+def temperature_to_colour(temperature):
+    colour = TEMPERATURE_BANDS[0]["colour"]
+    for band in TEMPERATURE_BANDS:
+        if temperature >= band["threshold"]:
+            colour = band["colour"]
+        else:
+            break
+    return colour
 
 
 class Display(Animator):
@@ -144,6 +169,10 @@ class Display(Animator):
         self._last_time = None
         self._last_day = None
         self._last_date = None
+        self._last_temperature = None
+
+        # Temperature lookup
+        self._temperature = Temperature(TEMPERATURE_LOCATION)
 
         # Start Looking for planes
         self.overhead = Overhead()
@@ -502,6 +531,43 @@ class Display(Animator):
                     DAY_POSITION[1],
                     DAY_COLOUR,
                     current_day,
+                )
+
+    @Animator.KeyFrame.add(FRAME_PERIOD * 60, FRAME_PERIOD * 61)
+    def temperature(self, count):
+        if len(self._data):
+            # Ensure redraw when there's new data
+            self._last_temperature = None
+        
+        else:
+            temperature = self._temperature.grab()
+            temp_str = f"{temperature:.0f}°".rjust(4, ' ')
+            print(f"{temperature}")
+
+            # Only draw if temp needs updated
+            if self._last_temperature != temp_str:
+                # Undraw last temp if different from current
+                if not self._last_temperature is None:
+                    _ = graphics.DrawText(
+                        self.canvas,
+                        TEMPERATURE_FONT,
+                        TEMPERATURE_POSITION[0],
+                        TEMPERATURE_POSITION[1],
+                        COLOUR_BLACK,
+                        self._last_temperature,
+                    )
+                    self._last_temperature = temp_str
+
+                temp_colour = temperature_to_colour(temperature)
+
+                # Draw temperature
+                _ = graphics.DrawText(
+                    self.canvas,
+                    TEMPERATURE_FONT,
+                    TEMPERATURE_POSITION[0],
+                    TEMPERATURE_POSITION[1],
+                    temp_colour,
+                    temp_str,
                 )
 
     @Animator.KeyFrame.add(1)
