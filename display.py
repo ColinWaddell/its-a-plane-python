@@ -91,6 +91,8 @@ JOURNEY_WIDTH = 64
 JOURNEY_SPACING = 16
 JOURNEY_FONT = font_large
 JOURNEY_FONT_SELECTED = font_large_bold
+JOURNEY_CODE_SELECTED = "GLA"
+JOURNEY_BLANK_FILLER = " ? "
 
 PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
@@ -164,7 +166,7 @@ class Display(Animator):
         if len(self._data) == 0:
             return
 
-        # Clear the while area
+        # Clear the whole area
         self.draw_square(
             0,
             BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
@@ -242,12 +244,6 @@ class Display(Animator):
         if len(self._data) == 0:
             return
 
-        if not (
-            self._data[self._data_index]["origin"]
-            and self._data[self._data_index]["destination"]
-        ):
-            return
-
         origin = self._data[self._data_index]["origin"]
         destination = self._data[self._data_index]["destination"]
 
@@ -263,21 +259,21 @@ class Display(Animator):
         # Draw origin
         text_length = graphics.DrawText(
             self.canvas,
-            JOURNEY_FONT_SELECTED if origin == "GLA" else JOURNEY_FONT,
+            JOURNEY_FONT_SELECTED if origin == JOURNEY_CODE_SELECTED else JOURNEY_FONT,
             1,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
-            origin,
+            origin if origin else JOURNEY_BLANK_FILLER,
         )
 
         # Draw destination
         _ = graphics.DrawText(
             self.canvas,
-            JOURNEY_FONT_SELECTED if destination == "GLA" else JOURNEY_FONT,
+            JOURNEY_FONT_SELECTED if destination == JOURNEY_CODE_SELECTED else JOURNEY_FONT,
             text_length + JOURNEY_SPACING,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
-            destination,
+            destination if destination else JOURNEY_BLANK_FILLER,
         )
 
     @Animator.KeyFrame.add(1)
@@ -321,12 +317,6 @@ class Display(Animator):
     def journey_arrow(self):
         # Guard against no data
         if len(self._data) == 0:
-            return
-
-        if not (
-            self._data[self._data_index]["origin"]
-            and self._data[self._data_index]["destination"]
-        ):
             return
 
         # Black area before arrow
