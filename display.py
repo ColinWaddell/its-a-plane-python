@@ -104,7 +104,7 @@ PLANE_FONT = font_regular
 TEMPERATURE_LOCATION = "Glasgow"
 TEMPERATURE_FONT = font_small
 TEMPERATURE_FONT_HEIGHT = 6
-TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT)
+TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
 TEMPERATURE_COLOUR = COLOUR_ORANGE
 TEMPERATURE_BANDS = [
     {"threshold": -100, "colour": COLOUR_BLUE_LIGHT},
@@ -533,13 +533,13 @@ class Display(Animator):
                     current_day,
                 )
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 60, FRAME_PERIOD * 61)
+    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def temperature(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
             self._last_temperature = None
         
-        else:
+        elif not (count % 60):
             temperature = self._temperature.grab()
             temp_str = f"{temperature:.0f}°".rjust(4, ' ')
 
