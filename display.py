@@ -108,7 +108,7 @@ TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT)
 TEMPERATURE_COLOUR = COLOUR_ORANGE
 TEMPERATURE_BANDS = [
     {"threshold": -100, "colour": COLOUR_BLUE_LIGHT},
-    {"threshold": 0, "colour": COLOUR_BLUE},
+    {"threshold": 0, "colour": COLOUR_BLUE_DARK},
     {"threshold": 10, "colour": COLOUR_YELLOW_DARK},
     {"threshold": 20, "colour": COLOUR_ORANGE_DARK},
 ]
@@ -542,7 +542,6 @@ class Display(Animator):
         else:
             temperature = self._temperature.grab()
             temp_str = f"{temperature:.0f}°".rjust(4, ' ')
-            print(f"{temperature}")
 
             # Only draw if temp needs updated
             if self._last_temperature != temp_str:
