@@ -169,7 +169,6 @@ class Display(Animator):
         self._last_time = None
         self._last_day = None
         self._last_date = None
-        self._last_temperature = None
 
         # Temperature lookup
         self._temperature = Temperature(TEMPERATURE_LOCATION)
@@ -537,26 +536,23 @@ class Display(Animator):
     def temperature(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
-            self._last_temperature = None
+            return
         
         elif not (count % 60):
+            # Undraw old temp
+            self.draw_square(
+                TEMPERATURE_POSITION[0],
+                TEMPERATURE_POSITION[1] - TEMPERATURE_FONT_HEIGHT,
+                MAX_WIDTH,
+                TEMPERATURE_POSITION[1],
+                COLOUR_BLACK
+            )
+
             temperature = self._temperature.grab()
-            temp_str = f"{temperature:.0f}°".rjust(4, ' ')
 
-            # Only draw if temp needs updated
-            if self._last_temperature != temp_str:
-                # Undraw last temp if different from current
-                if not self._last_temperature is None:
-                    _ = graphics.DrawText(
-                        self.canvas,
-                        TEMPERATURE_FONT,
-                        TEMPERATURE_POSITION[0],
-                        TEMPERATURE_POSITION[1],
-                        COLOUR_BLACK,
-                        self._last_temperature,
-                    )
-                    self._last_temperature = temp_str
 
+            if temperature:
+                temp_str = f"{temperature:.0f}°".rjust(4, ' ')
                 temp_colour = temperature_to_colour(temperature)
 
                 # Draw temperature

@@ -17,7 +17,7 @@ class Temperature:
             content = json.loads(raw_data.decode('utf-8'))
             current_temp = content["temp_c"]
 
-        except (KeyError, json.JSONDecodeError):
+        except:
             pass
 
         return current_temp
