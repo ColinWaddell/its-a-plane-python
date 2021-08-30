@@ -102,6 +102,7 @@ PLANE_TEXT_HEIGHT = 9
 PLANE_FONT = font_regular
 
 TEMPERATURE_LOCATION = "Glasgow"
+TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = font_small
 TEMPERATURE_FONT_HEIGHT = 6
 TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
@@ -169,6 +170,8 @@ class Display(Animator):
         self._last_time = None
         self._last_day = None
         self._last_date = None
+        self._last_temperature = None
+        self._last_temperature_str = None
 
         # Temperature lookup
         self._temperature = Temperature(TEMPERATURE_LOCATION)
@@ -303,6 +306,10 @@ class Display(Animator):
             JOURNEY_COLOUR,
             destination if destination else JOURNEY_BLANK_FILLER,
         )
+
+    @Animator.KeyFrame.add(0)
+    def reset_scrolling(self):
+        self.plane_position = MAX_WIDTH
 
     @Animator.KeyFrame.add(1)
     def plane_details(self, count):
@@ -538,22 +545,24 @@ class Display(Animator):
             # Ensure redraw when there's new data
             return
         
-        elif not (count % 60):
-            # Undraw old temp
-            self.draw_square(
-                TEMPERATURE_POSITION[0],
-                TEMPERATURE_POSITION[1] - TEMPERATURE_FONT_HEIGHT,
-                MAX_WIDTH,
-                TEMPERATURE_POSITION[1],
-                COLOUR_BLACK
-            )
+        if not (count % TEMPERATURE_REFRESH_SECONDS):
+            self.temperature = self._temperature.grab()
 
-            temperature = self._temperature.grab()
-
-
-            if temperature:
-                temp_str = f"{temperature:.0f}°".rjust(4, ' ')
-                temp_colour = temperature_to_colour(temperature)
+        if self.temperature != self._last_temperature:
+            if self._last_temperature_str is not None:
+                # Undraw old temperature
+                _ = graphics.DrawText(
+                    self.canvas,
+                    TEMPERATURE_FONT,
+                    TEMPERATURE_POSITION[0],
+                    TEMPERATURE_POSITION[1],
+                    self._last_temperature_str,
+                    COLOUR_BLACK,
+                )
+        
+            if self.temperature:
+                temp_str = f"{self.temperature:.0f}°".rjust(4, ' ')
+                temp_colour = temperature_to_colour(self.temperature)
 
                 # Draw temperature
                 _ = graphics.DrawText(
@@ -564,6 +573,9 @@ class Display(Animator):
                     temp_colour,
                     temp_str,
                 )
+
+                self._last_temperature = self.temperature
+                self._last_temperature_str = temp_str
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
