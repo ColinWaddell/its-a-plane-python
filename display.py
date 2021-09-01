@@ -548,34 +548,33 @@ class Display(Animator):
         if not (count % TEMPERATURE_REFRESH_SECONDS):
             self.temperature = self._temperature.grab()
 
-        if self.temperature != self._last_temperature:
-            if self._last_temperature_str is not None:
-                # Undraw old temperature
-                _ = graphics.DrawText(
-                    self.canvas,
-                    TEMPERATURE_FONT,
-                    TEMPERATURE_POSITION[0],
-                    TEMPERATURE_POSITION[1],
-                    self._last_temperature_str,
-                    COLOUR_BLACK,
-                )
-        
-            if self.temperature:
-                temp_str = f"{self.temperature:.0f}°".rjust(4, ' ')
-                temp_colour = temperature_to_colour(self.temperature)
+        if self._last_temperature_str is not None:
+            # Undraw old temperature
+            _ = graphics.DrawText(
+                self.canvas,
+                TEMPERATURE_FONT,
+                TEMPERATURE_POSITION[0],
+                TEMPERATURE_POSITION[1],
+                COLOUR_BLACK,
+                self._last_temperature_str,
+            )
+    
+        if self.temperature:
+            temp_str = f"{self.temperature:.0f}°".rjust(4, ' ')
+            temp_colour = temperature_to_colour(self.temperature)
 
-                # Draw temperature
-                _ = graphics.DrawText(
-                    self.canvas,
-                    TEMPERATURE_FONT,
-                    TEMPERATURE_POSITION[0],
-                    TEMPERATURE_POSITION[1],
-                    temp_colour,
-                    temp_str,
-                )
+            # Draw temperature
+            _ = graphics.DrawText(
+                self.canvas,
+                TEMPERATURE_FONT,
+                TEMPERATURE_POSITION[0],
+                TEMPERATURE_POSITION[1],
+                temp_colour,
+                temp_str,
+            )
 
-                self._last_temperature = self.temperature
-                self._last_temperature_str = temp_str
+            self._last_temperature = self.temperature
+            self._last_temperature_str = temp_str
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
