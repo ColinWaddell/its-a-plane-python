@@ -1,6 +1,7 @@
 from FlightRadar24.api import FlightRadar24API
 from threading import Thread, Lock
 from time import sleep
+import math
 
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
@@ -11,7 +12,41 @@ BLANK_FIELDS = ["", "N/A", "NONE"]
 
 ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
 ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
-ZONE_DEFAULT = ZONE_HOME
+ZONE_DEFAULT = ZONE_UK
+
+EARTH_RADIUS_KM = 6371
+LOCATION_HOME = [55.9074356, -4.3331678, 0.01781 + EARTH_RADIUS_KM]
+
+
+def distance_from_flight_to_home(flight, home=LOCATION_HOME):
+    def polar_to_cartesian(lat, long, alt):
+        DEG2RAD = math.pi / 180
+        return [
+            alt * math.cos(DEG2RAD * lat) * math.sin(DEG2RAD * long),
+            alt * math.sin(DEG2RAD * lat),
+            alt * math.cos(DEG2RAD * lat) * math.cos(DEG2RAD * long),
+        ]
+
+    def feet_to_meters_plus_earth(altitude_ft):
+        altitude_km = 0.0003048 * altitude_ft
+        return altitude_km + EARTH_RADIUS_KM
+
+    try:
+        (x0, y0, z0) = polar_to_cartesian(
+            flight.latitude,
+            flight.longitude,
+            feet_to_meters_plus_earth(flight.altitude),
+        )
+
+        (x1, y1, z1) = polar_to_cartesian(*home)
+
+        dist = math.sqrt((x1 - x0) ** 2 + (y1 - y0) ** 2 + (z1 - z0) ** 2)
+
+        return dist
+
+    except AttributeError:
+        # on error say it's far away
+        return 1e6
 
 
 class Overhead:
@@ -39,7 +74,7 @@ class Overhead:
 
         # Sort flights by altitude, lowest first
         flights = [f for f in flights if f.altitude < MAX_ALTITUDE]
-        flights = sorted(flights, key=lambda f: f.altitude)
+        flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:
             retries = RETRIES
@@ -59,11 +94,7 @@ class Overhead:
                         plane = ""
 
                     # Tidy up what we pass along
-                    plane = (
-                        plane
-                        if not (plane.upper() in BLANK_FIELDS)
-                        else ""
-                    )
+                    plane = plane if not (plane.upper() in BLANK_FIELDS) else ""
 
                     origin = (
                         flight.origin_airport_iata
@@ -77,10 +108,9 @@ class Overhead:
                         else ""
                     )
 
-
                     callsign = (
-                        flight.callsign 
-                        if not (flight.callsign.upper() in BLANK_FIELDS) 
+                        flight.callsign
+                        if not (flight.callsign.upper() in BLANK_FIELDS)
                         else ""
                     )
 
@@ -119,7 +149,7 @@ class Overhead:
         with self._lock:
             self._new_data = False
             return self._data
-    
+
     @property
     def data_is_empty(self):
         return len(self._data) == 0
