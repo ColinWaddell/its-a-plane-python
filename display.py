@@ -95,7 +95,7 @@ JOURNEY_SPACING = 16
 JOURNEY_FONT = font_large
 JOURNEY_FONT_SELECTED = font_large_bold
 JOURNEY_CODE_SELECTED = "GLA"
-JOURNEY_BLANK_FILLER = " ? "
+JOURNEY_BLANK_FILLER = "UFO"
 
 PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
@@ -110,7 +110,7 @@ TEMPERATURE_COLOUR = COLOUR_ORANGE
 TEMPERATURE_MIN = 0
 TEMPERATURE_MIN_COLOUR = COLOUR_BLUE_LIGHT
 TEMPERATURE_MAX = 25
-TEMPERATURE_MAX_COLOUR = COLOUR_ORANGE_DARK
+TEMPERATURE_MAX_COLOUR = COLOUR_ORANGE
 
 
 # Constants
@@ -540,11 +540,10 @@ class Display(Animator):
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def temperature(self, count):
 
-
         if len(self._data):
             # Ensure redraw when there's new data
             return
-        
+
         if not (count % TEMPERATURE_REFRESH_SECONDS):
             self.temperature = self._temperature.grab()
 
