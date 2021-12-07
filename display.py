@@ -124,7 +124,7 @@ MAX_STATIC_TEXT_LEN = 12
 def callsigns_match(flights_a, flights_b):
     get_callsign = lambda flights: [f["callsign"] for f in flights]
     callsigns_a = set(get_callsign(flights_a))
-    callsigns_b = set(get_callsign(flights_a))
+    callsigns_b = set(get_callsign(flights_b))
 
     return callsigns_a == callsigns_b
 
