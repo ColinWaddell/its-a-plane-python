@@ -120,6 +120,7 @@ MAX_STATIC_TEXT_LEN = 12
 
 # Helpers
 
+
 def colour_gradient(colour_A, colour_B, ratio):
     return graphics.Color(
         colour_A.red + ((colour_B.red - colour_A.red) * ratio),
@@ -298,7 +299,9 @@ class Display(Animator):
         # Draw destination
         _ = graphics.DrawText(
             self.canvas,
-            JOURNEY_FONT_SELECTED if destination == JOURNEY_CODE_SELECTED else JOURNEY_FONT,
+            JOURNEY_FONT_SELECTED
+            if destination == JOURNEY_CODE_SELECTED
+            else JOURNEY_FONT,
             text_length + JOURNEY_SPACING,
             JOURNEY_HEIGHT,
             JOURNEY_COLOUR,
@@ -430,13 +433,13 @@ class Display(Animator):
             if data_is_different:
                 self._data_index = 0
                 self._data_all_looped = False
-                self._data = new_data 
+                self._data = new_data
 
             # Only reset if there's flight data already
             # on the screen, of if there's some new
             # data available to draw which is different
             # from the current data
-            reset_required = (there_is_data and data_is_different)
+            reset_required = there_is_data and data_is_different
 
             if reset_required:
                 self.reset_scene()
@@ -569,9 +572,9 @@ class Display(Animator):
                 COLOUR_BLACK,
                 self._last_temperature_str,
             )
-    
+
         if self.temperature:
-            temp_str = f"{round(self.temperature)}°".rjust(4, ' ')
+            temp_str = f"{round(self.temperature)}°".rjust(4, " ")
 
             if self.temperature > 25:
                 ratio = 1
@@ -579,7 +582,7 @@ class Display(Animator):
                 ratio = (self.temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
             else:
                 ratio = 0
-            
+
             temp_colour = colour_gradient(COLOUR_BLUE, COLOUR_ORANGE, ratio)
 
             # Draw temperature

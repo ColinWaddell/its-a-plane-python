@@ -14,7 +14,7 @@ BLANK_FIELDS = ["", "N/A", "NONE"]
 try:
     # Attempt to load config data
     from config import ZONE_HOME, LOCATION_HOME
-    
+
     ZONE_DEFAULT = ZONE_HOME
     LOCATION_DEFAULT = LOCATION_HOME
 
