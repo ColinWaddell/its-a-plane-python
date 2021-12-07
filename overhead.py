@@ -7,18 +7,24 @@ RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
 MAX_ALTITUDE = 10000  # feet
+EARTH_RADIUS_KM = 6371
 BLANK_FIELDS = ["", "N/A", "NONE"]
 
 
-ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
-ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
-ZONE_DEFAULT = ZONE_HOME
+try:
+    # Attempt to load config data
+    from config import ZONE_HOME, LOCATION_HOME
+    
+    ZONE_DEFAULT = ZONE_HOME
+    LOCATION_DEFAULT = LOCATION_HOME
 
-EARTH_RADIUS_KM = 6371
-LOCATION_HOME = [55.9074356, -4.3331678, 0.01781 + EARTH_RADIUS_KM]
+except (ModuleNotFoundError, NameError):
+    # If there's no config data
+    ZONE_DEFAULT = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
+    LOCATION_DEFAULT = [51.509865, -0.118092, EARTH_RADIUS_KM]
 
 
-def distance_from_flight_to_home(flight, home=LOCATION_HOME):
+def distance_from_flight_to_home(flight, home=LOCATION_DEFAULT):
     def polar_to_cartesian(lat, long, alt):
         DEG2RAD = math.pi / 180
         return [
@@ -72,7 +78,7 @@ class Overhead:
         bounds = self._api.get_bounds(ZONE_DEFAULT)
         flights = self._api.get_flights(bounds=bounds)
 
-        # Sort flights by altitude, lowest first
+        # Sort flights by closest first
         flights = [f for f in flights if f.altitude < MAX_ALTITUDE]
         flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
 

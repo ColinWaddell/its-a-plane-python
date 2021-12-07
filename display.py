@@ -418,13 +418,25 @@ class Display(Animator):
     @Animator.KeyFrame.add(FRAME_PERIOD * 5)
     def check_for_loaded_data(self, count):
         if self.overhead.new_data:
+            # Check if there's data
+            there_is_data = len(self._data) > 0 or not self.overhead.data_is_empty
+
+            # this marks self.overhead.data as no longer new
+            new_data = self.overhead.data
+
+            # See if this matches the data already on the screen
+            data_is_different = not (self._data == new_data)
+
+            if data_is_different:
+                self._data_index = 0
+                self._data_all_looped = False
+                self._data = new_data 
+
             # Only reset if there's flight data already
             # on the screen, of if there's some new
-            # data available to draw
-            reset_required = len(self._data) > 0 or not self.overhead.data_is_empty
-            self._data_index = 0
-            self._data_all_looped = False
-            self._data = self.overhead.data
+            # data available to draw which is different
+            # from the current data
+            reset_required = (there_is_data and data_is_different)
 
             if reset_required:
                 self.reset_scene()
