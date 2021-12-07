@@ -95,7 +95,7 @@ JOURNEY_SPACING = 16
 JOURNEY_FONT = font_large
 JOURNEY_FONT_SELECTED = font_large_bold
 JOURNEY_CODE_SELECTED = "GLA"
-JOURNEY_BLANK_FILLER = " ? "
+JOURNEY_BLANK_FILLER = "UFO"
 
 PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
@@ -107,12 +107,11 @@ TEMPERATURE_FONT = font_small
 TEMPERATURE_FONT_HEIGHT = 6
 TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
 TEMPERATURE_COLOUR = COLOUR_ORANGE
-TEMPERATURE_BANDS = [
-    {"threshold": -100, "colour": COLOUR_BLUE_LIGHT},
-    {"threshold": 0, "colour": COLOUR_BLUE_DARK},
-    {"threshold": 10, "colour": COLOUR_YELLOW_DARK},
-    {"threshold": 20, "colour": COLOUR_ORANGE_DARK},
-]
+TEMPERATURE_MIN = 0
+TEMPERATURE_MIN_COLOUR = COLOUR_BLUE_LIGHT
+TEMPERATURE_MAX = 25
+TEMPERATURE_MAX_COLOUR = COLOUR_ORANGE
+
 
 # Constants
 MAX_WIDTH = 64
@@ -120,14 +119,13 @@ MAX_HEIGHT = 32
 MAX_STATIC_TEXT_LEN = 12
 
 # Helpers
-def temperature_to_colour(temperature):
-    colour = TEMPERATURE_BANDS[0]["colour"]
-    for band in TEMPERATURE_BANDS:
-        if temperature >= band["threshold"]:
-            colour = band["colour"]
-        else:
-            break
-    return colour
+
+def colour_gradient(colour_A, colour_B, ratio):
+    return graphics.Color(
+        colour_A.red + ((colour_B.red - colour_A.red) * ratio),
+        colour_A.green + ((colour_B.green - colour_A.green) * ratio),
+        colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
+    )
 
 
 class Display(Animator):
@@ -541,10 +539,11 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(FRAME_PERIOD * 1)
     def temperature(self, count):
+
         if len(self._data):
             # Ensure redraw when there's new data
             return
-        
+
         if not (count % TEMPERATURE_REFRESH_SECONDS):
             self.temperature = self._temperature.grab()
 
@@ -561,7 +560,15 @@ class Display(Animator):
     
         if self.temperature:
             temp_str = f"{round(self.temperature)}°".rjust(4, ' ')
-            temp_colour = temperature_to_colour(self.temperature)
+
+            if self.temperature > 25:
+                ratio = 1
+            elif self.temperature > 0:
+                ratio = (self.temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
+            else:
+                ratio = 0
+            
+            temp_colour = colour_gradient(COLOUR_BLUE, COLOUR_ORANGE, ratio)
 
             # Draw temperature
             _ = graphics.DrawText(
