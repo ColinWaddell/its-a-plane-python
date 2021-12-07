@@ -560,7 +560,7 @@ class Display(Animator):
             )
     
         if self.temperature:
-            temp_str = f"{self.temperature:.0f}°".rjust(4, ' ')
+            temp_str = f"{round(self.temperature)}°".rjust(4, ' ')
             temp_colour = temperature_to_colour(self.temperature)
 
             # Draw temperature
