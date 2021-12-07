@@ -12,7 +12,7 @@ BLANK_FIELDS = ["", "N/A", "NONE"]
 
 ZONE_UK = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
 ZONE_HOME = {"tl_y": 56.06403, "tl_x": -4.51589, "br_y": 55.89088, "br_x": -4.19694}
-ZONE_DEFAULT = ZONE_UK
+ZONE_DEFAULT = ZONE_HOME
 
 EARTH_RADIUS_KM = 6371
 LOCATION_HOME = [55.9074356, -4.3331678, 0.01781 + EARTH_RADIUS_KM]
