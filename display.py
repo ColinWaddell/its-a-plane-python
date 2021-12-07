@@ -121,6 +121,14 @@ MAX_STATIC_TEXT_LEN = 12
 # Helpers
 
 
+def callsigns_match(flights_a, flights_b):
+    get_callsign = lambda flights: [f["callsign"] for f in flights]
+    callsigns_a = set(get_callsign(flights_a))
+    callsigns_b = set(get_callsign(flights_a))
+
+    return callsigns_a == callsigns_b
+
+
 def colour_gradient(colour_A, colour_B, ratio):
     return graphics.Color(
         colour_A.red + ((colour_B.red - colour_A.red) * ratio),
@@ -428,7 +436,9 @@ class Display(Animator):
             new_data = self.overhead.data
 
             # See if this matches the data already on the screen
-            data_is_different = not (self._data == new_data)
+            # This test only checks if it's 2 lists with the same
+            # callsigns, regardless or order
+            data_is_different = callsigns_match(self._data, new_data)
 
             if data_is_different:
                 self._data_index = 0
