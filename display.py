@@ -438,7 +438,7 @@ class Display(Animator):
             # See if this matches the data already on the screen
             # This test only checks if it's 2 lists with the same
             # callsigns, regardless or order
-            data_is_different = callsigns_match(self._data, new_data)
+            data_is_different = not callsigns_match(self._data, new_data)
 
             if data_is_different:
                 self._data_index = 0
