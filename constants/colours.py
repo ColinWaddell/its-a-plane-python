@@ -1,3 +1,5 @@
+from rgbmatrix import graphics
+
 # Colour helpers
 COLOUR_BLACK = graphics.Color(0, 0, 0)
 COLOUR_WHITE = graphics.Color(255, 255, 255)
