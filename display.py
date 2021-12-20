@@ -1,122 +1,71 @@
 from datetime import datetime
 import time
 import sys
-import os
 
 from animator import Animator
 from overhead import Overhead
 from temperature import Temperature
+from constants import framerate, colours, fonts, limits
+
+from scenes.temperature import TemperatureScene
+from scenes.flightdetails import FlightDetailsScene
 
 from rgbmatrix import graphics
 from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
 
-# Loop setup
-FRAMES_PERIOD = 0.1
-FRAMES_PER_SECOND = 1 / FRAMES_PERIOD
 
 
-# Fonts
-DIR_PATH = os.path.dirname(os.path.realpath(__file__))
-font_extrasmall = graphics.Font()
-font_small = graphics.Font()
-font_regular = graphics.Font()
-font_large = graphics.Font()
-font_large_bold = graphics.Font()
-font_extrasmall.LoadFont(f"{DIR_PATH}/fonts/4x6.bdf")
-font_small.LoadFont(f"{DIR_PATH}/fonts/5x8.bdf")
-font_regular.LoadFont(f"{DIR_PATH}/fonts/6x12.bdf")
-font_large.LoadFont(f"{DIR_PATH}/fonts/8x13.bdf")
-font_large_bold.LoadFont(f"{DIR_PATH}/fonts/8x13B.bdf")
-
-# Colour helpers
-COLOUR_BLACK = graphics.Color(0, 0, 0)
-COLOUR_WHITE = graphics.Color(255, 255, 255)
-COLOUR_GREY = graphics.Color(192, 192, 192)
-COLOUR_YELLOW = graphics.Color(255, 255, 0)
-COLOUR_YELLOW_DARK = graphics.Color(128, 128, 0)
-COLOUR_BLUE = graphics.Color(55, 14, 237)
-COLOUR_BLUE_LIGHT = graphics.Color(110, 182, 255)
-COLOUR_BLUE_DARK = graphics.Color(29, 0, 156)
-COLOUR_PINK = graphics.Color(200, 0, 200)
-COLOUR_PINK_DARK = graphics.Color(112, 0, 145)
-COLOUR_PINK_DARKER = graphics.Color(96, 1, 125)
-COLOUR_GREEN = graphics.Color(0, 200, 0)
-COLOUR_ORANGE = graphics.Color(227, 110, 0)
-COLOUR_ORANGE_DARK = graphics.Color(113, 55, 0)
-COLOUR_RED = graphics.Color(255, 0, 0)
-COLOUR_RED_LIGHT = graphics.Color(255, 195, 195)
 
 # Element colours
-FLIGHT_NUMBER_ALPHA_COLOUR = COLOUR_BLUE
-FLIGHT_NUMBER_NUMERIC_COLOUR = COLOUR_BLUE_LIGHT
-DIVIDING_BAR_COLOUR = COLOUR_GREEN
-DATA_INDEX_COLOUR = COLOUR_GREY
-JOURNEY_COLOUR = COLOUR_YELLOW
-ARROW_COLOUR = COLOUR_ORANGE
-PLANE_DETAILS_COLOUR = COLOUR_PINK
-BLINKER_COLOUR = COLOUR_WHITE
-CLOCK_COLOUR = COLOUR_BLUE_DARK
-DATE_COLOUR = COLOUR_PINK_DARKER
-DAY_COLOUR = COLOUR_PINK_DARK
+JOURNEY_COLOUR = colours.COLOUR_YELLOW
+ARROW_COLOUR = colours.COLOUR_ORANGE
+PLANE_DETAILS_COLOUR = colours.COLOUR_PINK
+BLINKER_COLOUR = colours.COLOUR_WHITE
+CLOCK_COLOUR = colours.COLOUR_BLUE_DARK
+DATE_COLOUR = colours.COLOUR_PINK_DARKER
+DAY_COLOUR = colours.COLOUR_PINK_DARK
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
 ARROW_WIDTH = 4
 ARROW_HEIGHT = 8
 
-BAR_STARTING_POSITION = (0, 18)
-BAR_PADDING = 2
+
 
 BLINKER_POSITION = (63, 0)
 BLINKER_STEPS = 10
 
-DATA_INDEX_POSITION = (52, 21)
-DATA_INDEX_TEXT_HEIGHT = 6
-DATA_INDEX_FONT = font_extrasmall
 
-CLOCK_FONT = font_regular
+
+CLOCK_FONT = fonts.fonts_regular
 CLOCK_POSITION = (1, 8)
 
-DATE_FONT = font_small
+DATE_FONT = fonts.fonts_small
 DATE_POSITION = (1, 31)
 
-DAY_FONT = font_small
+DAY_FONT = fonts.fonts_small
 DAY_POSITION = (2, 23)
 
-FLIGHT_NO_POSITION = (1, 21)
-FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
-FLIGHT_NO_FONT = font_small
+
 
 JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
 JOURNEY_WIDTH = 64
 JOURNEY_SPACING = 16
-JOURNEY_FONT = font_large
-JOURNEY_FONT_SELECTED = font_large_bold
+JOURNEY_FONT = fonts.fonts_large
+JOURNEY_FONT_SELECTED = fonts.fonts_large_bold
 JOURNEY_CODE_SELECTED = "GLA"
 JOURNEY_BLANK_FILLER = "UFO"
 
 PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
-PLANE_FONT = font_regular
-
-TEMPERATURE_LOCATION = "Glasgow"
-TEMPERATURE_REFRESH_SECONDS = 60
-TEMPERATURE_FONT = font_small
-TEMPERATURE_FONT_HEIGHT = 6
-TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
-TEMPERATURE_COLOUR = COLOUR_ORANGE
-TEMPERATURE_MIN = 0
-TEMPERATURE_MIN_COLOUR = COLOUR_BLUE_LIGHT
-TEMPERATURE_MAX = 25
-TEMPERATURE_MAX_COLOUR = COLOUR_ORANGE
+PLANE_FONT = fonts.fonts_regular
 
 
-# Constants
-MAX_WIDTH = 64
-MAX_HEIGHT = 32
-MAX_STATIC_TEXT_LEN = 12
+
+
+
 
 # Helpers
 
@@ -129,15 +78,9 @@ def callsigns_match(flights_a, flights_b):
     return callsigns_a == callsigns_b
 
 
-def colour_gradient(colour_A, colour_B, ratio):
-    return graphics.Color(
-        colour_A.red + ((colour_B.red - colour_A.red) * ratio),
-        colour_A.green + ((colour_B.green - colour_A.green) * ratio),
-        colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
-    )
 
 
-class Display(Animator):
+class Display(Animator, TemperatureScene):
     def __init__(self):
         # Setup Display
         options = RGBMatrixOptions()
@@ -164,7 +107,7 @@ class Display(Animator):
         self.canvas.Clear()
 
         # Element positions
-        self.plane_position = MAX_WIDTH
+        self.plane_position = limits.MAX_WIDTH
 
         # Data to render
         self._data_index = 0
@@ -186,7 +129,7 @@ class Display(Animator):
         self.overhead.grab_data()
 
         super().__init__()
-        self.delay = FRAMES_PERIOD
+        self.delay = framerate.FRAMES_PERIOD
 
     def draw_square(self, x0, y0, x1, y1, colour):
         for x in range(x0, x1):
@@ -198,83 +141,6 @@ class Display(Animator):
         # a screen reset
         self.canvas.Clear()
 
-    @Animator.KeyFrame.add(0)
-    def flight_details(self):
-
-        # Guard against no data
-        if len(self._data) == 0:
-            return
-
-        # Clear the whole area
-        self.draw_square(
-            0,
-            BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
-            MAX_WIDTH - 1,
-            BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
-            COLOUR_BLACK,
-        )
-
-        # Draw flight number if available
-        flight_no_text_length = 0
-        if (
-            self._data[self._data_index]["callsign"]
-            and self._data[self._data_index]["callsign"] != "N/A"
-        ):
-            flight_no = f'{self._data[self._data_index]["callsign"]}'
-
-            for ch in flight_no:
-                ch_length = graphics.DrawText(
-                    self.canvas,
-                    FLIGHT_NO_FONT,
-                    FLIGHT_NO_POSITION[0] + flight_no_text_length,
-                    FLIGHT_NO_POSITION[1],
-                    FLIGHT_NUMBER_NUMERIC_COLOUR
-                    if ch.isnumeric()
-                    else FLIGHT_NUMBER_ALPHA_COLOUR,
-                    ch,
-                )
-                flight_no_text_length += ch_length
-
-        # Draw bar
-        if len(self._data) > 1:
-            # Clear are where N of M might have been
-            self.draw_square(
-                DATA_INDEX_POSITION[0] - BAR_PADDING,
-                BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
-                MAX_WIDTH,
-                BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
-                COLOUR_BLACK,
-            )
-
-            # Dividing bar
-            graphics.DrawLine(
-                self.canvas,
-                flight_no_text_length + BAR_PADDING,
-                BAR_STARTING_POSITION[1],
-                DATA_INDEX_POSITION[0] - BAR_PADDING - 1,
-                BAR_STARTING_POSITION[1],
-                DIVIDING_BAR_COLOUR,
-            )
-
-            # Draw text
-            text_length = graphics.DrawText(
-                self.canvas,
-                font_extrasmall,
-                DATA_INDEX_POSITION[0],
-                DATA_INDEX_POSITION[1],
-                DATA_INDEX_COLOUR,
-                f"{self._data_index + 1}/{len(self._data)}",
-            )
-        else:
-            # Dividing bar
-            graphics.DrawLine(
-                self.canvas,
-                flight_no_text_length + BAR_PADDING if flight_no_text_length else 0,
-                BAR_STARTING_POSITION[1],
-                MAX_WIDTH,
-                BAR_STARTING_POSITION[1],
-                DIVIDING_BAR_COLOUR,
-            )
 
     @Animator.KeyFrame.add(0)
     def journey(self):
@@ -292,7 +158,7 @@ class Display(Animator):
             JOURNEY_POSITION[1],
             JOURNEY_POSITION[0] + JOURNEY_WIDTH - 1,
             JOURNEY_POSITION[1] + JOURNEY_HEIGHT - 1,
-            COLOUR_BLACK,
+            colours.COLOUR_BLACK,
         )
 
         # Draw origin
@@ -319,7 +185,7 @@ class Display(Animator):
 
     @Animator.KeyFrame.add(0)
     def reset_scrolling(self):
-        self.plane_position = MAX_WIDTH
+        self.plane_position = limits.MAX_WIDTH
 
     @Animator.KeyFrame.add(1)
     def plane_details(self, count):
@@ -334,9 +200,9 @@ class Display(Animator):
         self.draw_square(
             0,
             PLANE_DISTANCE_FROM_TOP - PLANE_TEXT_HEIGHT,
-            MAX_WIDTH,
-            MAX_HEIGHT,
-            COLOUR_BLACK,
+            limits.MAX_WIDTH,
+            limits.MAX_HEIGHT,
+            colours.COLOUR_BLACK,
         )
 
         # Draw text
@@ -352,7 +218,7 @@ class Display(Animator):
         # Handle scrolling
         self.plane_position -= 1
         if self.plane_position + text_length < 0:
-            self.plane_position = MAX_WIDTH
+            self.plane_position = limits.MAX_WIDTH
             if len(self._data) > 1:
                 self._data_index = (self._data_index + 1) % len(self._data)
                 self._data_all_looped = (not self._data_index) or self._data_all_looped
@@ -370,7 +236,7 @@ class Display(Animator):
             ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
             ARROW_POINT_POSITION[0],
             ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
-            COLOUR_BLACK,
+            colours.COLOUR_BLACK,
         )
 
         # Starting positions for filled in arrow
@@ -427,7 +293,7 @@ class Display(Animator):
             self.canvas.SetPixel(BLINKER_POSITION[0], BLINKER_POSITION[1], 0, 0, 0)
         return reset_count
 
-    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 5)
+    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 5)
     def check_for_loaded_data(self, count):
         if self.overhead.new_data:
             # Check if there's data
@@ -455,7 +321,7 @@ class Display(Animator):
             if reset_required:
                 self.reset_scene()
 
-    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
+    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
     def clock(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
@@ -476,7 +342,7 @@ class Display(Animator):
                         CLOCK_FONT,
                         CLOCK_POSITION[0],
                         CLOCK_POSITION[1],
-                        COLOUR_BLACK,
+                        colours.COLOUR_BLACK,
                         self._last_time,
                     )
                 self._last_time = current_time
@@ -491,7 +357,7 @@ class Display(Animator):
                     current_time,
                 )
 
-    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
+    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
     def date(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
@@ -512,7 +378,7 @@ class Display(Animator):
                         DATE_FONT,
                         DATE_POSITION[0],
                         DATE_POSITION[1],
-                        COLOUR_BLACK,
+                        colours.COLOUR_BLACK,
                         self._last_date,
                     )
                 self._last_date = current_date
@@ -527,7 +393,7 @@ class Display(Animator):
                     current_date,
                 )
 
-    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
+    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
     def day(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
@@ -548,7 +414,7 @@ class Display(Animator):
                         DAY_FONT,
                         DAY_POSITION[0],
                         DAY_POSITION[1],
-                        COLOUR_BLACK,
+                        colours.COLOUR_BLACK,
                         self._last_day,
                     )
                 self._last_day = current_day
@@ -563,58 +429,14 @@ class Display(Animator):
                     current_day,
                 )
 
-    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
-    def temperature(self, count):
 
-        if len(self._data):
-            # Ensure redraw when there's new data
-            return
-
-        if not (count % TEMPERATURE_REFRESH_SECONDS):
-            self.temperature = self._temperature.grab()
-
-        if self._last_temperature_str is not None:
-            # Undraw old temperature
-            _ = graphics.DrawText(
-                self.canvas,
-                TEMPERATURE_FONT,
-                TEMPERATURE_POSITION[0],
-                TEMPERATURE_POSITION[1],
-                COLOUR_BLACK,
-                self._last_temperature_str,
-            )
-
-        if self.temperature:
-            temp_str = f"{round(self.temperature)}°".rjust(4, " ")
-
-            if self.temperature > 25:
-                ratio = 1
-            elif self.temperature > 0:
-                ratio = (self.temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
-            else:
-                ratio = 0
-
-            temp_colour = colour_gradient(COLOUR_BLUE, COLOUR_ORANGE, ratio)
-
-            # Draw temperature
-            _ = graphics.DrawText(
-                self.canvas,
-                TEMPERATURE_FONT,
-                TEMPERATURE_POSITION[0],
-                TEMPERATURE_POSITION[1],
-                temp_colour,
-                temp_str,
-            )
-
-            self._last_temperature = self.temperature
-            self._last_temperature_str = temp_str
 
     @Animator.KeyFrame.add(1)
     def sync(self, count):
         # Redraw screen every frame
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 20)
+    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 20)
     def grab_new_data(self, count):
         # Only grab data if we're not already searching
         # for planes, or if there's new data available
