@@ -23,29 +23,22 @@ URL = "https://taps-aff.co.uk/api/"
 LOCATION = "Glasgow"  # todo: add to config.py
 
 
-class Temperature:
-    def __init__(self, location=LOCATION):
-        self._location = LOCATION
+def grab_temperature(location):
+    current_temp = None
 
-    def grab(self):
-        current_temp = None
+    try:
+        request = urllib.request.Request(URL + location)
+        raw_data = urllib.request.urlopen(request).read()
+        content = json.loads(raw_data.decode("utf-8"))
+        current_temp = content["temp_c"]
 
-        try:
-            request = urllib.request.Request(URL + self._location)
-            raw_data = urllib.request.urlopen(request).read()
-            content = json.loads(raw_data.decode("utf-8"))
-            current_temp = content["temp_c"]
+    except:
+        pass
 
-        except:
-            pass
-
-        return current_temp
+    return current_temp
 
 
 class TemperatureScene:
-    def __init__(self):
-        # Temperature lookup
-        self._temperature = Temperature(TEMPERATURE_LOCATION)
 
     def colour_gradient(self, colour_A, colour_B, ratio):
         return graphics.Color(
@@ -62,7 +55,7 @@ class TemperatureScene:
             return
 
         if not (count % TEMPERATURE_REFRESH_SECONDS):
-            self.current_temperature = self._temperature.grab()
+            self.current_temperature = grab_temperature(TEMPERATURE_LOCATION)
 
         if self._last_temperature_str is not None:
             # Undraw old temperature
