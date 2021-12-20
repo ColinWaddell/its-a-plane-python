@@ -12,8 +12,8 @@ from rgbmatrix import RGBMatrix, RGBMatrixOptions
 
 
 # Loop setup
-FRAME_RATE = 0.1
-FRAME_PERIOD = 1 / FRAME_RATE
+FRAMES_PERIOD = 0.1
+FRAMES_PER_SECOND = 1 / FRAMES_PERIOD
 
 
 # Fonts
@@ -139,8 +139,6 @@ def colour_gradient(colour_A, colour_B, ratio):
 
 class Display(Animator):
     def __init__(self):
-        super().__init__(FRAME_RATE)
-
         # Setup Display
         options = RGBMatrixOptions()
         options.hardware_mapping = "adafruit-hat-pwm"
@@ -186,6 +184,9 @@ class Display(Animator):
         # Start Looking for planes
         self.overhead = Overhead()
         self.overhead.grab_data()
+
+        super().__init__()
+        self.delay = FRAMES_PERIOD
 
     def draw_square(self, x0, y0, x1, y1, colour):
         for x in range(x0, x1):
@@ -426,7 +427,7 @@ class Display(Animator):
             self.canvas.SetPixel(BLINKER_POSITION[0], BLINKER_POSITION[1], 0, 0, 0)
         return reset_count
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 5)
+    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 5)
     def check_for_loaded_data(self, count):
         if self.overhead.new_data:
             # Check if there's data
@@ -454,7 +455,7 @@ class Display(Animator):
             if reset_required:
                 self.reset_scene()
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
+    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
     def clock(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
@@ -490,7 +491,7 @@ class Display(Animator):
                     current_time,
                 )
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
+    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
     def date(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
@@ -526,7 +527,7 @@ class Display(Animator):
                     current_date,
                 )
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
+    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
     def day(self, count):
         if len(self._data):
             # Ensure redraw when there's new data
@@ -562,7 +563,7 @@ class Display(Animator):
                     current_day,
                 )
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 1)
+    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 1)
     def temperature(self, count):
 
         if len(self._data):
@@ -613,7 +614,7 @@ class Display(Animator):
         # Redraw screen every frame
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(FRAME_PERIOD * 20)
+    @Animator.KeyFrame.add(FRAMES_PER_SECOND * 20)
     def grab_new_data(self, count):
         # Only grab data if we're not already searching
         # for planes, or if there's new data available

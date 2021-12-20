@@ -1,5 +1,6 @@
 from time import sleep
 
+DELAY_DEFAULT = 0.01
 
 class Animator(object):
     class KeyFrame(object):
@@ -11,10 +12,10 @@ class Animator(object):
 
             return wrapper
 
-    def __init__(self, delay=0.01):
+    def __init__(self):
         self.keyframes = []
         self.frame = 0
-        self.delay = delay
+        self._delay = DELAY_DEFAULT
         self._reset_scene = True
 
         self._register_keyframes()
@@ -55,7 +56,15 @@ class Animator(object):
 
             self._reset_scene = False
             self.frame += 1
-            sleep(self.delay)
+            sleep(self._delay)
+        
+    @property
+    def delay(self):
+        return self._delay
+    
+    @delay.setter
+    def delay(self, value):
+        self._delay = value
 
 
 if __name__ == "__main__":
