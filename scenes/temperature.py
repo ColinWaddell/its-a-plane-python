@@ -6,8 +6,6 @@ from constants import framerate, colours, fonts
 
 from rgbmatrix import graphics
 
-from temperature import Temperature
-
 
 TEMPERATURE_LOCATION = "Glasgow"
 TEMPERATURE_REFRESH_SECONDS = 60
