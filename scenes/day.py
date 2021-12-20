@@ -3,9 +3,9 @@ from datetime import datetime
 from animator import Animator
 from constants import framerate, colours, fonts
 
+from rgbmatrix import graphics
+
 DAY_COLOUR = colours.COLOUR_PINK_DARK
-
-
 DAY_FONT = fonts.font_small
 DAY_POSITION = (2, 23)
 

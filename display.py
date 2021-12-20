@@ -12,6 +12,7 @@ from scenes.journey import JourneyScene
 from scenes.loadingpulse import LoadingPulseScene
 from scenes.clock import ClockScene
 from scenes.planedetails import PlaneDetailsScene
+from scenes.day import DayScene
 from scenes.date import DateScene
 
 from rgbmatrix import graphics
@@ -34,6 +35,7 @@ class Display(
     LoadingPulseScene,
     PlaneDetailsScene,
     ClockScene,
+    DayScene,
     DateScene,
 ):
     def __init__(self):
