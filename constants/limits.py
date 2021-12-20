@@ -1,0 +1,4 @@
+# Constants
+MAX_WIDTH = 64
+MAX_HEIGHT = 32
+MAX_STATIC_TEXT_LEN = 12
