@@ -62,7 +62,7 @@ class TemperatureScene:
             return
 
         if not (count % TEMPERATURE_REFRESH_SECONDS):
-            self.temperature = self._temperature.grab()
+            self.current_temperature = self._temperature.grab()
 
         if self._last_temperature_str is not None:
             # Undraw old temperature
@@ -75,13 +75,13 @@ class TemperatureScene:
                 self._last_temperature_str,
             )
 
-        if self.temperature:
-            temp_str = f"{round(self.temperature)}°".rjust(4, " ")
+        if self.current_temperature:
+            temp_str = f"{round(self.current_temperature)}°".rjust(4, " ")
 
-            if self.temperature > 25:
+            if self.current_temperature > 25:
                 ratio = 1
-            elif self.temperature > 0:
-                ratio = (self.temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
+            elif self.current_temperature > 0:
+                ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
             else:
                 ratio = 0
 
@@ -99,5 +99,5 @@ class TemperatureScene:
                 temp_str,
             )
 
-            self._last_temperature = self.temperature
+            self._last_temperature = self.current_temperature
             self._last_temperature_str = temp_str

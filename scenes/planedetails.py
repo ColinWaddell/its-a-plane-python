@@ -7,7 +7,7 @@ from constants import framerate, colours, fonts, limits
 PLANE_DETAILS_COLOUR = colours.COLOUR_PINK
 PLANE_DISTANCE_FROM_TOP = 30
 PLANE_TEXT_HEIGHT = 9
-PLANE_FONT = fonts.fonts_regular
+PLANE_FONT = fonts.font_regular
 
 
 class PlaneDetailsScene:

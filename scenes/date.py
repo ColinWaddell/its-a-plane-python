@@ -6,7 +6,7 @@ from constants import framerate, colours, fonts
 from rgbmatrix import graphics
 
 DATE_COLOUR = colours.COLOUR_PINK_DARKER
-DATE_FONT = fonts.fonts_small
+DATE_FONT = fonts.font_small
 DATE_POSITION = (1, 31)
 
 class DateScene:

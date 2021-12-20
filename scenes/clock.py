@@ -5,7 +5,7 @@ from constants import framerate, colours, fonts
 
 from rgbmatrix import graphics
 
-CLOCK_FONT = fonts.fonts_regular
+CLOCK_FONT = fonts.font_regular
 CLOCK_POSITION = (1, 8)
 CLOCK_COLOUR = colours.COLOUR_BLUE_DARK
 

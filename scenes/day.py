@@ -6,7 +6,7 @@ from constants import framerate, colours, fonts
 DAY_COLOUR = colours.COLOUR_PINK_DARK
 
 
-DAY_FONT = fonts.fonts_small
+DAY_FONT = fonts.font_small
 DAY_POSITION = (2, 23)
 
 
