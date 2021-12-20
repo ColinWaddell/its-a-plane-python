@@ -1,7 +1,12 @@
+import urllib.request
+import json
+
 from animator import Animator
 from constants import framerate, colours, fonts
 
 from rgbmatrix import graphics
+
+from temperature import Temperature
 
 
 TEMPERATURE_LOCATION = "Glasgow"
@@ -16,7 +21,34 @@ TEMPERATURE_MAX = 25
 TEMPERATURE_MAX_COLOUR = colours.COLOUR_ORANGE
 
 
+URL = "https://taps-aff.co.uk/api/"
+LOCATION = "Glasgow"  # todo: add to config.py
+
+
+class Temperature:
+    def __init__(self, location=LOCATION):
+        self._location = LOCATION
+
+    def grab(self):
+        current_temp = None
+
+        try:
+            request = urllib.request.Request(URL + self._location)
+            raw_data = urllib.request.urlopen(request).read()
+            content = json.loads(raw_data.decode("utf-8"))
+            current_temp = content["temp_c"]
+
+        except:
+            pass
+
+        return current_temp
+
+
 class TemperatureScene:
+    def __init__(self):
+        # Temperature lookup
+        self._temperature = Temperature(TEMPERATURE_LOCATION)
+
     def colour_gradient(self, colour_A, colour_B, ratio):
         return graphics.Color(
             colour_A.red + ((colour_B.red - colour_A.red) * ratio),
