@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-# Display a runtext with double-buffering.
 from display import Display
 
 
