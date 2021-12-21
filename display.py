@@ -1,8 +1,8 @@
 import sys
 
-from animator import Animator
-from overhead import Overhead
-from setup import frames, screen
+from setup import frames
+from utilities.animator import Animator
+from utilities.overhead import Overhead
 
 from scenes.temperature import TemperatureScene
 from scenes.flightdetails import FlightDetailsScene
