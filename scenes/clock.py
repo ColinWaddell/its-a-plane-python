@@ -12,7 +12,6 @@ CLOCK_COLOUR = colours.BLUE_DARK
 
 
 class ClockScene(object):
-
     def __init__(self):
         super().__init__()
         self._last_time = None

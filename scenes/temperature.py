@@ -39,7 +39,6 @@ TEMPERATURE_MAX_COLOUR = colours.ORANGE
 
 
 class TemperatureScene(object):
-
     def __init__(self):
         super().__init__()
         self._last_temperature = None
@@ -83,9 +82,7 @@ class TemperatureScene(object):
             else:
                 ratio = 0
 
-            temp_colour = self.colour_gradient(
-                colours.BLUE, colours.ORANGE, ratio
-            )
+            temp_colour = self.colour_gradient(colours.BLUE, colours.ORANGE, ratio)
 
             # Draw temperature
             _ = graphics.DrawText(

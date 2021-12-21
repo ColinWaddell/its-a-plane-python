@@ -24,7 +24,6 @@ ARROW_HEIGHT = 8
 
 
 class JourneyScene(object):
-
     def __init__(self):
         super().__init__()
 

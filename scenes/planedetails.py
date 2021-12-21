@@ -11,7 +11,6 @@ PLANE_FONT = fonts.regular
 
 
 class PlaneDetailsScene(object):
-
     def __init__(self):
         super().__init__()
         self.plane_position = screen.WIDTH

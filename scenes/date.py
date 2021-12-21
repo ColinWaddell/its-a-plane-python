@@ -12,7 +12,6 @@ DATE_POSITION = (1, 31)
 
 
 class DateScene(object):
-
     def __init__(self):
         super().__init__()
         self._last_date = None

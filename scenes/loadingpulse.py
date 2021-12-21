@@ -8,7 +8,6 @@ BLINKER_COLOUR = colours.WHITE
 
 
 class LoadingPulseScene(object):
-
     def __init__(self):
         super().__init__()
 

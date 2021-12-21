@@ -12,7 +12,6 @@ DAY_POSITION = (2, 23)
 
 
 class DayScene(object):
-
     def __init__(self):
         super().__init__()
         self._last_day = None
