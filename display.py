@@ -26,7 +26,6 @@ def callsigns_match(flights_a, flights_b):
 
 
 class Display(
-    Animator,
     TemperatureScene,
     FlightDetailsScene,
     JourneyScene,
@@ -35,6 +34,7 @@ class Display(
     ClockScene,
     DayScene,
     DateScene,
+    Animator,
 ):
     def __init__(self):
         # Setup Display
@@ -69,6 +69,7 @@ class Display(
         self.overhead = Overhead()
         self.overhead.grab_data()
 
+        # Initalise animator and scenes
         super().__init__()
 
         # Overwrite any default settings from

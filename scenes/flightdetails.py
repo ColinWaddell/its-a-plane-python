@@ -22,7 +22,11 @@ DIVIDING_BAR_COLOUR = colours.GREEN
 DATA_INDEX_COLOUR = colours.GREY
 
 
-class FlightDetailsScene:
+class FlightDetailsScene(object):
+
+    def __init__(self):
+        super().__init__()
+
     @Animator.KeyFrame.add(0)
     def flight_details(self):
 

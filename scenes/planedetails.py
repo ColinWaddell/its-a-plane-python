@@ -10,9 +10,10 @@ PLANE_TEXT_HEIGHT = 9
 PLANE_FONT = fonts.regular
 
 
-class PlaneDetailsScene:
+class PlaneDetailsScene(object):
+
     def __init__(self):
-        # Element positions
+        super().__init__()
         self.plane_position = screen.WIDTH
         self._data_all_looped = False
 
