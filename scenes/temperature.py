@@ -3,9 +3,9 @@ import json
 
 from animator import Animator
 from setup import colours, fonts, frames
+from config import TEMPERATURE_LOCATION
 
 from rgbmatrix import graphics
-
 
 # Weather API
 WEATHER_API_URL = "https://taps-aff.co.uk/api/"
@@ -27,7 +27,6 @@ def grab_temperature(location):
 
 
 # Scene Setup
-TEMPERATURE_LOCATION = "Glasgow"
 TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.font_small
 TEMPERATURE_FONT_HEIGHT = 6

@@ -2,6 +2,7 @@ from time import sleep
 
 DELAY_DEFAULT = 0.01
 
+
 class Animator(object):
     class KeyFrame(object):
         @staticmethod
@@ -57,11 +58,11 @@ class Animator(object):
             self._reset_scene = False
             self.frame += 1
             sleep(self._delay)
-        
+
     @property
     def delay(self):
         return self._delay
-    
+
     @delay.setter
     def delay(self, value):
         self._delay = value

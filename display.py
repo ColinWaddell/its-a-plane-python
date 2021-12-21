@@ -70,6 +70,9 @@ class Display(
         self.overhead.grab_data()
 
         super().__init__()
+
+        # Overwrite any default settings from
+        # Animator or Scenes
         self.delay = frames.PERIOD
 
     def draw_square(self, x0, y0, x1, y1, colour):
@@ -115,7 +118,7 @@ class Display(
         # Redraw screen every frame
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(frames.PER_SECOND * 20)
+    @Animator.KeyFrame.add(frames.PER_SECOND * 30)
     def grab_new_data(self, count):
         # Only grab data if we're not already searching
         # for planes, or if there's new data available
