@@ -1,7 +1,9 @@
 from display import Display
 
 
-# Main function
 if __name__ == "__main__":
+    # Create a display and
+    # start its animation
+
     run_text = Display()
     run_text.run()
