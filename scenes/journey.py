@@ -1,8 +1,9 @@
 from animator import Animator
-from constants import framerate, colours, fonts
+from setup import colours, fonts
 
 from rgbmatrix import graphics
 
+# Setup
 JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
 JOURNEY_WIDTH = 64

@@ -1,10 +1,8 @@
-from datetime import datetime
-import time
 import sys
 
 from animator import Animator
 from overhead import Overhead
-from constants import framerate, colours, fonts, limits
+from setup import frames, screen
 
 from scenes.temperature import TemperatureScene
 from scenes.flightdetails import FlightDetailsScene
@@ -63,27 +61,16 @@ class Display(
         self.canvas = self.matrix.CreateFrameCanvas()
         self.canvas.Clear()
 
-        # Element positions
-        self.plane_position = limits.MAX_WIDTH
-
         # Data to render
         self._data_index = 0
-        self._data_all_looped = False
         self._data = []
-
-        # Clock and date elements
-        self._last_time = None
-        self._last_day = None
-        self._last_date = None
-        self._last_temperature = None
-        self._last_temperature_str = None
 
         # Start Looking for planes
         self.overhead = Overhead()
         self.overhead.grab_data()
 
         super().__init__()
-        self.delay = framerate.FRAMES_PERIOD
+        self.delay = frames.PERIOD
 
     def draw_square(self, x0, y0, x1, y1, colour):
         for x in range(x0, x1):
@@ -95,11 +82,7 @@ class Display(
         # a screen reset
         self.canvas.Clear()
 
-    @Animator.KeyFrame.add(0)
-    def reset_scrolling(self):
-        self.plane_position = limits.MAX_WIDTH
-
-    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 5)
+    @Animator.KeyFrame.add(frames.PER_SECOND * 5)
     def check_for_loaded_data(self, count):
         if self.overhead.new_data:
             # Check if there's data
@@ -132,7 +115,7 @@ class Display(
         # Redraw screen every frame
         _ = self.matrix.SwapOnVSync(self.canvas)
 
-    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 20)
+    @Animator.KeyFrame.add(frames.PER_SECOND * 20)
     def grab_new_data(self, count):
         # Only grab data if we're not already searching
         # for planes, or if there's new data available

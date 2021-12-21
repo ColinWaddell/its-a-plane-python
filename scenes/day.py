@@ -1,17 +1,21 @@
 from datetime import datetime
 
 from animator import Animator
-from constants import framerate, colours, fonts
+from setup import colours, fonts, frames
 
 from rgbmatrix import graphics
 
+# Setup
 DAY_COLOUR = colours.COLOUR_PINK_DARK
 DAY_FONT = fonts.font_small
 DAY_POSITION = (2, 23)
 
 
 class DayScene:
-    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
+    def __init__(self):
+        self._last_day = None
+
+    @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def day(self, count):
         if len(self._data):
             # Ensure redraw when there's new data

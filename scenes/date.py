@@ -1,17 +1,21 @@
 from datetime import datetime
 
 from animator import Animator
-from constants import framerate, colours, fonts
+from setup import colours, fonts, frames
 
 from rgbmatrix import graphics
 
+# Setup
 DATE_COLOUR = colours.COLOUR_PINK_DARKER
 DATE_FONT = fonts.font_small
 DATE_POSITION = (1, 31)
 
-class DateScene:
 
-    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
+class DateScene:
+    def __init__(self):
+        self._last_date = None
+
+    @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def date(self, count):
         if len(self._data):
             # Ensure redraw when there's new data

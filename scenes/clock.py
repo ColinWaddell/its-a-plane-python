@@ -1,17 +1,21 @@
 from datetime import datetime
 
 from animator import Animator
-from constants import framerate, colours, fonts
+from setup import colours, fonts, frames
 
 from rgbmatrix import graphics
 
+# Setup
 CLOCK_FONT = fonts.font_regular
 CLOCK_POSITION = (1, 8)
 CLOCK_COLOUR = colours.COLOUR_BLUE_DARK
 
 
 class ClockScene:
-    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
+    def __init__(self):
+        self._last_time = None
+
+    @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def clock(self, count):
         if len(self._data):
             # Ensure redraw when there's new data

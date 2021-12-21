@@ -1,8 +1,9 @@
 from animator import Animator
-from constants import colours, fonts, limits
+from setup import colours, fonts, screen
 
 from rgbmatrix import graphics
 
+# Setup
 BAR_STARTING_POSITION = (0, 18)
 BAR_PADDING = 2
 
@@ -33,7 +34,7 @@ class FlightDetailsScene:
         self.draw_square(
             0,
             BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
-            limits.MAX_WIDTH - 1,
+            screen.WIDTH - 1,
             BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
             colours.COLOUR_BLACK,
         )
@@ -65,7 +66,7 @@ class FlightDetailsScene:
             self.draw_square(
                 DATA_INDEX_POSITION[0] - BAR_PADDING,
                 BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
-                limits.MAX_WIDTH,
+                screen.WIDTH,
                 BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
                 colours.COLOUR_BLACK,
             )
@@ -95,7 +96,7 @@ class FlightDetailsScene:
                 self.canvas,
                 flight_no_text_length + BAR_PADDING if flight_no_text_length else 0,
                 BAR_STARTING_POSITION[1],
-                limits.MAX_WIDTH,
+                screen.WIDTH,
                 BAR_STARTING_POSITION[1],
                 DIVIDING_BAR_COLOUR,
             )

@@ -2,11 +2,31 @@ import urllib.request
 import json
 
 from animator import Animator
-from constants import framerate, colours, fonts
+from setup import colours, fonts, frames
 
 from rgbmatrix import graphics
 
 
+# Weather API
+WEATHER_API_URL = "https://taps-aff.co.uk/api/"
+
+
+def grab_temperature(location):
+    current_temp = None
+
+    try:
+        request = urllib.request.Request(WEATHER_API_URL + location)
+        raw_data = urllib.request.urlopen(request).read()
+        content = json.loads(raw_data.decode("utf-8"))
+        current_temp = content["temp_c"]
+
+    except:
+        pass
+
+    return current_temp
+
+
+# Scene Setup
 TEMPERATURE_LOCATION = "Glasgow"
 TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.font_small
@@ -19,26 +39,10 @@ TEMPERATURE_MAX = 25
 TEMPERATURE_MAX_COLOUR = colours.COLOUR_ORANGE
 
 
-URL = "https://taps-aff.co.uk/api/"
-LOCATION = "Glasgow"  # todo: add to config.py
-
-
-def grab_temperature(location):
-    current_temp = None
-
-    try:
-        request = urllib.request.Request(URL + location)
-        raw_data = urllib.request.urlopen(request).read()
-        content = json.loads(raw_data.decode("utf-8"))
-        current_temp = content["temp_c"]
-
-    except:
-        pass
-
-    return current_temp
-
-
 class TemperatureScene:
+    def __init__(self):
+        self._last_temperature = None
+        self._last_temperature_str = None
 
     def colour_gradient(self, colour_A, colour_B, ratio):
         return graphics.Color(
@@ -47,7 +51,7 @@ class TemperatureScene:
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
 
-    @Animator.KeyFrame.add(framerate.FRAMES_PER_SECOND * 1)
+    @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
 
         if len(self._data):
