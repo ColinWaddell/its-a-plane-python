@@ -8,14 +8,14 @@ JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
 JOURNEY_WIDTH = 64
 JOURNEY_SPACING = 16
-JOURNEY_FONT = fonts.font_large
-JOURNEY_FONT_SELECTED = fonts.font_large_bold
+JOURNEY_FONT = fonts.large
+JOURNEY_FONT_SELECTED = fonts.large_bold
 JOURNEY_CODE_SELECTED = "GLA"
 JOURNEY_BLANK_FILLER = "UFO"
 
-JOURNEY_COLOUR = colours.COLOUR_YELLOW
+JOURNEY_COLOUR = colours.YELLOW
 
-ARROW_COLOUR = colours.COLOUR_ORANGE
+ARROW_COLOUR = colours.ORANGE
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -40,7 +40,7 @@ class JourneyScene:
             JOURNEY_POSITION[1],
             JOURNEY_POSITION[0] + JOURNEY_WIDTH - 1,
             JOURNEY_POSITION[1] + JOURNEY_HEIGHT - 1,
-            colours.COLOUR_BLACK,
+            colours.BLACK,
         )
 
         # Draw origin
@@ -77,7 +77,7 @@ class JourneyScene:
             ARROW_POINT_POSITION[1] - (ARROW_HEIGHT // 2),
             ARROW_POINT_POSITION[0],
             ARROW_POINT_POSITION[1] + (ARROW_HEIGHT // 2),
-            colours.COLOUR_BLACK,
+            colours.BLACK,
         )
 
         # Starting positions for filled in arrow

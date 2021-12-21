@@ -4,7 +4,7 @@ from setup import colours
 # Setup
 BLINKER_POSITION = (63, 0)
 BLINKER_STEPS = 10
-BLINKER_COLOUR = colours.COLOUR_WHITE
+BLINKER_COLOUR = colours.WHITE
 
 
 class LoadingPulseScene:

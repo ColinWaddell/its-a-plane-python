@@ -9,17 +9,17 @@ BAR_PADDING = 2
 
 FLIGHT_NO_POSITION = (1, 21)
 FLIGHT_NO_TEXT_HEIGHT = 8  # based on font size
-FLIGHT_NO_FONT = fonts.font_small
+FLIGHT_NO_FONT = fonts.small
 
-FLIGHT_NUMBER_ALPHA_COLOUR = colours.COLOUR_BLUE
-FLIGHT_NUMBER_NUMERIC_COLOUR = colours.COLOUR_BLUE_LIGHT
+FLIGHT_NUMBER_ALPHA_COLOUR = colours.BLUE
+FLIGHT_NUMBER_NUMERIC_COLOUR = colours.BLUE_LIGHT
 
 DATA_INDEX_POSITION = (52, 21)
 DATA_INDEX_TEXT_HEIGHT = 6
-DATA_INDEX_FONT = fonts.font_extrasmall
+DATA_INDEX_FONT = fonts.extrasmall
 
-DIVIDING_BAR_COLOUR = colours.COLOUR_GREEN
-DATA_INDEX_COLOUR = colours.COLOUR_GREY
+DIVIDING_BAR_COLOUR = colours.GREEN
+DATA_INDEX_COLOUR = colours.GREY
 
 
 class FlightDetailsScene:
@@ -36,7 +36,7 @@ class FlightDetailsScene:
             BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
             screen.WIDTH - 1,
             BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
-            colours.COLOUR_BLACK,
+            colours.BLACK,
         )
 
         # Draw flight number if available
@@ -68,7 +68,7 @@ class FlightDetailsScene:
                 BAR_STARTING_POSITION[1] - (FLIGHT_NO_TEXT_HEIGHT // 2),
                 screen.WIDTH,
                 BAR_STARTING_POSITION[1] + (FLIGHT_NO_TEXT_HEIGHT // 2),
-                colours.COLOUR_BLACK,
+                colours.BLACK,
             )
 
             # Dividing bar
@@ -84,7 +84,7 @@ class FlightDetailsScene:
             # Draw text
             text_length = graphics.DrawText(
                 self.canvas,
-                fonts.font_extrasmall,
+                fonts.extrasmall,
                 DATA_INDEX_POSITION[0],
                 DATA_INDEX_POSITION[1],
                 DATA_INDEX_COLOUR,

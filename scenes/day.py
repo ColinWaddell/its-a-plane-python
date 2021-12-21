@@ -6,8 +6,8 @@ from setup import colours, fonts, frames
 from rgbmatrix import graphics
 
 # Setup
-DAY_COLOUR = colours.COLOUR_PINK_DARK
-DAY_FONT = fonts.font_small
+DAY_COLOUR = colours.PINK_DARK
+DAY_FONT = fonts.small
 DAY_POSITION = (2, 23)
 
 
@@ -36,7 +36,7 @@ class DayScene:
                         DAY_FONT,
                         DAY_POSITION[0],
                         DAY_POSITION[1],
-                        colours.COLOUR_BLACK,
+                        colours.BLACK,
                         self._last_day,
                     )
                 self._last_day = current_day

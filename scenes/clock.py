@@ -6,9 +6,9 @@ from setup import colours, fonts, frames
 from rgbmatrix import graphics
 
 # Setup
-CLOCK_FONT = fonts.font_regular
+CLOCK_FONT = fonts.regular
 CLOCK_POSITION = (1, 8)
-CLOCK_COLOUR = colours.COLOUR_BLUE_DARK
+CLOCK_COLOUR = colours.BLUE_DARK
 
 
 class ClockScene:
@@ -36,7 +36,7 @@ class ClockScene:
                         CLOCK_FONT,
                         CLOCK_POSITION[0],
                         CLOCK_POSITION[1],
-                        colours.COLOUR_BLACK,
+                        colours.BLACK,
                         self._last_time,
                     )
                 self._last_time = current_time

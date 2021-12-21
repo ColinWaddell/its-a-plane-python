@@ -28,14 +28,14 @@ def grab_temperature(location):
 
 # Scene Setup
 TEMPERATURE_REFRESH_SECONDS = 60
-TEMPERATURE_FONT = fonts.font_small
+TEMPERATURE_FONT = fonts.small
 TEMPERATURE_FONT_HEIGHT = 6
 TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
-TEMPERATURE_COLOUR = colours.COLOUR_ORANGE
+TEMPERATURE_COLOUR = colours.ORANGE
 TEMPERATURE_MIN = 0
-TEMPERATURE_MIN_COLOUR = colours.COLOUR_BLUE_LIGHT
+TEMPERATURE_MIN_COLOUR = colours.BLUE_LIGHT
 TEMPERATURE_MAX = 25
-TEMPERATURE_MAX_COLOUR = colours.COLOUR_ORANGE
+TEMPERATURE_MAX_COLOUR = colours.ORANGE
 
 
 class TemperatureScene:
@@ -67,7 +67,7 @@ class TemperatureScene:
                 TEMPERATURE_FONT,
                 TEMPERATURE_POSITION[0],
                 TEMPERATURE_POSITION[1],
-                colours.COLOUR_BLACK,
+                colours.BLACK,
                 self._last_temperature_str,
             )
 
@@ -82,7 +82,7 @@ class TemperatureScene:
                 ratio = 0
 
             temp_colour = self.colour_gradient(
-                colours.COLOUR_BLUE, colours.COLOUR_ORANGE, ratio
+                colours.BLUE, colours.ORANGE, ratio
             )
 
             # Draw temperature

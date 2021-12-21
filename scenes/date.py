@@ -6,8 +6,8 @@ from setup import colours, fonts, frames
 from rgbmatrix import graphics
 
 # Setup
-DATE_COLOUR = colours.COLOUR_PINK_DARKER
-DATE_FONT = fonts.font_small
+DATE_COLOUR = colours.PINK_DARKER
+DATE_FONT = fonts.small
 DATE_POSITION = (1, 31)
 
 
@@ -36,7 +36,7 @@ class DateScene:
                         DATE_FONT,
                         DATE_POSITION[0],
                         DATE_POSITION[1],
-                        colours.COLOUR_BLACK,
+                        colours.BLACK,
                         self._last_date,
                     )
                 self._last_date = current_date
