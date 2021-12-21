@@ -1,4 +1,10 @@
-# config.py
+# Documentation
+
+[Blog article about this project](https://blog.colinwaddell.com/flight-tracker/)
+
+# Setup
+
+## Configuration
 
 In the root of the repo create a files `config.py` with the settings for your display. For example:
 
