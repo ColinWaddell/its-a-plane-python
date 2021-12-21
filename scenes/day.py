@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from animator import Animator
+from utilities.animator import Animator
 from setup import colours, fonts, frames
 
 from rgbmatrix import graphics

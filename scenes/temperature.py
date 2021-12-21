@@ -1,7 +1,7 @@
 import urllib.request
 import json
 
-from animator import Animator
+from utilities.animator import Animator
 from setup import colours, fonts, frames
 from config import TEMPERATURE_LOCATION
 

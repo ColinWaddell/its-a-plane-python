@@ -1,6 +1,6 @@
 from rgbmatrix import graphics
 
-from animator import Animator
+from utilities.animator import Animator
 from setup import colours, fonts, screen
 
 # Setup
