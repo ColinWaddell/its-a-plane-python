@@ -11,8 +11,10 @@ DAY_FONT = fonts.font_small
 DAY_POSITION = (2, 23)
 
 
-class DayScene:
+class DayScene(object):
+
     def __init__(self):
+        super().__init__()
         self._last_day = None
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)

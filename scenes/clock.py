@@ -11,8 +11,10 @@ CLOCK_POSITION = (1, 8)
 CLOCK_COLOUR = colours.COLOUR_BLUE_DARK
 
 
-class ClockScene:
+class ClockScene(object):
+
     def __init__(self):
+        super().__init__()
         self._last_time = None
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)

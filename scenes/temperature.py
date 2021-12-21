@@ -38,8 +38,10 @@ TEMPERATURE_MAX = 25
 TEMPERATURE_MAX_COLOUR = colours.COLOUR_ORANGE
 
 
-class TemperatureScene:
+class TemperatureScene(object):
+
     def __init__(self):
+        super().__init__()
         self._last_temperature = None
         self._last_temperature_str = None
 

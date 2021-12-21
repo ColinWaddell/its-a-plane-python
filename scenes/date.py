@@ -11,8 +11,10 @@ DATE_FONT = fonts.font_small
 DATE_POSITION = (1, 31)
 
 
-class DateScene:
+class DateScene(object):
+
     def __init__(self):
+        super().__init__()
         self._last_date = None
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)

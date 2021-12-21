@@ -21,6 +21,8 @@ class Animator(object):
 
         self._register_keyframes()
 
+        super().__init__()
+
     def _register_keyframes(self):
         # Some introspection to setup keyframes
         for methodname in dir(self):

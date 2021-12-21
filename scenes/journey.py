@@ -23,10 +23,13 @@ ARROW_WIDTH = 4
 ARROW_HEIGHT = 8
 
 
-class JourneyScene:
+class JourneyScene(object):
+
+    def __init__(self):
+        super().__init__()
+
     @Animator.KeyFrame.add(0)
     def journey(self):
-
         # Guard against no data
         if len(self._data) == 0:
             return

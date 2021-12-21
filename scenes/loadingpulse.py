@@ -7,7 +7,11 @@ BLINKER_STEPS = 10
 BLINKER_COLOUR = colours.COLOUR_WHITE
 
 
-class LoadingPulseScene:
+class LoadingPulseScene(object):
+
+    def __init__(self):
+        super().__init__()
+
     @Animator.KeyFrame.add(2)
     def loading_pulse(self, count):
         reset_count = True
