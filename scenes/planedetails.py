@@ -52,7 +52,7 @@ class PlaneDetailsScene:
                 self._data_index = (self._data_index + 1) % len(self._data)
                 self._data_all_looped = (not self._data_index) or self._data_all_looped
                 self.reset_scene()
-    
+
     @Animator.KeyFrame.add(0)
     def reset_scrolling(self):
         self.plane_position = screen.WIDTH

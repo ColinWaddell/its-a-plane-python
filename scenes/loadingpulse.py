@@ -1,9 +1,6 @@
 from animator import Animator
 from setup import colours
 
-from rgbmatrix import graphics
-
-
 # Setup
 BLINKER_POSITION = (63, 0)
 BLINKER_STEPS = 10
