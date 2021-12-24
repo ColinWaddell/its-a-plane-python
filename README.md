@@ -4,6 +4,16 @@
 
 # Setup
 
+## Installation
+1. Assemble the RGB matrix, Pi, and Bonnet as described in [this Adafruit guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/overview). 
+2. When complete, install the LED-matrix library, again as described in the [Adafruit guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices).
+3. Clone this repository (`git clone https://github.com/ColinWaddell/its-a-plane-python`). 
+4. Install the FlightRadarAPI dependency (`sudo pip install FlightRadarAPI`). Note - running with `sudo` is requred make this python library available to root on the pi. My understanding is that this is a Debian (and Raspbian)-specific behavior of `pip`. 
+5. Go to the its-a-plane-python repo folder `cd its-a-plane-python` (or wherever you cloned it to). 
+6. Add a config.py file as described below. 
+7. Run `python its-a-plane.py`. 
+
+
 ## Configuration
 
 In the root of the repo create a files `config.py` with the settings for your display. For example:
