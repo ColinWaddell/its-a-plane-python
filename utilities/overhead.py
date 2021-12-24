@@ -7,6 +7,7 @@ RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
 MAX_ALTITUDE = 10000  # feet
+MIN_ALTITUDE = 100 # feet
 EARTH_RADIUS_KM = 6371
 BLANK_FIELDS = ["", "N/A", "NONE"]
 
@@ -79,7 +80,7 @@ class Overhead:
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by closest first
-        flights = [f for f in flights if f.altitude < MAX_ALTITUDE]
+        flights = [f for f in flights if f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE]
         flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:

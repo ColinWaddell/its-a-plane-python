@@ -4,11 +4,13 @@ import json
 from utilities.animator import Animator
 from setup import colours, fonts, frames
 from config import TEMPERATURE_LOCATION
+from config import OPENWEATHER_API_KEY
 
 from rgbmatrix import graphics
 
 # Weather API
 WEATHER_API_URL = "https://taps-aff.co.uk/api/"
+OPENWEATHER_API_URL = "https://api.openweathermap.org/data/2.5/"
 
 
 def grab_temperature(location):
@@ -19,6 +21,21 @@ def grab_temperature(location):
         raw_data = urllib.request.urlopen(request).read()
         content = json.loads(raw_data.decode("utf-8"))
         current_temp = content["temp_c"]
+
+    except:
+        pass
+
+    return current_temp
+
+
+def grab_temperature_openweather(location, apikey):
+    current_temp = None
+
+    try:
+        request = urllib.request.Request(OPENWEATHER_API_URL + "weather?q=" + location + "&appid=" + apikey + '&units=metric')
+        raw_data = urllib.request.urlopen(request).read()
+        content = json.loads(raw_data.decode("utf-8"))
+        current_temp = content["main"]["temp"]
 
     except:
         pass
@@ -59,7 +76,12 @@ class TemperatureScene(object):
             return
 
         if not (count % TEMPERATURE_REFRESH_SECONDS):
-            self.current_temperature = grab_temperature(TEMPERATURE_LOCATION)
+
+            if OPENWEATHER_API_KEY != "":
+                self.current_temperature = grab_temperature_openweather(TEMPERATURE_LOCATION, OPENWEATHER_API_KEY)
+            else:
+                self.current_temperature = grab_temperature(TEMPERATURE_LOCATION)
+
 
         if self._last_temperature_str is not None:
             # Undraw old temperature
@@ -75,7 +97,7 @@ class TemperatureScene(object):
         if self.current_temperature:
             temp_str = f"{round(self.current_temperature)}°".rjust(4, " ")
 
-            if self.current_temperature > 25:
+            if self.current_temperature > TEMPERATURE_MAX:
                 ratio = 1
             elif self.current_temperature > 0:
                 ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
