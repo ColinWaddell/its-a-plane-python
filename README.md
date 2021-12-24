@@ -20,7 +20,7 @@ In the root of the repo create a files `config.py` with the settings for your di
 `ZONE_HOME` defines the area within which flights should be tracked. 
 `LOCATION_HOME` is the latitude/longitude of your home.
 `TEMPERATURE_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
-`OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price). 
+`OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price). If not using OpenWeather, just leave as `OPENWEATHER_API_KEY = "" `. 
 
 ```
 ZONE_HOME = {
