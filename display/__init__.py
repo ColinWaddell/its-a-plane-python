@@ -47,12 +47,12 @@ class Display(
         options.row_address_type = 0
         options.multiplexing = 0
         options.pwm_bits = 11
-        options.brightness = 40
+        options.brightness = 100
         options.pwm_lsb_nanoseconds = 130
         options.led_rgb_sequence = "RGB"
         options.pixel_mapper_config = ""
         options.show_refresh_rate = 0
-        options.gpio_slowdown = 2
+        options.gpio_slowdown = 1
         options.disable_hardware_pulsing = True
         options.drop_privileges = True
         self.matrix = RGBMatrix(options=options)
