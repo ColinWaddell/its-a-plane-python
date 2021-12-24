@@ -16,7 +16,11 @@
 
 ## Configuration
 
-In the root of the repo create a files `config.py` with the settings for your display. For example:
+In the root of the repo create a files `config.py` with the settings for your display.
+`ZONE_HOME` defines the area within which flights should be tracked. 
+`LOCATION_HOME` is the latitude/longitude of your home.
+`TEMPERATURE_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
+`OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price). 
 
 ```
 ZONE_HOME = {
@@ -31,7 +35,9 @@ LOCATION_HOME = [
     0.01781 # Altitude (km)
 ]
 TEMPERATURE_LOCATION = "Glasgow"
+OPENWEATHER_API_KEY = "" # Get an API key from https://openweathermap.org/price
 ```
+
 
 ## Usage
 If you are running a headless Pi that you are managing over `ssh`, you'll find that you have to remain connected for the display to keep running. A simple solution is to run the its-a-plane.py script in a `tmux` or `screen` session. For instance:
