@@ -32,7 +32,14 @@ def grab_temperature_openweather(location, apikey):
     current_temp = None
 
     try:
-        request = urllib.request.Request(OPENWEATHER_API_URL + "weather?q=" + location + "&appid=" + apikey + '&units=metric')
+        request = urllib.request.Request(
+            OPENWEATHER_API_URL
+            + "weather?q="
+            + location
+            + "&appid="
+            + apikey
+            + "&units=metric"
+        )
         raw_data = urllib.request.urlopen(request).read()
         content = json.loads(raw_data.decode("utf-8"))
         current_temp = content["main"]["temp"]
@@ -78,10 +85,11 @@ class TemperatureScene(object):
         if not (count % TEMPERATURE_REFRESH_SECONDS):
 
             if OPENWEATHER_API_KEY != "":
-                self.current_temperature = grab_temperature_openweather(TEMPERATURE_LOCATION, OPENWEATHER_API_KEY)
+                self.current_temperature = grab_temperature_openweather(
+                    TEMPERATURE_LOCATION, OPENWEATHER_API_KEY
+                )
             else:
                 self.current_temperature = grab_temperature(TEMPERATURE_LOCATION)
-
 
         if self._last_temperature_str is not None:
             # Undraw old temperature

@@ -24,6 +24,7 @@ def callsigns_match(flights_a, flights_b):
 
     return callsigns_a == callsigns_b
 
+
 try:
     # Attempt to load config data
     from config import BRIGHTNESS, GPIO_SLOWDOWN
@@ -32,6 +33,7 @@ except (ModuleNotFoundError, NameError):
     # If there's no config data
     BRIGHTNESS = 100
     GPIO_SLOWDOWN = 1
+
 
 class Display(
     TemperatureScene,

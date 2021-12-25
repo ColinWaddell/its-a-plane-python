@@ -9,7 +9,7 @@ try:
 
 except (ModuleNotFoundError, NameError):
     # If there's no config data
-    MIN_ALTITUDE = 0 #feet
+    MIN_ALTITUDE = 0  # feet
 
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
@@ -86,7 +86,11 @@ class Overhead:
         flights = self._api.get_flights(bounds=bounds)
 
         # Sort flights by closest first
-        flights = [f for f in flights if f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE]
+        flights = [
+            f
+            for f in flights
+            if f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE
+        ]
         flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:
