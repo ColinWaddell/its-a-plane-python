@@ -1,12 +1,21 @@
 import urllib.request
 import json
-
+from rgbmatrix import graphics
 from utilities.animator import Animator
 from setup import colours, fonts, frames
 from config import TEMPERATURE_LOCATION
 from config import OPENWEATHER_API_KEY
 
-from rgbmatrix import graphics
+try:
+    # Attempt to load config data
+    from config import TEMPERATURE_UNITS
+
+except (ModuleNotFoundError, NameError):
+    # If there's no config data
+    TEMPERATURE_UNITS = "metric"
+
+if TEMPERATURE_UNITS != "metric" and TEMPERATURE_UNITS != "imperial":
+    TEMPERATURE_UNITS = "metric"
 
 # Weather API
 WEATHER_API_URL = "https://taps-aff.co.uk/api/"
@@ -28,7 +37,7 @@ def grab_temperature(location):
     return current_temp
 
 
-def grab_temperature_openweather(location, apikey):
+def grab_temperature_openweather(location, apikey, units):
     current_temp = None
 
     try:
@@ -38,7 +47,8 @@ def grab_temperature_openweather(location, apikey):
             + location
             + "&appid="
             + apikey
-            + "&units=metric"
+            + "&units="
+            + units
         )
         raw_data = urllib.request.urlopen(request).read()
         content = json.loads(raw_data.decode("utf-8"))
@@ -55,11 +65,15 @@ TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.small
 TEMPERATURE_FONT_HEIGHT = 6
 TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
-TEMPERATURE_COLOUR = colours.ORANGE
-TEMPERATURE_MIN = 0
-TEMPERATURE_MIN_COLOUR = colours.BLUE_LIGHT
-TEMPERATURE_MAX = 25
+TEMPERATURE_MIN_COLOUR = colours.BLUE
 TEMPERATURE_MAX_COLOUR = colours.ORANGE
+
+if TEMPERATURE_UNITS == "metric":
+    TEMPERATURE_MIN = 0
+    TEMPERATURE_MAX = 25
+elif TEMPERATURE_UNITS == "imperial":
+    TEMPERATURE_MIN = 32
+    TEMPERATURE_MAX = 77
 
 
 class TemperatureScene(object):
@@ -86,7 +100,7 @@ class TemperatureScene(object):
 
             if OPENWEATHER_API_KEY != "":
                 self.current_temperature = grab_temperature_openweather(
-                    TEMPERATURE_LOCATION, OPENWEATHER_API_KEY
+                    TEMPERATURE_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
             else:
                 self.current_temperature = grab_temperature(TEMPERATURE_LOCATION)
@@ -107,12 +121,14 @@ class TemperatureScene(object):
 
             if self.current_temperature > TEMPERATURE_MAX:
                 ratio = 1
-            elif self.current_temperature > 0:
+            elif self.current_temperature > TEMPERATURE_MIN:
                 ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
             else:
                 ratio = 0
 
-            temp_colour = self.colour_gradient(colours.BLUE, colours.ORANGE, ratio)
+            temp_colour = self.colour_gradient(
+                TEMPERATURE_MIN_COLOUR, TEMPERATURE_MAX_COLOUR, ratio
+            )
 
             # Draw temperature
             _ = graphics.DrawText(
