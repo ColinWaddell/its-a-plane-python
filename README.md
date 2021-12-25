@@ -15,12 +15,14 @@
 
 
 ## Configuration
-
 In the root of the repo create a files `config.py` with the settings for your display.
 * `ZONE_HOME` defines the area within which flights should be tracked. 
 * `LOCATION_HOME` is the latitude/longitude of your home.
 * `TEMPERATURE_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
 * `OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price). If not using OpenWeather, just leave as `OPENWEATHER_API_KEY = "" `. 
+* `MIN_ALTITUDE` Will remove planes below a certain altitude (in feet). Depending on the defined ZONE_HOME, can be useful for filtering out planes parked on the tarmac...
+* `BRIGHTNESS` 0-100, changes the brightness of the display. 
+* `GPIO_SLOWDOWN` 0-4, larger numbers for faster hardware can reduce/eliminate flickering. (e.g., 2 seems to work well on a Pi Zero 2 W, but 0 might be fine for an older Pi Zero). 
 
 ```
 ZONE_HOME = {
@@ -36,6 +38,9 @@ LOCATION_HOME = [
 ]
 TEMPERATURE_LOCATION = "Glasgow"
 OPENWEATHER_API_KEY = "" # Get an API key from https://openweathermap.org/price
+MIN_ALTITUDE = 100
+BRIGHTNESS = 50
+GPIO_SLOWDOWN = 2
 ```
 
 
