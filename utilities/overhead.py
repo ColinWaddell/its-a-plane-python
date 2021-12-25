@@ -3,14 +3,20 @@ from threading import Thread, Lock
 from time import sleep
 import math
 
+try:
+    # Attempt to load config data
+    from config import MIN_ALTITUDE
+
+except (ModuleNotFoundError, NameError):
+    # If there's no config data
+    MIN_ALTITUDE = 0 #feet
+
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
 MAX_ALTITUDE = 10000  # feet
-MIN_ALTITUDE = 100 # feet
 EARTH_RADIUS_KM = 6371
 BLANK_FIELDS = ["", "N/A", "NONE"]
-
 
 try:
     # Attempt to load config data
