@@ -4,10 +4,16 @@ from rgbmatrix import graphics
 from utilities.animator import Animator
 from setup import colours, fonts, frames
 from config import TEMPERATURE_LOCATION
-from config import OPENWEATHER_API_KEY
+
+# Attempt to load config data
+try:
+    from config import OPENWEATHER_API_KEY
+
+except (ModuleNotFoundError, NameError):
+    # If there's no config data
+    OPENWEATHER_API_KEY = None
 
 try:
-    # Attempt to load config data
     from config import TEMPERATURE_UNITS
 
 except (ModuleNotFoundError, NameError):
@@ -98,7 +104,7 @@ class TemperatureScene(object):
 
         if not (count % TEMPERATURE_REFRESH_SECONDS):
 
-            if OPENWEATHER_API_KEY != "":
+            if OPENWEATHER_API_KEY:
                 self.current_temperature = grab_temperature_openweather(
                     TEMPERATURE_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
