@@ -54,3 +54,11 @@ If you are running a headless Pi that you are managing over `ssh`, you'll find t
 4. Run `sudo python /path/to/its-a-plane.py`. 
 5. Detach from the tmux session by pressing Ctrl+B and then pressing D. 
 6. `logout` to exit the Pi. Note that you'll need to re-enter or kill the tmux session to modify/stop the display. 
+
+A more permanent solution if you'd like the software to run automatically on boot is to add it to your `/etc/rc.local`
+1. ssh to the Pi.
+2. Edit `/etc/rc.local` - for example `sudo nano -w /etc/rc.local`
+3. Add a line pointing to the location this software is installed. In the following example some logging is provided for debugging purposes.
+```
+/usr/bin/python3 /home/pi/its-a-plane-python/its-a-plane.py > /home/pi/plane.log 2>&1 &
+```
