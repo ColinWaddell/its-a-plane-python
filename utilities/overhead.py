@@ -7,7 +7,7 @@ try:
     # Attempt to load config data
     from config import MIN_ALTITUDE
 
-except (ModuleNotFoundError, NameError):
+except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
     MIN_ALTITUDE = 0  # feet
 
@@ -25,7 +25,7 @@ try:
     ZONE_DEFAULT = ZONE_HOME
     LOCATION_DEFAULT = LOCATION_HOME
 
-except (ModuleNotFoundError, NameError):
+except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
     ZONE_DEFAULT = {"tl_y": 62.61, "tl_x": -13.07, "br_y": 49.71, "br_x": 3.46}
     LOCATION_DEFAULT = [51.509865, -0.118092, EARTH_RADIUS_KM]

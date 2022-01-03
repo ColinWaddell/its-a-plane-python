@@ -9,14 +9,14 @@ from config import TEMPERATURE_LOCATION
 try:
     from config import OPENWEATHER_API_KEY
 
-except (ModuleNotFoundError, NameError):
+except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
     OPENWEATHER_API_KEY = None
 
 try:
     from config import TEMPERATURE_UNITS
 
-except (ModuleNotFoundError, NameError):
+except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
     TEMPERATURE_UNITS = "metric"
 
