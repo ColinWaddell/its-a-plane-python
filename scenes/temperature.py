@@ -28,7 +28,7 @@ WEATHER_API_URL = "https://taps-aff.co.uk/api/"
 OPENWEATHER_API_URL = "https://api.openweathermap.org/data/2.5/"
 
 
-def grab_temperature(location):
+def grab_temperature(location, units='metric'):
     current_temp = None
 
     try:
@@ -39,6 +39,9 @@ def grab_temperature(location):
 
     except:
         pass
+
+    if units == "imperial":
+        current_temp = (current_temp * (9.0 / 5.0)) + 32
 
     return current_temp
 
@@ -109,7 +112,7 @@ class TemperatureScene(object):
                     TEMPERATURE_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
             else:
-                self.current_temperature = grab_temperature(TEMPERATURE_LOCATION)
+                self.current_temperature = grab_temperature(TEMPERATURE_LOCATION, TEMPERATURE_UNITS)
 
         if self._last_temperature_str is not None:
             # Undraw old temperature
