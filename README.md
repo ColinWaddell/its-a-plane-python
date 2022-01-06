@@ -27,7 +27,7 @@ In the root of the repo create a files `config.py` with the settings for your di
 * `BRIGHTNESS` 0-100, changes the brightness of the display. 
 * `GPIO_SLOWDOWN` 0-4, larger numbers for faster hardware can reduce/eliminate flickering. (e.g., 2 seems to work well on a Pi Zero 2 W, but 0 might be fine for an older Pi Zero). 
 * `JOURNEY_CODE_SELECTED` Three-letter airport code of local airport to put in **bold** on the display (Optional).
-* `JOURNEY_BLANK_FILLER` Three-letter text to use in place of an unknown airport origin/destination. Defaults to ` ? `.
+* `JOURNEY_BLANK_FILLER` Three-letter text to use in place of an unknown airport origin/destination. Defaults to " ? ".
 
 ```
 ZONE_HOME = {
