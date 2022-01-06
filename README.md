@@ -57,7 +57,7 @@ If you are running a headless Pi that you are managing over `ssh`, you'll find t
 1. ssh to the Pi.
 2. `sudo apt-get install tmux`
 3. Once installed, start a new session by running the command `tmux`.
-4. Run `sudo python /path/to/its-a-plane.py`. 
+4. Run `sudo python3 /path/to/its-a-plane.py`. 
 5. Detach from the tmux session by pressing Ctrl+B and then pressing D. 
 6. `logout` to exit the Pi. Note that you'll need to re-enter or kill the tmux session to modify/stop the display. 
 
