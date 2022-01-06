@@ -3,6 +3,21 @@ from setup import colours, fonts
 
 from rgbmatrix import graphics
 
+# Attempt to load config data
+try:
+    from config import JOURNEY_CODE_SELECTED
+
+except (ModuleNotFoundError, NameError, ImportError):
+    # If there's no config data
+    JOURNEY_CODE_SELECTED = "GLA"
+
+try:
+    from config import JOURNEY_BLANK_FILLER
+
+except (ModuleNotFoundError, NameError, ImportError):
+    # If there's no config data
+    JOURNEY_BLANK_FILLER = " ? "
+
 # Setup
 JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
@@ -10,9 +25,6 @@ JOURNEY_WIDTH = 64
 JOURNEY_SPACING = 16
 JOURNEY_FONT = fonts.large
 JOURNEY_FONT_SELECTED = fonts.large_bold
-JOURNEY_CODE_SELECTED = "GLA"
-JOURNEY_BLANK_FILLER = "UFO"
-
 JOURNEY_COLOUR = colours.YELLOW
 
 ARROW_COLOUR = colours.ORANGE

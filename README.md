@@ -8,10 +8,10 @@
 1. Assemble the RGB matrix, Pi, and Bonnet as described in [this Adafruit guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/overview). 
 2. When complete, install the LED-matrix (rgbmatrix) python library, again as described in the [Adafruit installation guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices).
 3. Clone this repository (`git clone https://github.com/ColinWaddell/its-a-plane-python`). 
-4. Install the FlightRadarAPI dependency (`sudo pip install FlightRadarAPI`). Note - running with `sudo` is requred make this python library available to root on the pi. This will overcome what I understand is is a Debian (and Raspbian)-specific behavior of `pip`, where the default installation is `--user` specific. We'll need this later, as `rgbmatrix` [must be run as as root](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python#using-the-library) for best performance.
+4. Install the FlightRadarAPI dependency (`sudo pip3 install FlightRadarAPI`). Note - running with `sudo` is required as `rgbmatrix` [must be run as as root](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python#using-the-library) for best performance.
 5. Go to the its-a-plane-python repo folder `cd its-a-plane-python` (or wherever you cloned it to). 
 6. Add a config.py file as described below. 
-7. Run `sudo python its-a-plane.py`.
+7. Run `sudo python3 its-a-plane.py`.
 
 
 ## Configuration
@@ -19,11 +19,13 @@ In the root of the repo create a files `config.py` with the settings for your di
 * `ZONE_HOME` defines the area within which flights should be tracked. 
 * `LOCATION_HOME` is the latitude/longitude of your home.
 * `TEMPERATURE_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
-* `OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price). If not using OpenWeather, just leave as `OPENWEATHER_API_KEY = "" `. 
-* `TEMPERATURE_UNITS` One of "metric" or "imperial". Requires `OPENWEATHER_API_KEY`. 
-* `MIN_ALTITUDE` Will remove planes below a certain altitude (in feet). Depending on the defined ZONE_HOME, can be useful for filtering out planes parked on the tarmac...
+* `OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price) (Optional)
+* `TEMPERATURE_UNITS` One of "metric" or "imperial". Defaults to "metric".
+* `MIN_ALTITUDE` Will remove planes below a certain altitude (in feet). Depending on the defined ZONE_HOME, can be useful for filtering out planes parked on the tarmac.
 * `BRIGHTNESS` 0-100, changes the brightness of the display. 
 * `GPIO_SLOWDOWN` 0-4, larger numbers for faster hardware can reduce/eliminate flickering. (e.g., 2 seems to work well on a Pi Zero 2 W, but 0 might be fine for an older Pi Zero). 
+* `JOURNEY_CODE_SELECTED` Three-letter airport code of local airport to put in **bold** on the display (Optional).
+* `JOURNEY_BLANK_FILLER` Three-letter text to use in place of an unknown airport origin/destination. Defaults to ` ? `.
 
 ```
 ZONE_HOME = {
@@ -43,6 +45,8 @@ TEMPERATURE_UNITS = "metric"
 MIN_ALTITUDE = 100
 BRIGHTNESS = 50
 GPIO_SLOWDOWN = 2
+JOURNEY_CODE_SELECTED = "GLA"
+JOURNEY_BLANK_FILLER = " ? "
 ```
 
 
@@ -58,7 +62,7 @@ If you are running a headless Pi that you are managing over `ssh`, you'll find t
 A more permanent solution if you'd like the software to run automatically on boot is to add it to your `/etc/rc.local`
 1. ssh to the Pi.
 2. Edit `/etc/rc.local` - for example `sudo nano -w /etc/rc.local`
-3. Add a line pointing to the location this software is installed. In the following example some logging is provided for debugging purposes.
+3. Add a line pointing to the location this software is installed. In the following example some logging is provided for debugging purposes:
 ```
 /usr/bin/python3 /home/pi/its-a-plane-python/its-a-plane.py > /home/pi/plane.log 2>&1 &
 ```
