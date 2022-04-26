@@ -9,11 +9,12 @@
 ## Installation
 1. Assemble the RGB matrix, Pi, and Bonnet as described in [this Adafruit guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/overview). 
 2. When complete, install the LED-matrix (rgbmatrix) python library, again as described in the [Adafruit installation guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices).
-3. Clone this repository (`git clone https://github.com/ColinWaddell/its-a-plane-python`). 
-4. Install the FlightRadarAPI dependency (`sudo pip3 install FlightRadarAPI`). Note - running with `sudo` is required as `rgbmatrix` [must be run as as root](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python#using-the-library) for best performance.
-5. Go to the its-a-plane-python repo folder `cd its-a-plane-python` (or wherever you cloned it to). 
-6. Add a config.py file as described below. 
-7. Run `sudo python3 its-a-plane.py`.
+3. It is assumed the [solder bridge is added to the HAT](https://learn.adafruit.com/assets/57727) in order to use the Pi's soundcard to drive the device's PWM
+4. Clone this repository (`git clone https://github.com/ColinWaddell/its-a-plane-python`). 
+5. Install the FlightRadarAPI dependency (`sudo pip3 install FlightRadarAPI`). Note - running with `sudo` is required as `rgbmatrix` [must be run as as root](https://github.com/hzeller/rpi-rgb-led-matrix/tree/master/bindings/python#using-the-library) for best performance.
+6. Go to the its-a-plane-python repo folder `cd its-a-plane-python` (or wherever you cloned it to). 
+7. Add a config.py file as described below. 
+8. Run `sudo python3 its-a-plane.py`.
 
 
 ## Configuration
@@ -28,6 +29,7 @@ In the root of the repo create a files `config.py` with the settings for your di
 * `GPIO_SLOWDOWN` 0-4, larger numbers for faster hardware can reduce/eliminate flickering. (e.g., 2 seems to work well on a Pi Zero 2 W, but 0 might be fine for an older Pi Zero). 
 * `JOURNEY_CODE_SELECTED` Three-letter airport code of local airport to put in **bold** on the display (Optional).
 * `JOURNEY_BLANK_FILLER` Three-letter text to use in place of an unknown airport origin/destination. Defaults to " ? ".
+* `HAT_PWM_ENABLED` Drive the PWM using the Pi's soundcard, [assuming the solder bridge has been added to the HAT](https://learn.adafruit.com/assets/57727). Defaults to `True`
 
 ```
 ZONE_HOME = {
@@ -49,6 +51,7 @@ BRIGHTNESS = 50
 GPIO_SLOWDOWN = 2
 JOURNEY_CODE_SELECTED = "GLA"
 JOURNEY_BLANK_FILLER = " ? "
+HAT_PWM_ENABLED = True
 ```
 
 
