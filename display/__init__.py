@@ -27,12 +27,13 @@ def callsigns_match(flights_a, flights_b):
 
 try:
     # Attempt to load config data
-    from config import BRIGHTNESS, GPIO_SLOWDOWN
+    from config import BRIGHTNESS, GPIO_SLOWDOWN, HAT_PWM_ENABLED
 
 except (ModuleNotFoundError, NameError):
     # If there's no config data
     BRIGHTNESS = 100
     GPIO_SLOWDOWN = 1
+    HAT_PWM_ENABLED = True
 
 
 class Display(
@@ -49,7 +50,7 @@ class Display(
     def __init__(self):
         # Setup Display
         options = RGBMatrixOptions()
-        options.hardware_mapping = "adafruit-hat-pwm"
+        options.hardware_mapping = "adafruit-hat-pwm" if HAT_PWM_ENABLED else "adafruit-hat"
         options.rows = 32
         options.cols = 64
         options.chain_length = 1
