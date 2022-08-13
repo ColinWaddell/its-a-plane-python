@@ -22,7 +22,7 @@ class LoadingLEDScene(object):
 
         super().__init__()
 
-    @Animator.KeyFrame.add(frames.PER_SECOND * 0.25)
+    @Animator.KeyFrame.add(4)
     def loading_led(self, count):
         reset_count = True
         if self.overhead.processing:
@@ -34,5 +34,3 @@ class LoadingLEDScene(object):
         else:
             # Not processing, leave LED on
             GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
-
-        return reset_count
