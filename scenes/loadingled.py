@@ -14,6 +14,7 @@ BLINKER_STEPS = 10
 class LoadingLEDScene(object):
     def __init__(self):
         # Setup GPIO for blinking
+        GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(LOADING_LED_GPIO_PIN, GPIO.OUT)
 
@@ -22,10 +23,6 @@ class LoadingLEDScene(object):
         self._pwm.start(100)
 
         super().__init__()
-
-    def __del__(self):
-        GPIO.cleanup()
-        super().__del__()
 
     @Animator.KeyFrame.add(2)
     def loading_led(self, count):
