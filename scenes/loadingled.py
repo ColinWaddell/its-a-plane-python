@@ -1,4 +1,5 @@
 from utilities.animator import Animator
+from setup import frames
 import RPi.GPIO as GPIO
 
 # Attempt to load config data
@@ -24,7 +25,7 @@ class LoadingLEDScene(object):
 
         super().__init__()
 
-    @Animator.KeyFrame.add(2)
+    @Animator.KeyFrame.add(frames.PER_SECOND * 0.5)
     def loading_led(self, count):
         reset_count = True
         if self.overhead.processing:
