@@ -18,29 +18,21 @@ class LoadingLEDScene(object):
         GPIO.setwarnings(False)
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(LOADING_LED_GPIO_PIN, GPIO.OUT)
-
-        # Setup PWM
-        self._pwm  = GPIO.PWM(LOADING_LED_GPIO_PIN, 50)
-        self._pwm.start(100)
+        GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
 
         super().__init__()
 
-    @Animator.KeyFrame.add(frames.PER_SECOND * 0.5)
+    @Animator.KeyFrame.add(frames.PER_SECOND * 0.25)
     def loading_led(self, count):
         reset_count = True
         if self.overhead.processing:
-            # Calculate the brightness scaler and
-            # ensure it's within a sensible range
-            brightness = (1 - (count / BLINKER_STEPS)) / 2
-            brightness = 0 if (brightness < 0 or brightness > 1) else brightness
+            GPIO.output(
+                LOADING_LED_GPIO_PIN,
+                GPIO.HIGH if count % 2 else GPIO.LOW
+            )
 
-            # Set LED to brightness
-            self._pwm.start(100 * brightness)
-
-            # Only count 0 -> (BLINKER_STEPS - 1)
-            reset_count = count == (BLINKER_STEPS - 1)
         else:
             # Not processing, leave LED on
-            self._pwm.start(100)
+            GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
 
         return reset_count
