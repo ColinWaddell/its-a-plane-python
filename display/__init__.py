@@ -4,7 +4,7 @@ from setup import frames
 from utilities.animator import Animator
 from utilities.overhead import Overhead
 
-from scenes.temperature import TemperatureScene
+from scenes.weather import WeatherScene
 from scenes.flightdetails import FlightDetailsScene
 from scenes.journey import JourneyScene
 from scenes.loadingpulse import LoadingPulseScene
