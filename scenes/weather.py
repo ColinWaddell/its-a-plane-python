@@ -209,7 +209,7 @@ class WeatherScene(object):
         
         if self.upcoming_rainfall:
             # Draw new graph
-            self.draw_rainfall(self.canvas, self._last_upcoming_rainfall)
+            self.draw_rainfall(self.canvas, self.upcoming_rainfall)
 
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
