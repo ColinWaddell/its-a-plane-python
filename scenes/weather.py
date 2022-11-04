@@ -164,7 +164,7 @@ class WeatherScene(object):
         # Draw hours
         for rain_mm, column_x in zip(rainfall, columns):
             rain_height = int(
-                round((1 + rain_mm) * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE), 0)
+                round(rain_mm * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE), 0)
             )
             
             if rain_height > RAINFALL_GRAPH_HEIGHT:
