@@ -32,22 +32,24 @@ OPENWEATHER_API_URL = "https://api.openweathermap.org/data/2.5/"
 
 # Cache grabbing weather data
 
+
 @lru_cache()
 def grab_weather(location, ttl_hash=None):
-    del ttl_hash # to emphasize we don't use
-    
+    del ttl_hash  # to emphasize we don't use
+
     request = urllib.request.Request(WEATHER_API_URL + location)
     raw_data = urllib.request.urlopen(request).read()
     content = json.loads(raw_data.decode("utf-8"))
 
     return content
 
+
 def get_ttl_hash(seconds=60):
     """Return the same value withing `seconds` time period"""
     return round(time.time() / seconds)
 
 
-def grab_temperature(location, units='metric'):
+def grab_temperature(location, units="metric"):
     current_temp = None
 
     try:
@@ -62,6 +64,7 @@ def grab_temperature(location, units='metric'):
 
     return current_temp
 
+
 def grab_rainfall(location, hours):
     up_coming_rainfall = None
 
@@ -74,18 +77,15 @@ def grab_rainfall(location, hours):
         forecast_tomorrow = weather["forecast"][1]["hourly"]
         hourly_forecast = forecast_today + forecast_tomorrow
 
-        rainfall_per_hour = [
-            hour["precip_mm"]
-            for hour in hourly_forecast
-        ]
+        rainfall_per_hour = [hour["precip_mm"] for hour in hourly_forecast]
 
         now = datetime.datetime.now()
         current_hour = now.hour
-        up_coming_rainfall = rainfall_per_hour[current_hour:current_hour+hours]
-        
+        up_coming_rainfall = rainfall_per_hour[current_hour : current_hour + hours]
+
     except:
         pass
-    
+
     return up_coming_rainfall
 
 
@@ -114,13 +114,13 @@ def grab_temperature_openweather(location, apikey, units):
 
 # Scene Setup
 RAINFALL_REFRESH_SECONDS = 300
-RAINFALL_HOURS = 7
-RAINFALL_COLOUR = colours.BLUE_LIGHT
-RAINFALL_GRAPH_ORIGIN = (24, 30)
+RAINFALL_HOURS = 9
+RAINFALL_COLOUR = colours.BLUE_DARKER
+RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARK
+RAINFALL_GRAPH_ORIGIN = (35, 17)
 RAINFALL_COLUMN_WIDTH = 3
-RAINFALL_CHECKMARK_HEIGHT = 2
-RAINFALL_CHECKMARK_COLOUR = colours.WHITE
-
+RAINFALL_GRAPH_HEIGHT = 10
+RAINFALL_MAX_VALUE = 2  # mm
 
 TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.small
@@ -150,70 +150,67 @@ class WeatherScene(object):
             colour_A.green + ((colour_B.green - colour_A.green) * ratio),
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
-    
+
     def draw_rainfall(
-        canvas,
+        self,
         rainfall,
         graph_colour=RAINFALL_COLOUR,
-        checkmark_colour=RAINFALL_CHECKMARK_COLOUR
+        checkmark_colour=RAINFALL_CHECKMARK_COLOUR,
     ):
-        columns = range(0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH)
-        
-        # Draw hour checks
-        for x in columns:
-            x1 = RAINFALL_GRAPH_ORIGIN[0] + x + 1,
-            y1 = RAINFALL_GRAPH_ORIGIN[1] + 1
-            y2 = y1 + RAINFALL_CHECKMARK_HEIGHT
+        columns = range(
+            0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH
+        )
 
-            graphics.DrawLine(
-                canvas,
-                10, #x1,
-                10, #y1,
-                10, #x1,
-                10, #y2,
-                checkmark_colour
-            )
-        
         # Draw hours
         for rain_mm, column_x in zip(rainfall, columns):
-            rain_height = rain_mm
-            x1 = RAINFALL_GRAPH_ORIGIN[0] + column_x
-            y1 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
-            x2 = x1 + RAINFALL_COLUMN_WIDTH
-
-            graphics.DrawLine(
-                canvas,
-                10, #x1,
-                10, #y1,
-                10, #x2,
-                10, #y1,
-                graph_colour
+            rain_height = int(
+                round((1 + rain_mm) * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE), 0)
             )
+            
+            if rain_height > RAINFALL_GRAPH_HEIGHT:
+                rain_height = RAINFALL_GRAPH_HEIGHT
+
+            x1 = RAINFALL_GRAPH_ORIGIN[0] + column_x
+            x2 = x1 + RAINFALL_COLUMN_WIDTH
+            y1 = RAINFALL_GRAPH_ORIGIN[1]
+            y2 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
+
+            self.draw_square(x1, y1, x2, y2, graph_colour)
+
+        # Draw hour checks
+        for x in columns[1::2]:
+            x1 = RAINFALL_GRAPH_ORIGIN[0] + x
+            x2 = x1 + RAINFALL_COLUMN_WIDTH - 1
+            y1 = RAINFALL_GRAPH_ORIGIN[1]
+
+            graphics.DrawLine(self.canvas, x1, y1, x2, y1, checkmark_colour)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
+
+        if len(self._data):
+            # Don't draw if there's plane data
+            return
+
         if not (count % RAINFALL_REFRESH_SECONDS):
-            self.upcoming_rainfall = grab_rainfall(
-                WEATHER_LOCATION,
-                RAINFALL_HOURS
-            )
+            self.upcoming_rainfall = grab_rainfall(WEATHER_LOCATION, RAINFALL_HOURS)
 
         if self._last_upcoming_rainfall is not None:
             # Undraw previous graph
             self.draw_rainfall(
-                self.canvas,
-                self._last_upcoming_rainfall,
-                colours.BLACK,
-                colours.BLACK
+                self._last_upcoming_rainfall, colours.BLACK, colours.BLACK
             )
-        
+
         if self.upcoming_rainfall:
             # Draw new graph
-            self.draw_rainfall(self.canvas, self.upcoming_rainfall)
-
+            self.draw_rainfall(self.upcoming_rainfall)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
+
+        if len(self._data):
+            # Don't draw if there's plane data
+            return
 
         if not (count % TEMPERATURE_REFRESH_SECONDS):
 
@@ -222,7 +219,9 @@ class WeatherScene(object):
                     WEATHER_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
             else:
-                self.current_temperature = grab_temperature(WEATHER_LOCATION, TEMPERATURE_UNITS)
+                self.current_temperature = grab_temperature(
+                    WEATHER_LOCATION, TEMPERATURE_UNITS
+                )
 
         if self._last_temperature_str is not None:
             # Undraw old temperature
