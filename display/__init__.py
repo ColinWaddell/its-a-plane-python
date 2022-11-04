@@ -37,7 +37,7 @@ except (ModuleNotFoundError, NameError):
 
 
 class Display(
-    TemperatureScene,
+    WeatherScene,
     FlightDetailsScene,
     JourneyScene,
     LoadingPulseScene,

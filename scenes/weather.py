@@ -166,13 +166,13 @@ class WeatherScene(object):
             y2 = y1 + RAINFALL_CHECKMARK_HEIGHT
 
             graphics.DrawLine(
-                    canvas,
-                    x1,
-                    y1,
-                    x1,
-                    y2,
-                    checkmark_colour,
-                )
+                canvas,
+                10, #x1,
+                10, #y1,
+                10, #x1,
+                10, #y2,
+                checkmark_colour
+            )
         
         # Draw hours
         for rain_mm, column_x in zip(rainfall, columns):
@@ -182,13 +182,13 @@ class WeatherScene(object):
             x2 = x1 + RAINFALL_COLUMN_WIDTH
 
             graphics.DrawLine(
-                    canvas,
-                    x1,
-                    y1,
-                    x2,
-                    y1,
-                    graph_colour,
-                )
+                canvas,
+                10, #x1,
+                10, #y1,
+                10, #x2,
+                10, #y1,
+                graph_colour
+            )
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
@@ -201,6 +201,7 @@ class WeatherScene(object):
         if self._last_upcoming_rainfall is not None:
             # Undraw previous graph
             self.draw_rainfall(
+                self.canvas,
                 self._last_upcoming_rainfall,
                 colours.BLACK,
                 colours.BLACK
@@ -208,7 +209,7 @@ class WeatherScene(object):
         
         if self.upcoming_rainfall:
             # Draw new graph
-            self.draw_rainfall(self._last_upcoming_rainfall)
+            self.draw_rainfall(self.canvas, self._last_upcoming_rainfall)
 
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
