@@ -1,12 +1,12 @@
-import urllib.request
 from functools import lru_cache
+import urllib.request
 import datetime
 import time
 import json
 from rgbmatrix import graphics
 from utilities.animator import Animator
 from setup import colours, fonts, frames
-from config import TEMPERATURE_LOCATION
+from config import WEATHER_LOCATION
 
 # Attempt to load config data
 try:
@@ -62,7 +62,7 @@ def grab_temperature(location, units='metric'):
 
     return current_temp
 
-def grab_rainfall(location, hours=7):
+def grab_rainfall(location, hours):
     up_coming_rainfall = None
 
     try:
@@ -113,6 +113,15 @@ def grab_temperature_openweather(location, apikey, units):
 
 
 # Scene Setup
+RAINFALL_REFRESH_SECONDS = 300
+RAINFALL_HOURS = 7
+RAINFALL_COLOUR = colours.BLUE_LIGHT
+RAINFALL_GRAPH_ORIGIN = (24, 30)
+RAINFALL_COLUMN_WIDTH = 3
+RAINFALL_CHECKMARK_HEIGHT = 2
+RAINFALL_CHECKMARK_COLOUR = colours.WHITE
+
+
 TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.small
 TEMPERATURE_FONT_HEIGHT = 6
@@ -131,6 +140,7 @@ elif TEMPERATURE_UNITS == "imperial":
 class WeatherScene(object):
     def __init__(self):
         super().__init__()
+        self._last_upcoming_rainfall = None
         self._last_temperature = None
         self._last_temperature_str = None
 
@@ -140,10 +150,65 @@ class WeatherScene(object):
             colour_A.green + ((colour_B.green - colour_A.green) * ratio),
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
+    
+    def draw_rainfall(
+        canvas,
+        rainfall,
+        graph_colour=RAINFALL_COLOUR,
+        checkmark_colour=RAINFALL_CHECKMARK_COLOUR
+    ):
+        columns = range(0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH)
+        
+        # Draw hour checks
+        for x in columns:
+            x1 = RAINFALL_GRAPH_ORIGIN[0] + x + 1,
+            y1 = RAINFALL_GRAPH_ORIGIN[1] + 1
+            y2 = y1 + RAINFALL_CHECKMARK_HEIGHT
+
+            graphics.DrawLine(
+                    canvas,
+                    x1,
+                    y1,
+                    x1,
+                    y2,
+                    checkmark_colour,
+                )
+        
+        # Draw hours
+        for rain_mm, column_x in zip(rainfall, columns):
+            rain_height = rain_mm
+            x1 = RAINFALL_GRAPH_ORIGIN[0] + column_x
+            y1 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
+            x2 = x1 + RAINFALL_COLUMN_WIDTH
+
+            graphics.DrawLine(
+                    canvas,
+                    x1,
+                    y1,
+                    x2,
+                    y1,
+                    graph_colour,
+                )
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
-        pass
+        if not (count % RAINFALL_REFRESH_SECONDS):
+            self.upcoming_rainfall = grab_rainfall(
+                WEATHER_LOCATION,
+                RAINFALL_HOURS
+            )
+
+        if self._last_upcoming_rainfall is not None:
+            # Undraw previous graph
+            self.draw_rainfall(
+                self._last_upcoming_rainfall,
+                colours.BLACK,
+                colours.BLACK
+            )
+        
+        if self.upcoming_rainfall:
+            # Draw new graph
+            self.draw_rainfall(self._last_upcoming_rainfall)
 
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
@@ -153,10 +218,10 @@ class WeatherScene(object):
 
             if OPENWEATHER_API_KEY:
                 self.current_temperature = grab_temperature_openweather(
-                    TEMPERATURE_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
+                    WEATHER_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
             else:
-                self.current_temperature = grab_temperature(TEMPERATURE_LOCATION, TEMPERATURE_UNITS)
+                self.current_temperature = grab_temperature(WEATHER_LOCATION, TEMPERATURE_UNITS)
 
         if self._last_temperature_str is not None:
             # Undraw old temperature
