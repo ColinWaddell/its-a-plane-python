@@ -149,10 +149,6 @@ class WeatherScene(object):
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
 
-        if len(self._data):
-            # Ensure redraw when there's new data
-            return
-
         if not (count % TEMPERATURE_REFRESH_SECONDS):
 
             if OPENWEATHER_API_KEY:
