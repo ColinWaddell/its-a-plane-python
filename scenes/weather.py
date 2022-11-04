@@ -142,6 +142,11 @@ class WeatherScene(object):
         )
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
+    def rainfall(self, count):
+        pass
+
+
+    @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
 
         if len(self._data):
