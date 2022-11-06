@@ -21,7 +21,7 @@
 In the root of the repo create a files `config.py` with the settings for your display.
 * `ZONE_HOME` defines the area within which flights should be tracked. 
 * `LOCATION_HOME` is the latitude/longitude of your home.
-* `TEMPERATURE_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
+* `WEATHER_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
 * `OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price) (Optional)
 * `TEMPERATURE_UNITS` One of "metric" or "imperial". Defaults to "metric".
 * `MIN_ALTITUDE` Will remove planes below a certain altitude (in feet). Depending on the defined ZONE_HOME, can be useful for filtering out planes parked on the tarmac.
@@ -43,7 +43,7 @@ LOCATION_HOME = [
     -4.3331678, # Longitude (deg)
     0.01781 # Altitude (km)
 ]
-TEMPERATURE_LOCATION = "Glasgow"
+WEATHER_LOCATION = "Glasgow"
 OPENWEATHER_API_KEY = "" # Get an API key from https://openweathermap.org/price
 TEMPERATURE_UNITS = "metric"
 MIN_ALTITUDE = 100
