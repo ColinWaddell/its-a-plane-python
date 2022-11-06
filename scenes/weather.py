@@ -1,8 +1,9 @@
-from functools import lru_cache
 import urllib.request
 import datetime
 import time
 import json
+from math import ceil
+from functools import lru_cache
 from rgbmatrix import graphics
 from utilities.animator import Animator
 from setup import colours, fonts, frames
@@ -117,10 +118,10 @@ RAINFALL_REFRESH_SECONDS = 300
 RAINFALL_HOURS = 9
 RAINFALL_COLOUR = colours.BLUE_DARKER
 RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARK
-RAINFALL_GRAPH_ORIGIN = (36, 18)
+RAINFALL_GRAPH_ORIGIN = (36, 16)
 RAINFALL_COLUMN_WIDTH = 3
-RAINFALL_GRAPH_HEIGHT = 10
-RAINFALL_MAX_VALUE = 2  # mm
+RAINFALL_GRAPH_HEIGHT = 8
+RAINFALL_MAX_VALUE = 3  # mm
 
 TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.small
@@ -164,7 +165,7 @@ class WeatherScene(object):
         # Draw hours
         for rain_mm, column_x in zip(rainfall, columns):
             rain_height = int(
-                round(rain_mm * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE), 0)
+                ceil(rain_mm * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE))
             )
             
             if rain_height > RAINFALL_GRAPH_HEIGHT:
