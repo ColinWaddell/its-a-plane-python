@@ -121,9 +121,8 @@ def grab_temperature_openweather(location, apikey, units):
 # Scene Setup
 RAINFALL_REFRESH_SECONDS = 300
 RAINFALL_HOURS = 9
-RAINFALL_COLOUR_MIN_TEMP = colours.BLUE_DARKER
-RAINFALL_COLOUR_MAX_TEMP = colours.BLUE_DARKER
-RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARK
+RAINFALL_CHECKMARKS_ENABLED = False
+RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARKER
 RAINFALL_GRAPH_ORIGIN = (36, 16)
 RAINFALL_COLUMN_WIDTH = 3
 RAINFALL_GRAPH_HEIGHT = 8
@@ -167,15 +166,15 @@ class WeatherScene(object):
         max_temp=TEMPERATURE_MAX
     ):
 
-        if current_temperature > TEMPERATURE_MAX:
+        if current_temperature > max_temp:
             ratio = 1
-        elif current_temperature > TEMPERATURE_MIN:
-            ratio = (current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
+        elif current_temperature > min_temp:
+            ratio = (current_temperature - min_temp) / max_temp
         else:
             ratio = 0
 
         temp_colour = self.colour_gradient(
-            TEMPERATURE_MIN_COLOUR, TEMPERATURE_MAX_COLOUR, ratio
+            min_temp_colour, max_temp_colour, ratio
         )
 
         return temp_colour
@@ -205,23 +204,20 @@ class WeatherScene(object):
             y2 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
 
             if graph_colour is None:
-                square_colour = self.temperature_to_colour(
-                    data["temp_c"],
-                    min_temp_colour=RAINFALL_COLOUR_MIN_TEMP,
-                    max_temp_colour=RAINFALL_COLOUR_MIN_TEMP
-                )
+                square_colour = self.temperature_to_colour(data["temp_c"])
             else:
                 square_colour = graph_colour
 
             self.draw_square(x1, y1, x2, y2, square_colour)
 
-        # # Draw hour checks
-        # for x in columns[1::2]:
-        #     x1 = RAINFALL_GRAPH_ORIGIN[0] + x
-        #     x2 = x1 + RAINFALL_COLUMN_WIDTH - 1
-        #     y1 = RAINFALL_GRAPH_ORIGIN[1]
+        # Draw hour checks
+        if RAINFALL_CHECKMARKS_ENABLED:
+            for x in columns[1::2]:
+                x1 = RAINFALL_GRAPH_ORIGIN[0] + x
+                x2 = x1 + RAINFALL_COLUMN_WIDTH - 1
+                y1 = RAINFALL_GRAPH_ORIGIN[1]
 
-        #     graphics.DrawLine(self.canvas, x1, y1, x2, y1, checkmark_colour)
+                graphics.DrawLine(self.canvas, x1, y1, x2, y1, checkmark_colour)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
