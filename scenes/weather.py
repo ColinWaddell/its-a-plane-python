@@ -66,8 +66,8 @@ def grab_temperature(location, units="metric"):
     return current_temp
 
 
-def grab_rainfall(location, hours):
-    up_coming_rainfall = None
+def grab_rainfall_and_temperature(location, hours):
+    up_coming_rainfall_and_temperature = None
 
     try:
         weather = grab_weather(location, ttl_hash=get_ttl_hash())
@@ -78,16 +78,21 @@ def grab_rainfall(location, hours):
         forecast_tomorrow = weather["forecast"][1]["hourly"]
         hourly_forecast = forecast_today + forecast_tomorrow
 
-        rainfall_per_hour = [hour["precip_mm"] for hour in hourly_forecast]
+        hourly_data = [
+            {
+                "precip_mm": hour["precip_mm"],
+                "temp_c": hour["temp_c"]
+            } for hour in hourly_forecast
+        ]
 
         now = datetime.datetime.now()
         current_hour = now.hour
-        up_coming_rainfall = rainfall_per_hour[current_hour : current_hour + hours]
+        up_coming_rainfall_and_temperature = hourly_data[current_hour : current_hour + hours]
 
     except:
         pass
 
-    return up_coming_rainfall
+    return up_coming_rainfall_and_temperature
 
 
 def grab_temperature_openweather(location, apikey, units):
@@ -141,7 +146,7 @@ elif TEMPERATURE_UNITS == "imperial":
 class WeatherScene(object):
     def __init__(self):
         super().__init__()
-        self._last_upcoming_rainfall = None
+        self._last_upcoming_rain_and_temp = None
         self._last_temperature = None
         self._last_temperature_str = None
 
@@ -162,8 +167,8 @@ class WeatherScene(object):
 
         if current_temperature > TEMPERATURE_MAX:
             ratio = 1
-        elif self.current_temperature > TEMPERATURE_MIN:
-            ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
+        elif current_temperature > TEMPERATURE_MIN:
+            ratio = (current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
         else:
             ratio = 0
 
@@ -173,10 +178,10 @@ class WeatherScene(object):
 
         return temp_colour
 
-    def draw_rainfall(
+    def draw_rainfall_and_temperature(
         self,
-        rainfall,
-        graph_colour=RAINFALL_COLOUR,
+        rainfall_and_temperature,
+        graph_colour=None,
         checkmark_colour=RAINFALL_CHECKMARK_COLOUR,
     ):
         columns = range(
@@ -184,9 +189,9 @@ class WeatherScene(object):
         )
 
         # Draw hours
-        for rain_mm, column_x in zip(rainfall, columns):
+        for data, column_x in zip(rainfall_and_temperature, columns):
             rain_height = int(
-                ceil(rain_mm * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE))
+                ceil(data["precip_mm"] * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE))
             )
             
             if rain_height > RAINFALL_GRAPH_HEIGHT:
@@ -196,6 +201,11 @@ class WeatherScene(object):
             x2 = x1 + RAINFALL_COLUMN_WIDTH
             y1 = RAINFALL_GRAPH_ORIGIN[1]
             y2 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
+
+            print(data["temp_c"])
+
+            if graph_colour is None:
+                graph_colour = self.temperature_to_colour(data["temp_c"])
 
             self.draw_square(x1, y1, x2, y2, graph_colour)
 
@@ -215,18 +225,17 @@ class WeatherScene(object):
             return
 
         if not (count % RAINFALL_REFRESH_SECONDS):
-            self.upcoming_rainfall = grab_rainfall(WEATHER_LOCATION, RAINFALL_HOURS)
+            self.upcoming_rain_and_temp = grab_rainfall_and_temperature(WEATHER_LOCATION, RAINFALL_HOURS)
 
-        if self._last_upcoming_rainfall is not None:
+        if self._last_upcoming_rain_and_temp is not None:
             # Undraw previous graph
-            self.draw_rainfall(
-                self._last_upcoming_rainfall, colours.BLACK, colours.BLACK
+            self.draw_rainfall_and_temperature(
+                self._last_upcoming_rain_and_temp, colours.BLACK, colours.BLACK
             )
 
-        if self.upcoming_rainfall:
+        if self.upcoming_rain_and_temp:
             # Draw new graph
-            temp_colour = RAINFALL_COLOUR # self.temperature_to_colour()
-            self.draw_rainfall(self.upcoming_rainfall, temp_colour)
+            self.draw_rainfall_and_temperature(self.upcoming_rain_and_temp)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
