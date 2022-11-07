@@ -151,6 +151,27 @@ class WeatherScene(object):
             colour_A.green + ((colour_B.green - colour_A.green) * ratio),
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
+    
+    def temperature_to_colour(
+        self,
+        current_temperature,
+        max_temp=TEMPERATURE_MAX,
+        max_temp_colour=TEMPERATURE_MAX_COLOUR,
+        min_temp=TEMPERATURE_MIN,
+        min_temp_colour=TEMPERATURE_MIN_COLOUR):
+
+        if current_temperature > TEMPERATURE_MAX:
+            ratio = 1
+        elif self.current_temperature > TEMPERATURE_MIN:
+            ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
+        else:
+            ratio = 0
+
+        temp_colour = self.colour_gradient(
+            TEMPERATURE_MIN_COLOUR, TEMPERATURE_MAX_COLOUR, ratio
+        )
+
+        return temp_colour
 
     def draw_rainfall(
         self,
@@ -204,7 +225,8 @@ class WeatherScene(object):
 
         if self.upcoming_rainfall:
             # Draw new graph
-            self.draw_rainfall(self.upcoming_rainfall)
+            temp_colour = RAINFALL_COLOUR # self.temperature_to_colour()
+            self.draw_rainfall(self.upcoming_rainfall, temp_colour)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
@@ -238,16 +260,7 @@ class WeatherScene(object):
         if self.current_temperature:
             temp_str = f"{round(self.current_temperature)}°".rjust(4, " ")
 
-            if self.current_temperature > TEMPERATURE_MAX:
-                ratio = 1
-            elif self.current_temperature > TEMPERATURE_MIN:
-                ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
-            else:
-                ratio = 0
-
-            temp_colour = self.colour_gradient(
-                TEMPERATURE_MIN_COLOUR, TEMPERATURE_MAX_COLOUR, ratio
-            )
+            temp_colour = self.temperature_to_colour(self.current_temperature)
 
             # Draw temperature
             _ = graphics.DrawText(
