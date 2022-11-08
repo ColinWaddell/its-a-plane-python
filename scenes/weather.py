@@ -66,8 +66,8 @@ def grab_temperature(location, units="metric"):
     return current_temp
 
 
-def grab_rainfall(location, hours):
-    up_coming_rainfall = None
+def grab_rainfall_and_temperature(location, hours):
+    up_coming_rainfall_and_temperature = None
 
     try:
         weather = grab_weather(location, ttl_hash=get_ttl_hash())
@@ -78,16 +78,21 @@ def grab_rainfall(location, hours):
         forecast_tomorrow = weather["forecast"][1]["hourly"]
         hourly_forecast = forecast_today + forecast_tomorrow
 
-        rainfall_per_hour = [hour["precip_mm"] for hour in hourly_forecast]
+        hourly_data = [
+            {
+                "precip_mm": hour["precip_mm"],
+                "temp_c": hour["temp_c"]
+            } for hour in hourly_forecast
+        ]
 
         now = datetime.datetime.now()
         current_hour = now.hour
-        up_coming_rainfall = rainfall_per_hour[current_hour : current_hour + hours]
+        up_coming_rainfall_and_temperature = hourly_data[current_hour : current_hour + hours]
 
     except:
         pass
 
-    return up_coming_rainfall
+    return up_coming_rainfall_and_temperature
 
 
 def grab_temperature_openweather(location, apikey, units):
@@ -116,8 +121,8 @@ def grab_temperature_openweather(location, apikey, units):
 # Scene Setup
 RAINFALL_REFRESH_SECONDS = 300
 RAINFALL_HOURS = 9
-RAINFALL_COLOUR = colours.BLUE_DARKER
-RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARK
+RAINFALL_CHECKMARKS_ENABLED = False
+RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARKER
 RAINFALL_GRAPH_ORIGIN = (36, 16)
 RAINFALL_COLUMN_WIDTH = 3
 RAINFALL_GRAPH_HEIGHT = 8
@@ -141,7 +146,7 @@ elif TEMPERATURE_UNITS == "imperial":
 class WeatherScene(object):
     def __init__(self):
         super().__init__()
-        self._last_upcoming_rainfall = None
+        self._last_upcoming_rain_and_temp = None
         self._last_temperature = None
         self._last_temperature_str = None
 
@@ -151,11 +156,33 @@ class WeatherScene(object):
             colour_A.green + ((colour_B.green - colour_A.green) * ratio),
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
-
-    def draw_rainfall(
+    
+    def temperature_to_colour(
         self,
-        rainfall,
-        graph_colour=RAINFALL_COLOUR,
+        current_temperature,
+        min_temp_colour=TEMPERATURE_MIN_COLOUR,
+        max_temp_colour=TEMPERATURE_MAX_COLOUR,
+        min_temp=TEMPERATURE_MIN,
+        max_temp=TEMPERATURE_MAX
+    ):
+
+        if current_temperature > max_temp:
+            ratio = 1
+        elif current_temperature > min_temp:
+            ratio = (current_temperature - min_temp) / max_temp
+        else:
+            ratio = 0
+
+        temp_colour = self.colour_gradient(
+            min_temp_colour, max_temp_colour, ratio
+        )
+
+        return temp_colour
+
+    def draw_rainfall_and_temperature(
+        self,
+        rainfall_and_temperature,
+        graph_colour=None,
         checkmark_colour=RAINFALL_CHECKMARK_COLOUR,
     ):
         columns = range(
@@ -163,9 +190,9 @@ class WeatherScene(object):
         )
 
         # Draw hours
-        for rain_mm, column_x in zip(rainfall, columns):
+        for data, column_x in zip(rainfall_and_temperature, columns):
             rain_height = int(
-                ceil(rain_mm * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE))
+                ceil(data["precip_mm"] * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE))
             )
             
             if rain_height > RAINFALL_GRAPH_HEIGHT:
@@ -176,15 +203,21 @@ class WeatherScene(object):
             y1 = RAINFALL_GRAPH_ORIGIN[1]
             y2 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
 
-            self.draw_square(x1, y1, x2, y2, graph_colour)
+            if graph_colour is None:
+                square_colour = self.temperature_to_colour(data["temp_c"])
+            else:
+                square_colour = graph_colour
+
+            self.draw_square(x1, y1, x2, y2, square_colour)
 
         # Draw hour checks
-        for x in columns[1::2]:
-            x1 = RAINFALL_GRAPH_ORIGIN[0] + x
-            x2 = x1 + RAINFALL_COLUMN_WIDTH - 1
-            y1 = RAINFALL_GRAPH_ORIGIN[1]
+        if RAINFALL_CHECKMARKS_ENABLED:
+            for x in columns[1::2]:
+                x1 = RAINFALL_GRAPH_ORIGIN[0] + x
+                x2 = x1 + RAINFALL_COLUMN_WIDTH - 1
+                y1 = RAINFALL_GRAPH_ORIGIN[1]
 
-            graphics.DrawLine(self.canvas, x1, y1, x2, y1, checkmark_colour)
+                graphics.DrawLine(self.canvas, x1, y1, x2, y1, checkmark_colour)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
@@ -194,17 +227,17 @@ class WeatherScene(object):
             return
 
         if not (count % RAINFALL_REFRESH_SECONDS):
-            self.upcoming_rainfall = grab_rainfall(WEATHER_LOCATION, RAINFALL_HOURS)
+            self.upcoming_rain_and_temp = grab_rainfall_and_temperature(WEATHER_LOCATION, RAINFALL_HOURS)
 
-        if self._last_upcoming_rainfall is not None:
+        if self._last_upcoming_rain_and_temp is not None:
             # Undraw previous graph
-            self.draw_rainfall(
-                self._last_upcoming_rainfall, colours.BLACK, colours.BLACK
+            self.draw_rainfall_and_temperature(
+                self._last_upcoming_rain_and_temp, colours.BLACK, colours.BLACK
             )
 
-        if self.upcoming_rainfall:
+        if self.upcoming_rain_and_temp:
             # Draw new graph
-            self.draw_rainfall(self.upcoming_rainfall)
+            self.draw_rainfall_and_temperature(self.upcoming_rain_and_temp)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
@@ -238,16 +271,7 @@ class WeatherScene(object):
         if self.current_temperature:
             temp_str = f"{round(self.current_temperature)}°".rjust(4, " ")
 
-            if self.current_temperature > TEMPERATURE_MAX:
-                ratio = 1
-            elif self.current_temperature > TEMPERATURE_MIN:
-                ratio = (self.current_temperature - TEMPERATURE_MIN) / TEMPERATURE_MAX
-            else:
-                ratio = 0
-
-            temp_colour = self.colour_gradient(
-                TEMPERATURE_MIN_COLOUR, TEMPERATURE_MAX_COLOUR, ratio
-            )
+            temp_colour = self.temperature_to_colour(self.current_temperature)
 
             # Draw temperature
             _ = graphics.DrawText(
