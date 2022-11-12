@@ -31,9 +31,30 @@ if TEMPERATURE_UNITS != "metric" and TEMPERATURE_UNITS != "imperial":
 WEATHER_API_URL = "https://taps-aff.co.uk/api/"
 OPENWEATHER_API_URL = "https://api.openweathermap.org/data/2.5/"
 
+
+# Scene Setup
+RAINFALL_REFRESH_SECONDS = 300
+RAINFALL_HOURS = 24
+RAINFAILL_12HR_MARKERS = True
+RAINFALL_GRAPH_ORIGIN = (39, 15)
+RAINFALL_COLUMN_WIDTH = 1
+RAINFALL_GRAPH_HEIGHT = 8
+RAINFALL_MAX_VALUE = 3  # mm
+
+TEMPERATURE_REFRESH_SECONDS = 60
+TEMPERATURE_FONT = fonts.extrasmall
+TEMPERATURE_FONT_HEIGHT = 5
+TEMPERATURE_POSITION = (48, TEMPERATURE_FONT_HEIGHT + 1)
+
+TEMPERATURE_COLOURS = (
+    (0, colours.WHITE),
+    (1, colours.BLUE_LIGHT),
+    (8, colours.PINK_DARK),
+    (18, colours.YELLOW),
+    (30, colours.ORANGE)
+)
+
 # Cache grabbing weather data
-
-
 @lru_cache()
 def grab_weather(location, ttl_hash=None):
     del ttl_hash  # to emphasize we don't use
@@ -82,13 +103,16 @@ def grab_rainfall_and_temperature(location, hours):
             {
                 "precip_mm": hour["precip_mm"],
                 "temp_c": hour["temp_c"],
-                "hour": hour["hour"]
-            } for hour in hourly_forecast
+                "hour": hour["hour"],
+            }
+            for hour in hourly_forecast
         ]
 
         now = datetime.datetime.now()
         current_hour = now.hour
-        up_coming_rainfall_and_temperature = hourly_data[current_hour : current_hour + hours]
+        up_coming_rainfall_and_temperature = hourly_data[
+            current_hour : current_hour + hours
+        ]
 
     except:
         pass
@@ -119,30 +143,6 @@ def grab_temperature_openweather(location, apikey, units):
     return current_temp
 
 
-# Scene Setup
-RAINFALL_REFRESH_SECONDS = 300
-RAINFALL_HOURS = 24
-RAINFAILL_12HR_MARKERS = True
-RAINFALL_GRAPH_ORIGIN = (39, 15)
-RAINFALL_COLUMN_WIDTH = 1
-RAINFALL_GRAPH_HEIGHT = 8
-RAINFALL_MAX_VALUE = 3  # mm
-
-TEMPERATURE_REFRESH_SECONDS = 60
-TEMPERATURE_FONT = fonts.extrasmall
-TEMPERATURE_FONT_HEIGHT = 5
-TEMPERATURE_POSITION = (48, TEMPERATURE_FONT_HEIGHT + 1)
-TEMPERATURE_MIN_COLOUR = colours.BLUE
-TEMPERATURE_MAX_COLOUR = colours.ORANGE
-
-if TEMPERATURE_UNITS == "metric":
-    TEMPERATURE_MIN = 0
-    TEMPERATURE_MAX = 25
-elif TEMPERATURE_UNITS == "imperial":
-    TEMPERATURE_MIN = 32
-    TEMPERATURE_MAX = 77
-
-
 class WeatherScene(object):
     def __init__(self):
         super().__init__()
@@ -156,15 +156,27 @@ class WeatherScene(object):
             colour_A.green + ((colour_B.green - colour_A.green) * ratio),
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
-    
+
     def temperature_to_colour(
         self,
-        current_temperature,
-        min_temp_colour=TEMPERATURE_MIN_COLOUR,
-        max_temp_colour=TEMPERATURE_MAX_COLOUR,
-        min_temp=TEMPERATURE_MIN,
-        max_temp=TEMPERATURE_MAX
+        current_temperature
     ):
+        # Set some defaults
+        min_temp = TEMPERATURE_COLOURS[0][0]
+        max_temp = TEMPERATURE_COLOURS[1][0]
+        min_temp_colour = TEMPERATURE_COLOURS[0][1]
+        max_temp_colour = TEMPERATURE_COLOURS[1][1]
+        
+        # Search to find where in the current
+        # temperature lies within the 
+        # defined colours
+
+        for i in range(1, len(TEMPERATURE_COLOURS) - 1):
+            if current_temperature > TEMPERATURE_COLOURS[i][0]:
+                min_temp = TEMPERATURE_COLOURS[i][0]
+                max_temp = TEMPERATURE_COLOURS[i + 1][0]
+                min_temp_colour = TEMPERATURE_COLOURS[i][1]
+                max_temp_colour = TEMPERATURE_COLOURS[i + 1][1]
 
         if current_temperature > max_temp:
             ratio = 1
@@ -173,9 +185,7 @@ class WeatherScene(object):
         else:
             ratio = 0
 
-        temp_colour = self.colour_gradient(
-            min_temp_colour, max_temp_colour, ratio
-        )
+        temp_colour = self.colour_gradient(min_temp_colour, max_temp_colour, ratio)
 
         return temp_colour
 
@@ -187,16 +197,18 @@ class WeatherScene(object):
         columns = range(
             0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH
         )
+        
+        i = 0
 
         # Draw hours
         for data, column_x in zip(rainfall_and_temperature, columns):
             rain_height = int(
                 ceil(data["precip_mm"] * (RAINFALL_GRAPH_HEIGHT / RAINFALL_MAX_VALUE))
             )
-            
+
             if rain_height > RAINFALL_GRAPH_HEIGHT:
                 rain_height = RAINFALL_GRAPH_HEIGHT
-            
+
             if RAINFAILL_12HR_MARKERS:
                 hourly_marker = data["hour"] in (0, 12)
             else:
@@ -212,6 +224,8 @@ class WeatherScene(object):
             else:
                 square_colour = graph_colour
 
+            i = i + 1
+
             self.draw_square(x1, y1, x2, y2, square_colour)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
@@ -222,7 +236,9 @@ class WeatherScene(object):
             return
 
         if not (count % RAINFALL_REFRESH_SECONDS):
-            self.upcoming_rain_and_temp = grab_rainfall_and_temperature(WEATHER_LOCATION, RAINFALL_HOURS)
+            self.upcoming_rain_and_temp = grab_rainfall_and_temperature(
+                WEATHER_LOCATION, RAINFALL_HOURS
+            )
 
         if self._last_upcoming_rain_and_temp is not None:
             # Undraw previous graph
