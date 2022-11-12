@@ -51,7 +51,7 @@ TEMPERATURE_COLOURS = (
     (1, colours.BLUE_LIGHT),
     (8, colours.PINK_DARK),
     (18, colours.YELLOW),
-    (30, colours.ORANGE)
+    (30, colours.ORANGE),
 )
 
 # Cache grabbing weather data
@@ -157,18 +157,15 @@ class WeatherScene(object):
             colour_A.blue + ((colour_B.blue - colour_A.blue) * ratio),
         )
 
-    def temperature_to_colour(
-        self,
-        current_temperature
-    ):
+    def temperature_to_colour(self, current_temperature):
         # Set some defaults
         min_temp = TEMPERATURE_COLOURS[0][0]
         max_temp = TEMPERATURE_COLOURS[1][0]
         min_temp_colour = TEMPERATURE_COLOURS[0][1]
         max_temp_colour = TEMPERATURE_COLOURS[1][1]
-        
+
         # Search to find where in the current
-        # temperature lies within the 
+        # temperature lies within the
         # defined colours
 
         for i in range(1, len(TEMPERATURE_COLOURS) - 1):
@@ -197,7 +194,7 @@ class WeatherScene(object):
         columns = range(
             0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH
         )
-        
+
         i = 0
 
         # Draw hours
