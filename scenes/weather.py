@@ -122,6 +122,7 @@ def grab_temperature_openweather(location, apikey, units):
 # Scene Setup
 RAINFALL_REFRESH_SECONDS = 300
 RAINFALL_HOURS = 24
+RAINFAILL_12HR_MARKERS = True
 RAINFALL_CHECKMARKS_ENABLED = False
 RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARKER
 RAINFALL_GRAPH_ORIGIN = (39, 15)
@@ -199,7 +200,10 @@ class WeatherScene(object):
             if rain_height > RAINFALL_GRAPH_HEIGHT:
                 rain_height = RAINFALL_GRAPH_HEIGHT
             
-            hourly_marker = data["hour"] in (0, 12)
+            if RAINFAILL_12HR_MARKERS:
+                hourly_marker = data["hour"] in (0, 12)
+            else:
+                hourly_marker = False
 
             x1 = RAINFALL_GRAPH_ORIGIN[0] + column_x
             x2 = x1 + RAINFALL_COLUMN_WIDTH
