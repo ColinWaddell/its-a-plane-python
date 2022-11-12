@@ -81,7 +81,8 @@ def grab_rainfall_and_temperature(location, hours):
         hourly_data = [
             {
                 "precip_mm": hour["precip_mm"],
-                "temp_c": hour["temp_c"]
+                "temp_c": hour["temp_c"],
+                "hour": hour["hour"]
             } for hour in hourly_forecast
         ]
 
@@ -123,15 +124,15 @@ RAINFALL_REFRESH_SECONDS = 300
 RAINFALL_HOURS = 24
 RAINFALL_CHECKMARKS_ENABLED = False
 RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARKER
-RAINFALL_GRAPH_ORIGIN = (39, 16)
+RAINFALL_GRAPH_ORIGIN = (39, 15)
 RAINFALL_COLUMN_WIDTH = 1
 RAINFALL_GRAPH_HEIGHT = 8
 RAINFALL_MAX_VALUE = 3  # mm
 
 TEMPERATURE_REFRESH_SECONDS = 60
-TEMPERATURE_FONT = fonts.small
-TEMPERATURE_FONT_HEIGHT = 6
-TEMPERATURE_POSITION = (44, TEMPERATURE_FONT_HEIGHT + 1)
+TEMPERATURE_FONT = fonts.extrasmall
+TEMPERATURE_FONT_HEIGHT = 5
+TEMPERATURE_POSITION = (48, TEMPERATURE_FONT_HEIGHT + 1)
 TEMPERATURE_MIN_COLOUR = colours.BLUE
 TEMPERATURE_MAX_COLOUR = colours.ORANGE
 
@@ -197,10 +198,12 @@ class WeatherScene(object):
             
             if rain_height > RAINFALL_GRAPH_HEIGHT:
                 rain_height = RAINFALL_GRAPH_HEIGHT
+            
+            hourly_marker = data["hour"] in (0, 12)
 
             x1 = RAINFALL_GRAPH_ORIGIN[0] + column_x
             x2 = x1 + RAINFALL_COLUMN_WIDTH
-            y1 = RAINFALL_GRAPH_ORIGIN[1]
+            y1 = RAINFALL_GRAPH_ORIGIN[1] + (1 if hourly_marker else 0)
             y2 = RAINFALL_GRAPH_ORIGIN[1] - rain_height
 
             if graph_colour is None:
