@@ -123,8 +123,6 @@ def grab_temperature_openweather(location, apikey, units):
 RAINFALL_REFRESH_SECONDS = 300
 RAINFALL_HOURS = 24
 RAINFAILL_12HR_MARKERS = True
-RAINFALL_CHECKMARKS_ENABLED = False
-RAINFALL_CHECKMARK_COLOUR = colours.BLUE_DARKER
 RAINFALL_GRAPH_ORIGIN = (39, 15)
 RAINFALL_COLUMN_WIDTH = 1
 RAINFALL_GRAPH_HEIGHT = 8
@@ -185,7 +183,6 @@ class WeatherScene(object):
         self,
         rainfall_and_temperature,
         graph_colour=None,
-        checkmark_colour=RAINFALL_CHECKMARK_COLOUR,
     ):
         columns = range(
             0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH
@@ -217,15 +214,6 @@ class WeatherScene(object):
 
             self.draw_square(x1, y1, x2, y2, square_colour)
 
-        # Draw hour checks
-        if RAINFALL_CHECKMARKS_ENABLED:
-            for x in columns[1::2]:
-                x1 = RAINFALL_GRAPH_ORIGIN[0] + x
-                x2 = x1 + RAINFALL_COLUMN_WIDTH - 1
-                y1 = RAINFALL_GRAPH_ORIGIN[1]
-
-                graphics.DrawLine(self.canvas, x1, y1, x2, y1, checkmark_colour)
-
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
 
@@ -239,7 +227,7 @@ class WeatherScene(object):
         if self._last_upcoming_rain_and_temp is not None:
             # Undraw previous graph
             self.draw_rainfall_and_temperature(
-                self._last_upcoming_rain_and_temp, colours.BLACK, colours.BLACK
+                self._last_upcoming_rain_and_temp, colours.BLACK
             )
 
         if self.upcoming_rain_and_temp:
