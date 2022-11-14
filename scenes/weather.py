@@ -23,7 +23,7 @@ try:
 except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
     TEMPERATURE_UNITS = "metric"
-    
+
 try:
     from config import RAINFALL_ENABLED
 
@@ -47,6 +47,7 @@ RAINFALL_GRAPH_ORIGIN = (39, 15)
 RAINFALL_COLUMN_WIDTH = 1
 RAINFALL_GRAPH_HEIGHT = 8
 RAINFALL_MAX_VALUE = 3  # mm
+RAINFALL_OVERSPILL_FLASH_ENABLED = True
 
 TEMPERATURE_REFRESH_SECONDS = 60
 TEMPERATURE_FONT = fonts.extrasmall
@@ -78,7 +79,7 @@ def get_ttl_hash(seconds=60):
     return round(time.time() / seconds)
 
 
-def grab_temperature(location, units="metric"):
+def grab_current_temperature(location, units="metric"):
     current_temp = None
 
     try:
@@ -94,7 +95,7 @@ def grab_temperature(location, units="metric"):
     return current_temp
 
 
-def grab_rainfall_and_temperature(location, hours):
+def grab_upcoming_rainfall_and_temperature(location, hours):
     up_coming_rainfall_and_temperature = None
 
     try:
@@ -127,7 +128,7 @@ def grab_rainfall_and_temperature(location, hours):
     return up_coming_rainfall_and_temperature
 
 
-def grab_temperature_openweather(location, apikey, units):
+def grab_current_temperature_openweather(location, apikey, units):
     current_temp = None
 
     try:
@@ -174,7 +175,6 @@ class WeatherScene(object):
         # Search to find where in the current
         # temperature lies within the
         # defined colours
-
         for i in range(1, len(TEMPERATURE_COLOURS) - 1):
             if current_temperature > TEMPERATURE_COLOURS[i][0]:
                 min_temp = TEMPERATURE_COLOURS[i][0]
@@ -194,9 +194,7 @@ class WeatherScene(object):
         return temp_colour
 
     def draw_rainfall_and_temperature(
-        self,
-        rainfall_and_temperature,
-        graph_colour=None,
+        self, rainfall_and_temperature, graph_colour=None, flash_enabled=False
     ):
         columns = range(
             0, RAINFALL_HOURS * RAINFALL_COLUMN_WIDTH, RAINFALL_COLUMN_WIDTH
@@ -211,7 +209,18 @@ class WeatherScene(object):
             )
 
             if rain_height > RAINFALL_GRAPH_HEIGHT:
+                # Any over-spill, flash some pixels
+                flash_height = rain_height - RAINFALL_GRAPH_HEIGHT
+
+                if flash_height > RAINFALL_GRAPH_HEIGHT:
+                    flash_height = (
+                        RAINFALL_GRAPH_HEIGHT + 1
+                    )  # +1 to also draw over x-axis
+
+                # Clip over-spill
                 rain_height = RAINFALL_GRAPH_HEIGHT
+            else:
+                flash_height = 0
 
             if RAINFAILL_12HR_MARKERS:
                 hourly_marker = data["hour"] in (0, 12)
@@ -226,35 +235,59 @@ class WeatherScene(object):
             if graph_colour is None:
                 square_colour = self.temperature_to_colour(data["temp_c"])
             else:
+                flash_height = 0
                 square_colour = graph_colour
 
             self.draw_square(x1, y1, x2, y2, square_colour)
 
+            # Make any over-spill flash
+            if flash_height and flash_enabled:
+                x1 = RAINFALL_GRAPH_ORIGIN[0] + column_x
+                x2 = x1 + RAINFALL_COLUMN_WIDTH
+                y1 = RAINFALL_GRAPH_ORIGIN[1] - RAINFALL_GRAPH_HEIGHT
+                y2 = y1 + flash_height - 1
+
+                self.draw_square(x1, y1, x2, y2, colours.BLACK)
+
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
-    
+
         if not RAINFALL_ENABLED:
             return
 
         if len(self._data):
             # Don't draw if there's plane data
+            # and force a redraw when this is visible
+            # again by clearing the previous drawn data
+            # forcing a complete redraw
+            self._last_upcoming_rain_and_temp = None
+
+            # Don't draw anything
             return
 
         if not (count % RAINFALL_REFRESH_SECONDS):
-            self.upcoming_rain_and_temp = grab_rainfall_and_temperature(
+            self.upcoming_rain_and_temp = grab_upcoming_rainfall_and_temperature(
                 WEATHER_LOCATION, RAINFALL_HOURS
             )
 
-        if self._last_upcoming_rain_and_temp is not None:
-            # Undraw previous graph
-            self.draw_rainfall_and_temperature(
-                self._last_upcoming_rain_and_temp, colours.BLACK
-            )
+        # Test for drawing rainfall if data is available
+        if not self._last_upcoming_rain_and_temp == self.upcoming_rain_and_temp:
+            if self._last_upcoming_rain_and_temp is not None:
+                # Undraw previous graph
+                self.draw_rainfall_and_temperature(
+                    self._last_upcoming_rain_and_temp, colours.BLACK
+                )
 
         if self.upcoming_rain_and_temp:
             # Draw new graph
-            self.draw_rainfall_and_temperature(self.upcoming_rain_and_temp)
-            self._last_upcoming_rain_and_temp = self.upcoming_rain_and_temp
+            flash_enabled = (
+                True if RAINFALL_OVERSPILL_FLASH_ENABLED and (count % 2) else False
+            )
+
+            self.draw_rainfall_and_temperature(
+                self.upcoming_rain_and_temp, flash_enabled=flash_enabled
+            )
+            self._last_upcoming_rain_and_temp = self.upcoming_rain_and_temp.copy()
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
@@ -266,11 +299,11 @@ class WeatherScene(object):
         if not (count % TEMPERATURE_REFRESH_SECONDS):
 
             if OPENWEATHER_API_KEY:
-                self.current_temperature = grab_temperature_openweather(
+                self.current_temperature = grab_current_temperature_openweather(
                     WEATHER_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
             else:
-                self.current_temperature = grab_temperature(
+                self.current_temperature = grab_current_temperature(
                     WEATHER_LOCATION, TEMPERATURE_UNITS
                 )
 
