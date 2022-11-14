@@ -221,8 +221,6 @@ class WeatherScene(object):
             else:
                 square_colour = graph_colour
 
-            i = i + 1
-
             self.draw_square(x1, y1, x2, y2, square_colour)
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
@@ -246,6 +244,7 @@ class WeatherScene(object):
         if self.upcoming_rain_and_temp:
             # Draw new graph
             self.draw_rainfall_and_temperature(self.upcoming_rain_and_temp)
+            self._last_upcoming_rain_and_temp = self.upcoming_rain_and_temp
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
