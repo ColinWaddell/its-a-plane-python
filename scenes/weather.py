@@ -23,6 +23,13 @@ try:
 except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
     TEMPERATURE_UNITS = "metric"
+    
+try:
+    from config import RAINFALL_ENABLED
+
+except (ModuleNotFoundError, NameError, ImportError):
+    # If there's no config data
+    RAINFALL_ENABLED = False
 
 if TEMPERATURE_UNITS != "metric" and TEMPERATURE_UNITS != "imperial":
     TEMPERATURE_UNITS = "metric"
@@ -225,6 +232,9 @@ class WeatherScene(object):
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def rainfall(self, count):
+    
+        if not RAINFALL_ENABLED:
+            return
 
         if len(self._data):
             # Don't draw if there's plane data
