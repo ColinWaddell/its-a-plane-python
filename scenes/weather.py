@@ -78,7 +78,7 @@ def get_ttl_hash(seconds=60):
     return round(time.time() / seconds)
 
 
-def grab_temperature(location, units="metric"):
+def grab_current_temperature(location, units="metric"):
     current_temp = None
 
     try:
@@ -94,7 +94,7 @@ def grab_temperature(location, units="metric"):
     return current_temp
 
 
-def grab_rainfall_and_temperature(location, hours):
+def grab_upcoming_rainfall_and_temperature(location, hours):
     up_coming_rainfall_and_temperature = None
 
     try:
@@ -127,7 +127,7 @@ def grab_rainfall_and_temperature(location, hours):
     return up_coming_rainfall_and_temperature
 
 
-def grab_temperature_openweather(location, apikey, units):
+def grab_current_temperature_openweather(location, apikey, units):
     current_temp = None
 
     try:
@@ -174,7 +174,6 @@ class WeatherScene(object):
         # Search to find where in the current
         # temperature lies within the
         # defined colours
-
         for i in range(1, len(TEMPERATURE_COLOURS) - 1):
             if current_temperature > TEMPERATURE_COLOURS[i][0]:
                 min_temp = TEMPERATURE_COLOURS[i][0]
@@ -238,23 +237,31 @@ class WeatherScene(object):
 
         if len(self._data):
             # Don't draw if there's plane data
+            # and force a redraw when this is visible
+            # again by clearing the previous drawn data
+            # forcing a complete redraw
+            self._last_upcoming_rain_and_temp = None
+
+            # Don't draw anything
             return
 
         if not (count % RAINFALL_REFRESH_SECONDS):
-            self.upcoming_rain_and_temp = grab_rainfall_and_temperature(
+            self.upcoming_rain_and_temp = grab_upcoming_rainfall_and_temperature(
                 WEATHER_LOCATION, RAINFALL_HOURS
             )
 
-        if self._last_upcoming_rain_and_temp is not None:
-            # Undraw previous graph
-            self.draw_rainfall_and_temperature(
-                self._last_upcoming_rain_and_temp, colours.BLACK
-            )
+        # Test for drawing rainfall if data is available
+        if not self._last_upcoming_rain_and_temp == self.upcoming_rain_and_temp:
+            if self._last_upcoming_rain_and_temp is not None:
+                # Undraw previous graph
+                self.draw_rainfall_and_temperature(
+                    self._last_upcoming_rain_and_temp, colours.BLACK
+                )
 
-        if self.upcoming_rain_and_temp:
-            # Draw new graph
-            self.draw_rainfall_and_temperature(self.upcoming_rain_and_temp)
-            self._last_upcoming_rain_and_temp = self.upcoming_rain_and_temp
+            if self.upcoming_rain_and_temp:
+                # Draw new graph
+                self.draw_rainfall_and_temperature(self.upcoming_rain_and_temp)
+                self._last_upcoming_rain_and_temp = self.upcoming_rain_and_temp.copy()
 
     @Animator.KeyFrame.add(frames.PER_SECOND * 1)
     def temperature(self, count):
@@ -266,11 +273,11 @@ class WeatherScene(object):
         if not (count % TEMPERATURE_REFRESH_SECONDS):
 
             if OPENWEATHER_API_KEY:
-                self.current_temperature = grab_temperature_openweather(
+                self.current_temperature = grab_current_temperature_openweather(
                     WEATHER_LOCATION, OPENWEATHER_API_KEY, TEMPERATURE_UNITS
                 )
             else:
-                self.current_temperature = grab_temperature(
+                self.current_temperature = grab_current_temperature(
                     WEATHER_LOCATION, TEMPERATURE_UNITS
                 )
 
