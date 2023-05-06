@@ -23,11 +23,11 @@ JOURNEY_POSITION = (0, 0)
 JOURNEY_HEIGHT = 12
 JOURNEY_WIDTH = 64
 JOURNEY_SPACING = 16
-JOURNEY_FONT = fonts.large
+JOURNEY_FONT = fonts.large_bold
 JOURNEY_FONT_SELECTED = fonts.large_bold
-JOURNEY_COLOUR = colours.YELLOW
-
-ARROW_COLOUR = colours.ORANGE
+JOURNEY_COLOUR = colours.WHITE
+SELECTED_COLOUR = colours.YELLOW
+ARROW_COLOUR = colours.GREEN
 
 # Element Positions
 ARROW_POINT_POSITION = (34, 7)
@@ -61,9 +61,9 @@ class JourneyScene(object):
         text_length = graphics.DrawText(
             self.canvas,
             JOURNEY_FONT_SELECTED if origin == JOURNEY_CODE_SELECTED else JOURNEY_FONT,
-            1,
+	    1,
             JOURNEY_HEIGHT,
-            JOURNEY_COLOUR,
+            SELECTED_COLOUR if origin == JOURNEY_CODE_SELECTED else JOURNEY_COLOUR,
             origin if origin else JOURNEY_BLANK_FILLER,
         )
 
@@ -71,11 +71,11 @@ class JourneyScene(object):
         _ = graphics.DrawText(
             self.canvas,
             JOURNEY_FONT_SELECTED
-            if destination == JOURNEY_CODE_SELECTED
-            else JOURNEY_FONT,
+	    if destination == JOURNEY_CODE_SELECTED
+	    else JOURNEY_FONT,
             text_length + JOURNEY_SPACING,
             JOURNEY_HEIGHT,
-            JOURNEY_COLOUR,
+            SELECTED_COLOUR if destination == JOURNEY_CODE_SELECTED else JOURNEY_COLOUR,
             destination if destination else JOURNEY_BLANK_FILLER,
         )
 

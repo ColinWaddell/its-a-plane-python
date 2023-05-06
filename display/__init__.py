@@ -4,13 +4,11 @@ from setup import frames
 from utilities.animator import Animator
 from utilities.overhead import Overhead
 
-from scenes.temperature import TemperatureScene
 from scenes.flightdetails import FlightDetailsScene
 from scenes.journey import JourneyScene
 from scenes.loadingpulse import LoadingPulseScene
 from scenes.clock import ClockScene
 from scenes.planedetails import PlaneDetailsScene
-from scenes.day import DayScene
 from scenes.date import DateScene
 
 from rgbmatrix import graphics
@@ -37,13 +35,11 @@ except (ModuleNotFoundError, NameError):
 
 
 class Display(
-    TemperatureScene,
     FlightDetailsScene,
     JourneyScene,
     LoadingPulseScene,
     PlaneDetailsScene,
     ClockScene,
-    DayScene,
     DateScene,
     Animator,
 ):
@@ -60,7 +56,7 @@ class Display(
         options.pwm_bits = 11
         options.brightness = BRIGHTNESS
         options.pwm_lsb_nanoseconds = 130
-        options.led_rgb_sequence = "RGB"
+        options.led_rgb_sequence = "RBG"
         options.pixel_mapper_config = ""
         options.show_refresh_rate = 0
         options.gpio_slowdown = GPIO_SLOWDOWN

@@ -2,6 +2,7 @@ from FlightRadar24.api import FlightRadar24API
 from threading import Thread, Lock
 from time import sleep
 import math
+import pprint
 
 try:
     # Attempt to load config data
@@ -14,9 +15,10 @@ except (ModuleNotFoundError, NameError, ImportError):
 RETRIES = 3
 RATE_LIMIT_DELAY = 1
 MAX_FLIGHT_LOOKUP = 5
-MAX_ALTITUDE = 10000  # feet
+MAX_ALTITUDE = 41000  # feet
 EARTH_RADIUS_KM = 6371
 BLANK_FIELDS = ["", "N/A", "NONE"]
+ALLOWED_AIRCRAFT_CODES = ["A320","B787"]
 
 try:
     # Attempt to load config data
@@ -73,6 +75,9 @@ class Overhead:
     def grab_data(self):
         Thread(target=self._grab_data).start()
 
+    def _flight_filter(self,f):
+        return f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE and f.aircraft_code in ALLOWED_AIRCRAFT_CODES
+
     def _grab_data(self):
         # Mark data as old
         with self._lock:
@@ -89,8 +94,9 @@ class Overhead:
         flights = [
             f
             for f in flights
-            if f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE
+            if self._flight_filter(f)
         ]
+        pprint.pprint(flights)
         flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
 
         for flight in flights[:MAX_FLIGHT_LOOKUP]:
