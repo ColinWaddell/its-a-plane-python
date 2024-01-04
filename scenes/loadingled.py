@@ -10,6 +10,7 @@ gpio_retries = 10
 while gpio_retries:
     try:
         import RPi.GPIO as GPIO
+        break
     except:
         gpio_retries = gpio_retries - 1
         GPIO = None
