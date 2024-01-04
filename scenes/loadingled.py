@@ -22,7 +22,8 @@ class LoadingLEDScene(object):
     def gpio_setup(self):
         if not self.gpio_setup_complete:
             try:
-                import RPi.GPIO as GPIO
+                import RPi.GPIO
+                GPIO = RPi.GPIO
                 # Setup GPIO for blinking
                 GPIO.setwarnings(False)
                 GPIO.setmode(GPIO.BCM)
