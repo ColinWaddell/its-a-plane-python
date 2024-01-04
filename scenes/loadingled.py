@@ -10,6 +10,7 @@ except (ModuleNotFoundError, NameError, ImportError):
     LOADING_LED_GPIO_PIN = 25
 
 BLINKER_STEPS = 4
+GPIO = None
 
 class LoadingLEDScene(object):
     def __init__(self):
