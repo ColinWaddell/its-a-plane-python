@@ -44,7 +44,7 @@ try:
     # Attempt to load experimental config data
     from config import LOADING_LED_ENABLED
 
-except (ModuleNotFoundError, NameError):
+except (ModuleNotFoundError, NameError, ImportError):
     # If there's no experimental config data
     LOADING_LED_ENABLED = False
 
