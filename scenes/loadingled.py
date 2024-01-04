@@ -1,6 +1,5 @@
 from utilities.animator import Animator
 from setup import frames
-import RPi.GPIO as GPIO
 
 # Attempt to load config data
 try:
@@ -22,6 +21,7 @@ class LoadingLEDScene(object):
     def gpio_setup(self):
         if not self.gpio_setup_complete:
             try:
+                import RPi.GPIO as GPIO
                 # Setup GPIO for blinking
                 GPIO.setwarnings(False)
                 GPIO.setmode(GPIO.BCM)
