@@ -36,7 +36,7 @@ class LoadingLEDScene(object):
 
     @Animator.KeyFrame.add(4)
     def loading_led(self, count):
-        if self.gpio_setup_complete:
+        if self.gpio_setup_complete and not GPIO is None:
             reset_count = True
             if self.overhead.processing:
                 GPIO.output(
