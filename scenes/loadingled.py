@@ -21,23 +21,15 @@ class LoadingLEDScene(object):
         super().__init__()
 
     def gpio_setup(self):
-        if not self.gpio_setup_complete:
+        try:
             GPIO.setwarnings(False)
             GPIO.setmode(GPIO.BCM)
-
-            retries = 10
-            while(retries):
-                try:
-                    GPIO.setup(LOADING_LED_GPIO_PIN, GPIO.OUT)
-                    GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
-                    self.gpio_setup_complete = True
-                    break
-
-                except:
-                    print("Error loading GPIO stuff", file=sys.stderr)
-                    retries = retries - 1
-                    self.gpio_setup_complete = False
-                    sleep(1)
+            GPIO.setup(LOADING_LED_GPIO_PIN, GPIO.OUT)
+            GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
+            self.gpio_setup_complete = True
+        except:
+            print("Error loading GPIO stuff", file=sys.stderr)
+            self.gpio_setup_complete = False
 
     @Animator.KeyFrame.add(4)
     def loading_led(self, count):
