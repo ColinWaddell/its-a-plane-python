@@ -2,6 +2,7 @@ from utilities.animator import Animator
 from setup import frames
 from time import sleep
 import RPi.GPIO as GPIO
+import sys
 
 # Attempt to load config data
 try:
@@ -27,6 +28,7 @@ class LoadingLEDScene(object):
             GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
             self.gpio_setup_complete = True
         except:
+            print("Error loading GPIO stuff", file=sys.stderr)
             self.gpio_setup_complete = False
 
     @Animator.KeyFrame.add(4)
