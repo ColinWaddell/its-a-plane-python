@@ -28,7 +28,7 @@ class LoadingLEDScene(object):
             GPIO.output(LOADING_LED_GPIO_PIN, GPIO.HIGH)
             self.gpio_setup_complete = True
         except:
-            print("Error loading GPIO stuff", file=sys.stderr)
+            print("Error initializing GPIO", file=sys.stderr)
             self.gpio_setup_complete = False
 
     @Animator.KeyFrame.add(4)

@@ -8,6 +8,7 @@ from rgbmatrix import graphics
 from utilities.animator import Animator
 from setup import colours, fonts, frames
 from config import WEATHER_LOCATION
+import sys
 
 # Attempt to load config data
 try:
@@ -29,6 +30,10 @@ try:
 
 except (ModuleNotFoundError, NameError, ImportError):
     # If there's no config data
+    RAINFALL_ENABLED = False
+
+if RAINFALL_ENABLED and OPENWEATHER_API_KEY:
+    print("Rainfall display does not yet work with Open Weather", file=sys.stderr)
     RAINFALL_ENABLED = False
 
 if TEMPERATURE_UNITS != "metric" and TEMPERATURE_UNITS != "imperial":
