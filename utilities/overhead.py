@@ -3,6 +3,10 @@ from threading import Thread, Lock
 from time import sleep
 import math
 
+from requests.exceptions import ConnectionError
+from urllib3.exceptions import NewConnectionError
+from urllib3.exceptions import MaxRetryError
+
 try:
     # Attempt to load config data
     from config import MIN_ALTITUDE
@@ -82,74 +86,79 @@ class Overhead:
         data = []
 
         # Grab flight details
-        bounds = self._api.get_bounds(ZONE_DEFAULT)
-        flights = self._api.get_flights(bounds=bounds)
+        try:
+            bounds = self._api.get_bounds(ZONE_DEFAULT)
+            flights = self._api.get_flights(bounds=bounds)
 
-        # Sort flights by closest first
-        flights = [
-            f
-            for f in flights
-            if f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE
-        ]
-        flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
+            # Sort flights by closest first
+            flights = [
+                f
+                for f in flights
+                if f.altitude < MAX_ALTITUDE and f.altitude > MIN_ALTITUDE
+            ]
+            flights = sorted(flights, key=lambda f: distance_from_flight_to_home(f))
 
-        for flight in flights[:MAX_FLIGHT_LOOKUP]:
-            retries = RETRIES
+            for flight in flights[:MAX_FLIGHT_LOOKUP]:
+                retries = RETRIES
 
-            while retries:
-                # Rate limit protection
-                sleep(RATE_LIMIT_DELAY)
+                while retries:
+                    # Rate limit protection
+                    sleep(RATE_LIMIT_DELAY)
 
-                # Grab and store details
-                try:
-                    details = self._api.get_flight_details(flight)
-
-                    # Get plane type
+                    # Grab and store details
                     try:
-                        plane = details["aircraft"]["model"]["text"]
-                    except (KeyError, TypeError):
-                        plane = ""
+                        details = self._api.get_flight_details(flight)
 
-                    # Tidy up what we pass along
-                    plane = plane if not (plane.upper() in BLANK_FIELDS) else ""
+                        # Get plane type
+                        try:
+                            plane = details["aircraft"]["model"]["text"]
+                        except (KeyError, TypeError):
+                            plane = ""
 
-                    origin = (
-                        flight.origin_airport_iata
-                        if not (flight.origin_airport_iata.upper() in BLANK_FIELDS)
-                        else ""
-                    )
+                        # Tidy up what we pass along
+                        plane = plane if not (plane.upper() in BLANK_FIELDS) else ""
 
-                    destination = (
-                        flight.destination_airport_iata
-                        if not (flight.destination_airport_iata.upper() in BLANK_FIELDS)
-                        else ""
-                    )
+                        origin = (
+                            flight.origin_airport_iata
+                            if not (flight.origin_airport_iata.upper() in BLANK_FIELDS)
+                            else ""
+                        )
 
-                    callsign = (
-                        flight.callsign
-                        if not (flight.callsign.upper() in BLANK_FIELDS)
-                        else ""
-                    )
+                        destination = (
+                            flight.destination_airport_iata
+                            if not (flight.destination_airport_iata.upper() in BLANK_FIELDS)
+                            else ""
+                        )
 
-                    data.append(
-                        {
-                            "plane": plane,
-                            "origin": origin,
-                            "destination": destination,
-                            "vertical_speed": flight.vertical_speed,
-                            "altitude": flight.altitude,
-                            "callsign": callsign,
-                        }
-                    )
-                    break
+                        callsign = (
+                            flight.callsign
+                            if not (flight.callsign.upper() in BLANK_FIELDS)
+                            else ""
+                        )
 
-                except (KeyError, AttributeError):
-                    retries -= 1
+                        data.append(
+                            {
+                                "plane": plane,
+                                "origin": origin,
+                                "destination": destination,
+                                "vertical_speed": flight.vertical_speed,
+                                "altitude": flight.altitude,
+                                "callsign": callsign,
+                            }
+                        )
+                        break
 
-        with self._lock:
-            self._new_data = True
+                    except (KeyError, AttributeError):
+                        retries -= 1
+
+            with self._lock:
+                self._new_data = True
+                self._processing = False
+                self._data = data
+
+        except (ConnectionError, NewConnectionError, MaxRetryError):
+            self._new_data = False
             self._processing = False
-            self._data = data
 
     @property
     def new_data(self):
