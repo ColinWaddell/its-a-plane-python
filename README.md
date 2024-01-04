@@ -71,3 +71,21 @@ A more permanent solution if you'd like the software to run automatically on boo
 ```
 /usr/bin/python3 /home/pi/its-a-plane-python/its-a-plane.py > /home/pi/plane.log 2>&1 &
 ```
+
+## Optional
+
+### Loading LED
+An LED can be wired to a GPIO on the Raspberry Pi which can then blinks when data is being loaded.
+
+To enabled this add the following to your `config.py`. Adjust `LOADING_LED_GPIO_PIN` to suit your setup.
+
+```
+LOADING_LED_ENABLED = True
+LOADING_LED_GPIO_PIN = 25
+```
+
+If you are using `rc.local` to load this software on boot and you see the error `RuntimeError: No access to /dev/mem.  Try running as root!` then you need to update your `rc.local` to launch the application using `sudo`
+
+```
+sudo /usr/bin/python3 /home/pi/its-a-plane-python/its-a-plane.py > /home/pi/plane.log 2>&1 &
+```
