@@ -4,11 +4,10 @@ from setup import frames
 from utilities.animator import Animator
 from utilities.overhead import Overhead
 
-from scenes.weather import WeatherScene
+from scenes.temperature import TemperatureScene
 from scenes.flightdetails import FlightDetailsScene
 from scenes.journey import JourneyScene
 from scenes.loadingpulse import LoadingPulseScene
-from scenes.loadingled import LoadingLEDScene
 from scenes.clock import ClockScene
 from scenes.planedetails import PlaneDetailsScene
 from scenes.day import DayScene
@@ -28,11 +27,7 @@ def callsigns_match(flights_a, flights_b):
 
 try:
     # Attempt to load config data
-    from config import (
-        BRIGHTNESS,
-        GPIO_SLOWDOWN,
-        HAT_PWM_ENABLED
-    )
+    from config import BRIGHTNESS, GPIO_SLOWDOWN, HAT_PWM_ENABLED
 
 except (ModuleNotFoundError, NameError):
     # If there's no config data
@@ -40,20 +35,12 @@ except (ModuleNotFoundError, NameError):
     GPIO_SLOWDOWN = 1
     HAT_PWM_ENABLED = True
 
-try:
-    # Attempt to load experimental config data
-    from config import LOADING_LED_ENABLED
-
-except (ModuleNotFoundError, NameError, ImportError):
-    # If there's no experimental config data
-    LOADING_LED_ENABLED = False
-
 
 class Display(
-    WeatherScene,
+    TemperatureScene,
     FlightDetailsScene,
     JourneyScene,
-    LoadingLEDScene if LOADING_LED_ENABLED else LoadingPulseScene ,
+    LoadingPulseScene,
     PlaneDetailsScene,
     ClockScene,
     DayScene,

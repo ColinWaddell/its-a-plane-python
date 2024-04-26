@@ -4,10 +4,10 @@ from utilities.animator import Animator
 from setup import colours, fonts, screen
 
 # Setup
-PLANE_DETAILS_COLOUR = colours.PINK
-PLANE_DISTANCE_FROM_TOP = 30
-PLANE_TEXT_HEIGHT = 9
-PLANE_FONT = fonts.regular
+PLANE_DETAILS_COLOUR = colours.WHITE
+PLANE_DISTANCE_FROM_TOP = 31
+PLANE_TEXT_HEIGHT = 7
+PLANE_FONT = fonts.small
 
 
 class PlaneDetailsScene(object):
