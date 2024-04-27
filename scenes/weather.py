@@ -322,6 +322,14 @@ class WeatherScene(object):
                 colours.BLACK,
                 self._last_temperature_str,
             )
+            _ = graphics.DrawText(
+                self.canvas,
+                TEMPERATURE_FONT,
+                TEMPERATURE_POSITION[0]-1,
+                TEMPERATURE_POSITION[1]-1,
+                colours.BLACK,
+                self._last_temperature_str,
+            )
 
         if self.current_temperature:
             temp_str = f"{round(self.current_temperature)}°".rjust(4, " ")
@@ -335,6 +343,14 @@ class WeatherScene(object):
                 TEMPERATURE_POSITION[0],
                 TEMPERATURE_POSITION[1],
                 temp_colour,
+                temp_str,
+            )
+            _ = graphics.DrawText(
+                self.canvas,
+                TEMPERATURE_FONT,
+                TEMPERATURE_POSITION[0]-1,
+                TEMPERATURE_POSITION[1]-1,
+                colours.DARK_GRAY,
                 temp_str,
             )
 
