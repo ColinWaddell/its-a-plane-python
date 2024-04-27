@@ -43,11 +43,11 @@ class DayScene(object):
                 self._last_day = current_day
 
                 # Draw day
-                _ = graphics.DrawText(
-                    self.canvas,
-                    DAY_FONT,
-                    DAY_POSITION[0],
-                    DAY_POSITION[1],
-                    DAY_COLOUR,
-                    current_day,
-                )
+                # _ = graphics.DrawText(
+                #     self.canvas,
+                #     DAY_FONT,
+                #     DAY_POSITION[0],
+                #     DAY_POSITION[1],
+                #     DAY_COLOUR,
+                #     current_day,
+                #)
