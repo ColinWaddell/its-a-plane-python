@@ -61,10 +61,10 @@ TEMPERATURE_POSITION = (47, TEMPERATURE_FONT_HEIGHT + 1)
 
 TEMPERATURE_COLOURS = (
     (10, colours.WHITE),    # 50F
-    (15, colours.BLUE),     # 60F
-    (21, colours.GREEN),    # 70F
-    (26, colours.YELLOW),   # 80F
-    (30, colours.RED),      # 90F
+    (15, colours.DARK_CYAN),     # 60F
+    (21, colours.DARK_GREEN),    # 70F
+    (26, colours.YELLOW_DARK),   # 80F
+    (30, colours.ORANGE),      # 90F
 )
 
 # Cache grabbing weather data
