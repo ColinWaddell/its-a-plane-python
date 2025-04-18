@@ -2,7 +2,7 @@
 
 [Blog article about this project](https://blog.colinwaddell.com/flight-tracker/)
 
-[![Finished flight tracker showing a flight](https://blog.colinwaddell.com/media/flight-tracker/screen-flight-thumb.jpg)](https://blog.colinwaddell.com/media/flight-tracker/screen-flight.jpg)
+[![Finished flight tracker showing a flight](https://blog.colinwaddell.com/user/pages/01.articles/02.flight-tracker/screen-flight-thumb.jpg)](https://blog.colinwaddell.com/user/pages/01.articles/02.flight-tracker/screen-flight-thumb.jpg)
 
 # Setup
 
