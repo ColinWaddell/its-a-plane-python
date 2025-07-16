@@ -119,18 +119,20 @@ To save and exit nano hit `Ctrl-X` followed by `Y`.
 In reality you'll want to customise `config.py` for your own purposes.
 
 ### Configuration file details 
-* `ZONE_HOME` defines the area within which flights should be tracked. 
-* `LOCATION_HOME` is the latitude/longitude of your home.
-* `WEATHER_LOCATION` is the city that will be used to display the temperature. If using Openweather (see next), please type in the city in the form of "City" or "City,Province/State,Country", e.g. "Paris" or "Paris,Ile-de-France,FR".
-* `OPENWEATHER_API_KEY` If provided, will use the OpenWeather API. You can obtain a free OpenWeather API key by going [here](https://openweathermap.org/price) (Optional)
-* `TEMPERATURE_UNITS` One of "metric" or "imperial". Defaults to "metric".
-* `MIN_ALTITUDE` Will remove planes below a certain altitude (in feet). Depending on the defined ZONE_HOME, can be useful for filtering out planes parked on the tarmac.
-* `BRIGHTNESS` 0-100, changes the brightness of the display. 
-* `GPIO_SLOWDOWN` 0-4, larger numbers for faster hardware can reduce/eliminate flickering. (e.g., 2 seems to work well on a Pi Zero 2 W, but 0 might be fine for an older Pi Zero). 
-* `JOURNEY_CODE_SELECTED` Three-letter airport code of local airport to put in **bold** on the display (Optional).
-* `JOURNEY_BLANK_FILLER` Three-letter text to use in place of an unknown airport origin/destination. Defaults to " ? ".
-* `HAT_PWM_ENABLED` Drive the PWM using the Pi's soundcard, [assuming the solder bridge has been added to the HAT](https://learn.adafruit.com/assets/57727). Defaults to `True`
 
+| Variable                 | Description |
+|--------------------------|-------------|
+| `ZONE_HOME`              | Defines the area within which flights should be tracked. |
+| `LOCATION_HOME`          | Latitude/longitude of your home. |
+| `WEATHER_LOCATION`       | City used to display the temperature. Format: `"City"` or `"City,Province/State,Country"` (e.g., `"Paris"` or `"Paris,Ile-de-France,FR"`). |
+| `OPENWEATHER_API_KEY`    | If provided, enables OpenWeather API. [Get a free key here](https://openweathermap.org/price). *(Optional)* |
+| `TEMPERATURE_UNITS`      | One of `"metric"` or `"imperial"`. Defaults to `"metric"`. |
+| `MIN_ALTITUDE`           | Removes planes below this altitude (in feet). Useful for filtering out planes on the tarmac. |
+| `BRIGHTNESS`             | Range 0–100. Adjusts brightness of the display. |
+| `GPIO_SLOWDOWN`          | Range 0–4. Higher values help reduce flickering on faster hardware (e.g., `2` for Pi Zero 2 W). |
+| `JOURNEY_CODE_SELECTED`  | Three-letter airport code of a local airport to display in **bold**. *(Optional)* |
+| `JOURNEY_BLANK_FILLER`   | Three-letter text used in place of an unknown airport. Defaults to `" ? "`. |
+| `HAT_PWM_ENABLED`        | Enables PWM via Pi’s soundcard. Requires [solder bridge modification](https://learn.adafruit.com/assets/57727). Defaults to `True`. |
 
 
 ### Configuring permissions to avoid running as root
