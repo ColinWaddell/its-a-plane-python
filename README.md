@@ -145,7 +145,7 @@ In reality you'll want to customise `config.py` for your own purposes.
 
 Previous versions of the instructions always pointed out to run everything as root for performance reasons but for security I think this is best avioded. Plus the latest version of the GPIO driver and rgb-matrix have strong opinions about who is in charge when running as root.
 
-To avoid running as root and to grant python permission to set real-time scheduling priorities without needing to run the command:
+To avoid running as root and to grant python permission to set real-time scheduling priorities without requiring elevates permissions,  run the command:
 
 ```
 sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11 
