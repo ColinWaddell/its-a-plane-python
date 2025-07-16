@@ -1,0 +1,16 @@
+[Unit]
+Description=Its A Plane
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/its-a-plane-python/env/bin/python /home/pi/its-a-plane-python/its-a-plane.py
+WorkingDirectory=/home/pi/its-a-plane-python
+StandardOutput=append:/home/pi/plane.log
+StandardError=append:/home/pi/plane.log
+Restart=on-failure
+User=pi
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
