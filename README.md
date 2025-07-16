@@ -160,6 +160,8 @@ cd /home/pi/its-a-plane-python
 env/bin/python3 its-a-plane.py
 ```
 
+To quit tap `Ctrl-C`.
+
 ### Running the software on start-up
 
 This repo contains an example `.service` file to allow this software to be easily ran on boot. Provided that the same paths have been used in your own installation as these instructions then you shouldn't need to edit this file.
