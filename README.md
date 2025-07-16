@@ -190,3 +190,5 @@ display a chart of rainfall by adding the following to your `config.py`:
 ```
 RAINFALL_ENABLED = True
 ```
+
+![Example rainfall chart image](https://raw.githubusercontent.com/ColinWaddell/its-a-plane-python/refs/heads/features/venv/assets/weather.jpg)
