@@ -8,7 +8,7 @@
 
 ## Installation
 
-The previous instructions were written against Debian Buster and can be found a this commit. People were starting to find the instructions didn't line up with the latest version of Debian Bookwork. These new instructions are less battle-tested that the previous version so if you run into any problems please raise it as issue.
+The previous instructions were written against Debian Buster and can be found [at this commit](https://github.com/ColinWaddell/its-a-plane-python/blob/44aa282bdc54a897ab72cbd0dc49017f6a11c11a/README.md). People were starting to find the instructions didn't line up with the latest version of Debian Bookwork. These new instructions are less battle-tested that the previous version so if you run into any problems please raise it as issue.
 
 ### Installation Guide
 
