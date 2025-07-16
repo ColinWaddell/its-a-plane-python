@@ -63,7 +63,13 @@ sudo ./demo --led-rows=32 --led-cols=64 -D0
 
 ### Install this Flight Tracking software
 
-1. Clone this repository (`git clone https://github.com/ColinWaddell/its-a-plane-python`). 
+1. Clone this repository:
+
+```
+cd /home/pi/its-a-plane-python
+git clone https://github.com/ColinWaddell/its-a-plane-python
+```
+
 2. Head into this repository and create a virtual-environment, activate it and install all the dependancies
 
 ```
