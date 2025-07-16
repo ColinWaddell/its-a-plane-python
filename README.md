@@ -75,7 +75,7 @@ git clone https://github.com/ColinWaddell/its-a-plane-python
 ```
 cd /home/pi/its-a-plane-python
 python3 -m venv env
-source env\bin\activate
+source env/bin/activate
 pip install -r requirements.txt
 ```
 
