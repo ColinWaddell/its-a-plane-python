@@ -200,6 +200,8 @@ display a chart of rainfall by adding the following to your `config.py`:
 RAINFALL_ENABLED = True
 ```
 
+[![Example Weather Chart](https://raw.githubusercontent.com/ColinWaddell/FlightTracker/refs/heads/master/assets/weather.jpg)](https://raw.githubusercontent.com/ColinWaddell/FlightTracker/refs/heads/master/assets/weather.jpg)
+
 # License Update:
 As of April 2025, Fridge Flight Tracker is released under the GNU General Public License v3.0
 
