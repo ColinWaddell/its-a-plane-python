@@ -65,7 +65,7 @@ sudo ./demo --led-rows=32 --led-cols=64 -D0
 1. Clone this repository:
 
 ```
-cd /home/pi/its-a-plane-python
+cd /home/pi/
 git clone https://github.com/ColinWaddell/its-a-plane-python
 ```
 
