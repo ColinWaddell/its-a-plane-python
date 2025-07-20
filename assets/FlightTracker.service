@@ -1,0 +1,16 @@
+[Unit]
+Description=Its A Plane
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/home/pi/FlightTracker/env/bin/python /home/pi/FlightTracker/flight-tracker.py
+WorkingDirectory=/home/pi/FlightTracker
+StandardOutput=append:/home/pi/plane.log
+StandardError=append:/home/pi/plane.log
+Restart=on-failure
+User=pi
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target
