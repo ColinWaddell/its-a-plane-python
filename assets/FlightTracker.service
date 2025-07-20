@@ -1,5 +1,5 @@
 [Unit]
-Description=Its A Plane
+Description=Flight Tracker
 After=network.target
 
 [Service]
