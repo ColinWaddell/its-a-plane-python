@@ -8,7 +8,7 @@
 
 ## Installation
 
-The previous instructions were written against Debian Buster and can be found [at this commit](https://github.com/ColinWaddell/its-a-plane-python/blob/44aa282bdc54a897ab72cbd0dc49017f6a11c11a/README.md). People were starting to find the instructions didn't line up with the latest version of Debian Bookworm. These new instructions are less battle-tested than the previous version so if you run into any problems please raise it as an issue.
+The previous instructions were written against Debian Buster and can be found [at this commit](https://github.com/ColinWaddell/FlightTracker/blob/44aa282bdc54a897ab72cbd0dc49017f6a11c11a/README.md). People were starting to find the instructions didn't line up with the latest version of Debian Bookworm. These new instructions are less battle-tested than the previous version so if you run into any problems please raise it as an issue.
 
 ### Installation Guide
 
@@ -25,9 +25,9 @@ For future reference, in this installation process we're going to use the follow
 | Location                                | Purpose                                                             |
 | --------------------------------------- | ------------------------------------------------------------------- |
 | `/home/pi/rpi-rgb-led-matrix`           | RGB Matrix Driver                                                   |
-| `/home/pi/its-a-plane-python`           | The Flight Tracking software (this repo)                            |
-| `/home/pi/its-a-plane-python/env`       | The virtual environment we'll install the necessary Python packages  |
-| `/home/pi/its-a-plane-python/config.py` | Config file for this flight tracking software                       |
+| `/home/pi/FlightTracker`           | The Flight Tracking software (this repo)                            |
+| `/home/pi/FlightTracker/env`       | The virtual environment we'll install the necessary Python packages  |
+| `/home/pi/FlightTracker/config.py` | Config file for this flight tracking software                       |
 
 ### First steps
 
@@ -66,19 +66,19 @@ sudo ./demo --led-rows=32 --led-cols=64 -D0
 
 ```
 cd /home/pi/
-git clone https://github.com/ColinWaddell/its-a-plane-python
+git clone https://github.com/ColinWaddell/FlightTracker
 ```
 
 2. Head into this repository and create a virtual environment, activate it and install all the dependencies
 
 ```
-cd /home/pi/its-a-plane-python
+cd /home/pi/FlightTracker
 python3 -m venv env
 source env/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Head into the rgb-matrix library and install the Python library into our virtual environment. These commands assume you are still using the same environment that we activated in the above steps. If not, rerun the `source` command in the `its-a-plane` directory.
+3. Head into the rgb-matrix library and install the Python library into our virtual environment. These commands assume you are still using the same environment that we activated in the above steps. If not, rerun the `source` command in the `FlightTracker` directory.
 
 ```
 cd /home/pi/rpi-rgb-led-matrix/bindings/python
@@ -90,7 +90,7 @@ pip install .
 These instructions will show you how to create a config file from the command line with `nano` but in reality you can do this however you want.
 
 ```
-cd /home/pi/its-a-plane-python 
+cd /home/pi/FlightTracker 
 nano config.py
 ```
 
@@ -155,8 +155,8 @@ sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11
 The software can now be tested by running it from the command line
 
 ```
-cd /home/pi/its-a-plane-python 
-env/bin/python3 its-a-plane.py
+cd /home/pi/FlightTracker 
+env/bin/python3 flight-tracker.py
 ```
 
 To quit tap `Ctrl-C`.
@@ -166,18 +166,18 @@ To quit tap `Ctrl-C`.
 This repo contains an example `.service` file to allow this software to be easily run on boot. Provided that the same paths have been used in your own installation as these instructions then you shouldn't need to edit this file.
 
 ```
-sudo cp /home/pi/its-a-plane-python/assets/its-a-plane.service /etc/systemd/system/its-a-plane.service
+sudo cp /home/pi/FlightTracker/assets/FlightTracker.service /etc/systemd/system/FlightTracker.service
 sudo systemctl daemon-reexec
 sudo systemctl daemon-reload
-sudo systemctl enable its-a-plane.service
-sudo systemctl start its-a-plane.service
+sudo systemctl enable FlightTracker.service
+sudo systemctl start FlightTracker.service
 ```
 
 Any problems, check the status and logs:
 
 ```
-sudo systemctl status its-a-plane.service
-journalctl -u its-a-plane.service -f
+sudo systemctl status FlightTracker.service
+journalctl -u FlightTracker.service -f
 ```
 
 ## Optional
