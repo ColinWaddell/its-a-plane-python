@@ -2,7 +2,7 @@
 
 [Blog article about this project](https://blog.colinwaddell.com/flight-tracker/)
 
-[![Finished flight tracker showing a flight](https://blog.colinwaddell.com/articles/flight-tracker/screen-flight.jpg)](https://blog.colinwaddell.com/articles/flight-tracker/screen-flight.jpg)
+[![Finished flight tracker showing a flight](https://blog.colinwaddell.com/user/pages/01.articles/02.flight-tracker/screen-flight-thumb.jpg)](https://blog.colinwaddell.com/user/pages/01.articles/02.flight-tracker/screen-flight-thumb.jpg)
 
 # Setup
 
@@ -201,4 +201,12 @@ display a chart of rainfall by adding the following to your `config.py`:
 RAINFALL_ENABLED = True
 ```
 
-![Example rainfall chart image](https://raw.githubusercontent.com/ColinWaddell/its-a-plane-python/refs/heads/features/venv/assets/weather.jpg)
+# License Update:
+As of April 2025, Fridge Flight Tracker is released under the GNU General Public License v3.0
+
+You’re welcome to use, modify, and share the code—just keep it under the same license and include
+proper attribution (retain my copyright and license notice). See LICENSE for details.
+
+I had to add this license folks have started selling these online as their own with zero attribution.
+Open-source projects like this are our CVs: they show peers and potential employers what we can do.
+Passing off someone else’s work as your own robs us of our chance to promote ourselves.
