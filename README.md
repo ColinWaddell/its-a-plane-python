@@ -8,13 +8,13 @@
 
 ## Installation
 
-The previous instructions were written against Debian Buster and can be found [at this commit](https://github.com/ColinWaddell/its-a-plane-python/blob/44aa282bdc54a897ab72cbd0dc49017f6a11c11a/README.md). People were starting to find the instructions didn't line up with the latest version of Debian Bookwork. These new instructions are less battle-tested that the previous version so if you run into any problems please raise it as issue.
+The previous instructions were written against Debian Buster and can be found [at this commit](https://github.com/ColinWaddell/its-a-plane-python/blob/44aa282bdc54a897ab72cbd0dc49017f6a11c11a/README.md). People were starting to find the instructions didn't line up with the latest version of Debian Bookworm. These new instructions are less battle-tested than the previous version so if you run into any problems please raise it as an issue.
 
 ### Installation Guide
 
 These instructions will assume that running the Flight Tracker on your Raspberry Pi is the only thing you're going to be doing with the device. The other assumptions are going to be:
 
-- You've got your Raspberry Pi setup with Raspbian based on Debian Bookwork 
+- You've got your Raspberry Pi set up with Raspbian based on Debian Bookworm 
 - The username of the device is `pi`
 - If you're not using a screen/keyboard attached to the Pi then you've figured out how to remote edit over SSH
 
@@ -26,12 +26,12 @@ For future reference, in this installation process we're going to use the follow
 | --------------------------------------- | ------------------------------------------------------------------- |
 | `/home/pi/rpi-rgb-led-matrix`           | RGB Matrix Driver                                                   |
 | `/home/pi/its-a-plane-python`           | The Flight Tracking software (this repo)                            |
-| `/home/pi/its-a-plane-python/env`       | The virtual environment we'll install the necessary python packages |
+| `/home/pi/its-a-plane-python/env`       | The virtual environment we'll install the necessary Python packages  |
 | `/home/pi/its-a-plane-python/config.py` | Config file for this flight tracking software                       |
 
 ### First steps
 
-Before installing anything let's ensure out system is up-to-date:
+Before installing anything let's ensure our system is up-to-date:
 
 ```
 sudo apt-get update
@@ -42,10 +42,9 @@ This will take a while on a fresh device as it picks up all its updates.
 
 ### Install the RGB Screen
 
-
 1. Assemble the RGB matrix, Pi, and Bonnet as described in [this Adafruit guide](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/overview).
-2. It is recommended that the [solder bridge is added to the HAT](https://learn.adafruit.com/assets/57727) in order to use the Pi's soundcard to drive the device's PWM 
-3. Please [read the official installating instructions](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices) for further details before proceding but don't run any commands or install anything yet
+2. It is recommended that the [solder bridge is added to the HAT](https://learn.adafruit.com/assets/57727) in order to use the Pi's soundcard to drive the device's PWM.
+3. Please [read the official installation instructions](https://learn.adafruit.com/adafruit-rgb-matrix-bonnet-for-raspberry-pi/driving-matrices) for further details before proceeding but don't run any commands or install anything yet.
 4. Use the following commands to install the `rgb-matrix` library. Please note the paths used in these instructions are used later in this guide and must be adhered to for everything to make sense.
 
 ```
@@ -54,7 +53,7 @@ curl https://raw.githubusercontent.com/adafruit/Raspberry-Pi-Installer-Scripts/m
 sudo bash /tmp/rgb-matrix.sh
 ```
 
-5. If the installating has worked successfully then there should be some demo applications available to run:
+5. If the installation has worked successfully then there should be some demo applications available to run:
 
 ```
 cd /home/pi/rpi-rgb-led-matrix/examples-api-use
@@ -70,7 +69,7 @@ cd /home/pi/its-a-plane-python
 git clone https://github.com/ColinWaddell/its-a-plane-python
 ```
 
-2. Head into this repository and create a virtual-environment, activate it and install all the dependancies
+2. Head into this repository and create a virtual environment, activate it and install all the dependencies
 
 ```
 cd /home/pi/its-a-plane-python
@@ -79,7 +78,7 @@ source env/bin/activate
 pip install -r requirements.txt
 ```
 
-3. Head into the rgb-matrix library and install the python library into our virtual environment. These commands assume you are still using the same environment that we activated in the above steps. If not rerun the `source` command in the `its-a-plane` directory.
+3. Head into the rgb-matrix library and install the Python library into our virtual environment. These commands assume you are still using the same environment that we activated in the above steps. If not, rerun the `source` command in the `its-a-plane` directory.
 
 ```
 cd /home/pi/rpi-rgb-led-matrix/bindings/python
@@ -88,7 +87,7 @@ pip install .
 
 ### Configure the Flight Tracking software for your location
 
-These instructions will show you how to create a config file from the commandline with `nano` but in reality you can do this however you want.
+These instructions will show you how to create a config file from the command line with `nano` but in reality you can do this however you want.
 
 ```
 cd /home/pi/its-a-plane-python 
@@ -143,9 +142,9 @@ In reality you'll want to customise `config.py` for your own purposes.
 
 ### Configuring permissions to avoid running as root
 
-Previous versions of the instructions always pointed out to run everything as root for performance reasons but for security I think this is best avioded. Plus the latest version of the GPIO driver and rgb-matrix have strong opinions about who is in charge when running as root.
+Previous versions of the instructions always pointed out to run everything as root for performance reasons but for security I think this is best avoided. Plus the latest version of the GPIO driver and rgb-matrix have strong opinions about who is in charge when running as root.
 
-To avoid running as root and to grant python permission to set real-time scheduling priorities without needing to run the command:
+To avoid running as root and to grant Python permission to set real-time scheduling priorities without needing to run the command:
 
 ```
 sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11 
@@ -153,7 +152,7 @@ sudo setcap 'cap_sys_nice=eip' /usr/bin/python3.11
 
 ### Running the software manually
 
-The software can now be tested by running it from the command-line
+The software can now be tested by running it from the command line
 
 ```
 cd /home/pi/its-a-plane-python 
@@ -164,7 +163,7 @@ To quit tap `Ctrl-C`.
 
 ### Running the software on start-up
 
-This repo contains an example `.service` file to allow this software to be easily ran on boot. Provided that the same paths have been used in your own installation as these instructions then you shouldn't need to edit this file.
+This repo contains an example `.service` file to allow this software to be easily run on boot. Provided that the same paths have been used in your own installation as these instructions then you shouldn't need to edit this file.
 
 ```
 sudo cp /home/pi/its-a-plane-python/assets/its-a-plane.service /etc/systemd/system/its-a-plane.service
@@ -184,9 +183,9 @@ journalctl -u its-a-plane.service -f
 ## Optional
 
 ### Loading LED
-An LED can be wired to a GPIO on the Raspberry Pi which can then blinks when data is being loaded.
+An LED can be wired to a GPIO on the Raspberry Pi which can then blink when data is being loaded.
 
-To enabled this add the following to your `config.py`. Adjust `LOADING_LED_GPIO_PIN` to suit your setup.
+To enable this add the following to your `config.py`. Adjust `LOADING_LED_GPIO_PIN` to suit your setup.
 
 ```
 LOADING_LED_ENABLED = True
@@ -207,6 +206,4 @@ As of April 2025, Fridge Flight Tracker is released under the GNU General Publ
 You’re welcome to use, modify, and share the code—just keep it under the same license and include
 proper attribution (retain my copyright and license notice). See LICENSE for details.
 
-I had to add this license folks have started selling these online as their own with zero attribution.
-Open-source projects like this are our CVs: they show peers and potential employers what we can do.
-Passing off someone else’s work as your own robs us of our chance to promote ourselves.
+I had to add this license as folks have started selling these online as their own with zero attribution. Open-source projects like this are our CVs: they show peers and potential employers what we can do. Passing off someone else’s work as your own robs us of our chance to promote ourselves.
