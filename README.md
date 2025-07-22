@@ -203,7 +203,7 @@ RAINFALL_ENABLED = True
 [![Example Weather Chart](https://raw.githubusercontent.com/ColinWaddell/FlightTracker/refs/heads/master/assets/weather.jpg)](https://raw.githubusercontent.com/ColinWaddell/FlightTracker/refs/heads/master/assets/weather.jpg)
 
 # License Update:
-As of April 2025, Fridge Flight Tracker is released under the GNU General Public License v3.0
+As of April 2025, Flight Tracker is released under the GNU General Public License v3.0
 
 You’re welcome to use, modify, and share the code—just keep it under the same license and include
 proper attribution (retain my copyright and license notice). See LICENSE for details.
