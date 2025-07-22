@@ -208,4 +208,4 @@ As of April 2025, Flight Tracker is released under the GNU General Public Lice
 You’re welcome to use, modify, and share the code—just keep it under the same license and include
 proper attribution (retain my copyright and license notice). See LICENSE for details.
 
-I had to add this license as folks have started selling these online as their own with zero attribution. Open-source projects like this are our CVs: they show peers and potential employers what we can do. Passing off someone else’s work as your own robs us of our chance to promote ourselves.
+[I had to add this license as folks have started selling these online as their own with zero attribution](https://colinwaddell.com/articles/flight-radar-ripoff). Open-source projects like this are our CVs: they show peers and potential employers what we can do. Passing off someone else’s work as your own robs us of our chance to promote ourselves.
